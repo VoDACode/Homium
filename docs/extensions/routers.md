@@ -1,9 +1,9 @@
 # Extensions: Routers
 
-* [Structure](/structure.md)
-* [Using resources and APIs](/using-resources-and-apis.md)
-* [Routers](/routers.md)
-* [How is it loaded?](/README.md#how-is-it-loaded)
+* [Structure](structure.md)
+* [Using resources and APIs](using-resources-and-apis.md)
+* [Routers](routers.md)
+* [How is it loaded?](README.md#how-is-it-loaded)
 
 ## Routers
 
