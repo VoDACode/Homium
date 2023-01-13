@@ -2,23 +2,23 @@
 
 ## Navigations
 
-> # [Extensions](docs\extensions\README.md)
+> # [Extensions](docs/extensions/README.md)
 >
->* [Structure](docs\extensions\structure.md)
->* [Using resources and APIs](docs\extensions\using-resources-and-apis.md)
->* [Routers](docs\extensions\routers.md)
->* [How is it loaded?](docs\extensions\README.md#how-is-it-loaded)
+>* [Structure](docs/extensions/structure.md)
+>* [Using resources and APIs](docs/extensions/using-resources-and-apis.md)
+>* [Routers](docs/extensions/routers.md)
+>* [How is it loaded?](docs/extensions/README.md#how-is-it-loaded)
 
 > # Project
 >
 > * [Goals](#goals)
 > * [Contributing](#contributing)
-> * [Structure](docs\project\structure.md) [EMPTY]
-> * [Code style](docs\project\code-style.md) [EMPTY]
+> * [Structure](docs/project/structure.md) [EMPTY]
+> * [Code style](docs/project/code-style.md) [EMPTY]
 
 ## Goals
 
-* Support dynamically loaded [extensions](docs\extensions\README.md)
+* Support dynamically loaded [extensions](docs/extensions/README.md)
 * System of OOP for smart home devices logic
 * Custom UI
 * Package manager (extensions manager)
