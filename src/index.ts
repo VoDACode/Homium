@@ -9,7 +9,10 @@ import * as boot from './boot';
 const app = express();
 const port = config.server.port || process.env.PORT;
 
-db.connect();
+(async() => {
+    await db.connect();
+    await boot.firstStart();
+})();
 
 app.use(bodyParser.json());
 app.use(cookieParser());

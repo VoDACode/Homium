@@ -27,7 +27,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
         await db.sessions.insertOne(session);
     }
     res.cookie("token", sessionToken, { expires: expiresAt })
-    res.end()
+    res.status(200).end()
 
 }
 
@@ -66,7 +66,7 @@ export async function signout(req: Request, res: Response, next: NextFunction) {
     }
     await db.sessions.deleteOne({ sessionToken: req.cookies['token'] });
     res.clearCookie("token");
-    res.end();
+    res.status(200).end();
 }
 
 export async function refresh(req: Request, res: Response) {
@@ -100,5 +100,5 @@ export async function refresh(req: Request, res: Response) {
     await db.sessions.updateOne( { session: sessionToken }, { $set: session }, { upsert: true} );
 
     res.cookie("token", newSessionToken, { expires: expiresAt })
-    res.end()
+    res.status(200).end()
 }

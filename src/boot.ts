@@ -4,6 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import { IExtension } from './types/IExtension';
 import extensions from './services/extensions';
+import db from './db';
+import { UserModel } from './models/UserModel';
 
 const app = express();
 
@@ -32,6 +34,12 @@ export function loadControllers(){
         app.use('/api/controllers/' + name, controller);
         console.log('Loaded controller: ' + name);
     });
+}
+
+export async function firstStart(){
+    if(await db.users.countDocuments() !== 0)
+        return;
+    await db.users.insertOne(new UserModel("root", "toor"));
 }
 
 function _bootExtensions(mode: 'onlyNew' | 'all') {
