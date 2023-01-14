@@ -2,6 +2,8 @@
 
 ## Navigations
 
+> # [API documentation](docs/api/README.md)
+
 > # [Extensions](docs/extensions/README.md)
 >
 >* [Structure](docs/extensions/structure.md)
