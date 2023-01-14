@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "build": "tsc",
-    "start": "nodemon ./src/index.ts",
+    "start": "node scripts/start.js",
     "copy": "rimraf dist && tsc && copyfiles -u 1 src/static/**/* src/**/*.json src/**/*.html src/**/*.css dist/"
   },
   "repository": {

@@ -1,12 +1,15 @@
 import express from 'express';
 import path from 'path';
-import * as config from './config';
+import db from './db';
+import config from './config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as boot from './boot';
 
 const app = express();
-const port = config.getConfig().server.port || process.env.PORT;
+const port = config.server.port || process.env.PORT;
+
+db.connect();
 
 app.use(bodyParser.json());
 app.use(cookieParser());

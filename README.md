@@ -11,6 +11,7 @@
 
 > # Project
 >
+> * [Get started](docs/project/get-start.md)
 > * [Goals](#goals)
 > * [Contributing](#contributing)
 > * [Structure](docs/project/structure.md) [EMPTY]

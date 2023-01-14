@@ -1,9 +1,7 @@
 import { NextFunction, Response, Request } from "express";
-import { Database } from "../db";
+import db from "../db";
 import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
-
-const db = Database.Instance();
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
@@ -11,7 +9,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
         res.status(401).end()
         return
     }
-    await db.connect();
+
     const expectedPassword = (await db.users.findOne({ username: username }))?.password;
     if (!expectedPassword || expectedPassword !== password) {
         res.status(401).end()
@@ -46,8 +44,6 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
         return;
     }
 
-    await db.connect();
-
     const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
     if (!userSession) {
         res.status(401).end()
@@ -68,7 +64,6 @@ export async function signout(req: Request, res: Response, next: NextFunction) {
         res.status(401).end()
         return
     }
-    await db.connect();
     await db.sessions.deleteOne({ sessionToken: req.cookies['token'] });
     res.clearCookie("token");
     res.end();
@@ -86,7 +81,6 @@ export async function refresh(req: Request, res: Response) {
         return
     }
 
-    await db.connect();
     const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
     if (!userSession) {
         res.status(401).end()

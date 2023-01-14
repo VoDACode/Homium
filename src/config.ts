@@ -15,7 +15,7 @@ class Config {
             throw new Error("Config file not found");
         }
     }
-    public static Instance(): Config {
+    public static get Instance(): Config {
         return this._instance || (this._instance = new this());
     }
     private _config: IConfigModel;
@@ -30,6 +30,4 @@ class Config {
     }
 }
 
-export function getConfig(): IConfigModel { 
-    return Config.Instance().config;
-}
+export default Config.Instance.config;

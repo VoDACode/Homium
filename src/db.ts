@@ -1,14 +1,12 @@
 import {Db, MongoClient} from 'mongodb';
-import { getConfig } from './config';
+import config from './config';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
-
-const config = getConfig();
 
 export class Database {
     private static _instance: Database;
     private constructor() { }
-    public static Instance(): Database {
+    public static get getInstance(): Database {
         return this._instance || (this._instance = new this());
     }
     private _db: MongoClient | undefined;
@@ -31,3 +29,5 @@ export class Database {
         return this.db.collection<Session>('sessions');
     }
 }
+
+export default Database.getInstance;
