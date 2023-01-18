@@ -1,0 +1,8 @@
+{
+    "PASSWORD": "Password",
+    "LOGIN": "Login",
+    "LOGIN_ERROR": "Login error",
+    "LOGIN_ERROR_MESSAGE": "Invalid username or password",
+    "SIGN_IN": "Sign in",
+    "SIGN_OUT": "Sign out"
+}

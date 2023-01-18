@@ -11,3 +11,14 @@ export class UserModel {
         this.lastname = lastname || "";
     }
 }
+
+export class UserView {
+    lastname: string;
+    firstname: string;
+    username: string;
+    constructor(user: UserModel) {
+        this.username = user.username;
+        this.firstname = user.firstname;
+        this.lastname = user.lastname;
+    }
+}

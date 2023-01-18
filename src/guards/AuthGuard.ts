@@ -2,6 +2,7 @@ import { NextFunction, Response, Request } from "express";
 import db from "../db";
 import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
+import { UserModel } from "../models/UserModel";
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
@@ -21,14 +22,13 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
     const expiresAt = new Date(+now + 120 * 1000)
     const session = new Session(username, expiresAt, sessionToken);
 
-    if(await db.sessions.findOne({ sessionToken: sessionToken })) {
-        await db.sessions.updateOne( { sessionToken: sessionToken }, { $set: session }, { upsert: true} );
+    if (await db.sessions.findOne({ sessionToken: sessionToken })) {
+        await db.sessions.updateOne({ sessionToken: sessionToken }, { $set: session }, { upsert: true });
     } else {
         await db.sessions.insertOne(session);
     }
-    res.cookie("token", sessionToken, { expires: expiresAt })
-    res.status(200).end()
-
+    res.cookie("token", sessionToken, { expires: expiresAt });
+    res.status(200).end();
 }
 
 export async function authGuard(req: Request, res: Response, next: NextFunction) {
@@ -38,29 +38,29 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
     }
 
     const sessionToken = req.cookies['token']
-
+    console.log(req.cookies);
     if (!sessionToken) {
-        res.status(401).end();
+        res.status(401).send("Sessino not found").end();
         return;
     }
 
     const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
     if (!userSession) {
-        res.status(401).end()
-        return
+        res.status(401).send("User not found").end();
+        return;
     }
 
-    if (userSession.isExpired()) {
+    if (userSession.expiresAt < new Date()) {
         await db.sessions.deleteOne({ sessionToken: sessionToken });
-        res.status(401).end()
-        return
+        res.status(401).send("Old session").end();
+        return;
     }
 
     next();
 }
 
 export async function signout(req: Request, res: Response, next: NextFunction) {
-    if(!req.cookies || req.cookies['token']) {
+    if (!req.cookies || req.cookies['token']) {
         res.status(401).end()
         return
     }
@@ -97,8 +97,24 @@ export async function refresh(req: Request, res: Response) {
     const expiresAt = new Date(+now + 120 * 1000)
     const session = new Session(userSession.username, expiresAt, newSessionToken);
 
-    await db.sessions.updateOne( { session: sessionToken }, { $set: session }, { upsert: true} );
+    await db.sessions.updateOne({ session: sessionToken }, { $set: session }, { upsert: true });
 
     res.cookie("token", newSessionToken, { expires: expiresAt })
     res.status(200).end()
+}
+
+export async function getUser(data: Request | string) : Promise<UserModel | null>{
+    const userSession = (await db.sessions.findOne({ sessionToken: getToken() }));
+    if (!userSession) {
+        return null;
+    }
+    if (userSession.isExpired()) {
+        await db.sessions.deleteOne({ sessionToken: getToken() });
+        return null;
+    }
+    return await db.users.findOne({ username: userSession.username });
+
+    function getToken() {
+        return typeof data === 'string' ? data : data.cookies['token'];
+    }
 }

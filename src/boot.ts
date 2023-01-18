@@ -10,11 +10,11 @@ import { UserModel } from './models/UserModel';
 const app = express();
 
 export function bootExtensions() {
-    _bootExtensions('all');
+    return _bootExtensions('all');
 }
 
 export function bootNewExtensions() {
-    _bootExtensions('onlyNew');
+    return _bootExtensions('onlyNew');
 }
 
 export function loadControllers(){
@@ -34,6 +34,7 @@ export function loadControllers(){
         app.use('/api/controllers/' + name, controller);
         console.log('Loaded controller: ' + name);
     });
+    return app;
 }
 
 export async function firstStart(){
@@ -117,4 +118,5 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
         }
         extensions.get(file, 'folder')?.run();
     });
+    return app;
 }

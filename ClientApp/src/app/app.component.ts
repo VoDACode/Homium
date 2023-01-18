@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import {CookieService} from "ngx-cookie-service";
+import { ApiAuthService } from './services/api/api-auth.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +10,14 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'homium';
+  showBg = false;
+  selectLocale: string = 'en';
+  constructor(private translateService: TranslateService, private cookie: CookieService) {
+    this.selectLocale = this.cookie.get('locale');
+    if(!this.selectLocale){
+      this.selectLocale = 'en';
+      this.cookie.set('locale', this.selectLocale)
+    }
+    this.translateService.use(this.selectLocale);
+  }
 }

@@ -19,8 +19,10 @@ app.use(cookieParser());
 
 app.use("/app/static", express.static(path.join(__dirname, 'static')));
 
-boot.loadControllers();
-boot.bootExtensions();
+app.use("/", boot.loadControllers());
+app.use("/", boot.bootExtensions());
+
+app.use("/", require('./router'));
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

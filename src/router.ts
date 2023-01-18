@@ -3,14 +3,12 @@ import extensions from './services/extensions';
 
 const router = express.Router();
 
-
-//TO DO
-router.get('/sign-in', (req, res) => {
-    res.sendFile('signin.html');
-});
-
+console.log('Router loaded');
 // API routes
-router.use('/api', (req, res) => {
+router.use('/api', (req, res, next) => {
+    if(req.originalUrl.startsWith('/api/extensions') || req.originalUrl.startsWith('/api/controllers')){
+        return next();
+    }
     let url = req.headers.referer;
     url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');
     let urlParts = url?.split('/');
@@ -18,17 +16,20 @@ router.use('/api', (req, res) => {
         let extensionName = urlParts?.[2];
         let extension = extensions.get(extensionName, 'name');
         if(extension){
-            res.redirect('/extensions/' + extension.name + req.originalUrl);
+            res.redirect(308, '/extensions/' + extension.name + req.originalUrl);
         }else{
             res.send('Extension not found');
         }
     }else{
-        res.redirect('/api/controllers' + req.originalUrl.replace('/api', ''));
+        res.redirect(308, '/api/controllers' + req.originalUrl.replace('/api', ''));
     }
 });
 
 // Static files
-router.use('/static', (req, res) => {
+router.use('/static', (req, res, next) => {
+    if(req.originalUrl.startsWith('/static') && req.originalUrl != '/static'){
+        return next();
+    }
     let url = req.headers.referer;
     url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');
     let urlParts = url?.split('/');
@@ -36,12 +37,12 @@ router.use('/static', (req, res) => {
         let extensionName = urlParts?.[2];
         let extension = extensions.get(extensionName, 'name');
         if(extension){
-            res.redirect('/extensions/' + extension.name + req.originalUrl);
+            res.redirect(308, '/extensions/' + extension.name + req.originalUrl);
         }else{
             res.send('Extension not found');
         }
     }else{
-        res.redirect('/app/static' + req.originalUrl.replace('/static', ''));
+        res.redirect(308, '/app/static' + req.originalUrl.replace('/static', ''));
     }
 });
 
