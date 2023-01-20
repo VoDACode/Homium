@@ -1,0 +1,49 @@
+nav{
+    width: 100vw;
+    background-color: aliceblue;
+    height: 50px;
+    position: fixed;
+}
+nav > ul{
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+li{
+    text-align: center;
+    position: relative;
+}
+nav > ul > li{
+    display: inline-block;
+    position: relative;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+ul.sub-list{
+    background-color: aliceblue;
+    padding: 10px;
+    border-radius: 5px;
+
+    display: none;
+    position: absolute;
+    top: 45px;
+    padding: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+ul.sub-list li{
+    display: block;
+    padding-top: 10px;
+}
+
+li,
+li > a:hover,
+li > span:hover{
+    cursor: pointer;
+}
+
+li:hover{
+    background-color: #d3d3d3;
+}

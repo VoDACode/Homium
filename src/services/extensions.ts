@@ -3,9 +3,11 @@ import { IExtension } from "../types/IExtension";
 class ExtansionExpanded{
     extension: IExtension;
     folder: string;
-    constructor(extension: IExtension, folder: string) {
+    id: string;
+    constructor(extension: IExtension, folder: string, id: string) {
         this.extension = extension;
         this.folder = folder;
+        this.id = id;
     }
 }
 
@@ -22,22 +24,26 @@ class ExtensionsStorage{
         return this.extensions.length;
     }
 
-    add(extension: IExtension, folder: string){
+    add(extension: IExtension, folder: string, id: string){
+        if(this.extensions.find(e => e.id === id))
+            return;
         if(!this.extensions.find((e) => e.extension.name === extension.name) || !this.extensions.find((e) => e.folder === folder)){
             return;
         }
-        this.extensions.push(new ExtansionExpanded(extension, folder));
+        this.extensions.push(new ExtansionExpanded(extension, folder, id));
     }
 
-    get(name: string, searchBy: 'name' | 'folder'): IExtension | undefined {
+    get(name: string, searchBy: 'name' | 'folder' | 'id'): IExtension | undefined {
         if(searchBy == 'name'){
             return this.extensions.find((e) => e.extension.name === name)?.extension;
         }else if(searchBy == 'folder'){
             return this.extensions.find((e) => e.folder === name)?.extension;
+        }else if(searchBy == 'id'){
+            return this.extensions.find((e) => e.id === name)?.extension;
         }
     }
 
-    reload(name: string, searchBy: 'name' | 'folder'): boolean {
+    reload(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         let extension = this.get(name, searchBy);
         if(extension){
             extension.stop();
@@ -47,7 +53,7 @@ class ExtensionsStorage{
         return false;
     }
 
-    remove(name: string, searchBy: 'name' | 'folder'): boolean {
+    remove(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         let extension = this.get(name, searchBy);
         if(extension){
             extension.stop();
@@ -57,7 +63,7 @@ class ExtensionsStorage{
         return false;
     }
 
-    any(name: string, searchBy: 'name' | 'folder'): boolean {
+    any(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         return this.get(name, searchBy) != undefined;
     }
 }

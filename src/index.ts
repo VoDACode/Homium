@@ -12,18 +12,21 @@ const port = config.server.port || process.env.PORT;
 (async() => {
     await db.connect();
     await boot.firstStart();
+    start();
 })();
 
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.use("/app/static", express.static(path.join(__dirname, 'static')));
-
-app.use("/", boot.loadControllers());
-app.use("/", boot.bootExtensions());
-
-app.use("/", require('./router'));
-
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+function start(){
+    app.use(bodyParser.json());
+    app.use(cookieParser());
+    
+    app.use("/app/static", express.static(path.join(__dirname, 'static')));
+    
+    app.use("/", boot.loadControllers());
+    app.use("/", boot.bootExtensions());
+    
+    app.use("/", require('./router'));
+    
+    app.listen(port, () => {
+        console.log(`Server running on port ${port}`);
+    });
+}

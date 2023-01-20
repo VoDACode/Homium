@@ -12,6 +12,8 @@ import { CookieService } from 'ngx-cookie-service';
 import { AuthGuard } from './services/auth/AuthGuard';
 import { Router } from '@angular/router';
 import { AuthInterceptor } from './services/auth/AuthInterceptor';
+import { NavAdminPanelComponent } from './components/nav-admin-panel/nav-admin-panel.component';
+import { AdminPanelComponent } from './components/admin-panel/admin-panel.component';
 
 export function HttpLoaderFactory(http: HttpClient): TranslateLoader {
   return new TranslateHttpLoader(http, './assets/locale/', '.json');
@@ -20,7 +22,9 @@ export function HttpLoaderFactory(http: HttpClient): TranslateLoader {
 @NgModule({
   declarations: [
     AppComponent,
-    SigninComponent
+    SigninComponent,
+    NavAdminPanelComponent,
+    AdminPanelComponent
   ],
   imports: [
     BrowserModule,

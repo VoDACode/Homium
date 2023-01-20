@@ -1,0 +1,17 @@
+<!--Nav menu-->
+
+<nav>
+    <ul>
+        <li *ngFor="let item of data" (click)="openSubItems(item)">
+            <span *ngIf="item.url == ''">
+                {{item.name}}
+            </span>
+            <a *ngIf="item.url != ''" routerLink="{{item.url}}" routerLinkActive="active">{{item.name}}</a>
+            <ul *ngIf="item.items" [style.display]="item.viewSubItems ? 'inline' : 'none'" class="sub-list">
+                <li *ngFor="let child of item.items">
+                    <a routerLink="{{child.url}}" routerLinkActive="active">{{child.name}}</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</nav>

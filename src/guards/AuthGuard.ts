@@ -19,7 +19,8 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 
     const sessionToken = uuid()
     const now = new Date()
-    const expiresAt = new Date(+now + 120 * 1000)
+    now.setDate(now.getDate() + 3);
+    const expiresAt = now;
     const session = new Session(username, expiresAt, sessionToken);
 
     if (await db.sessions.findOne({ sessionToken: sessionToken })) {
@@ -86,7 +87,7 @@ export async function refresh(req: Request, res: Response) {
         res.status(401).end()
         return
     }
-    if (userSession.isExpired()) {
+    if (userSession.expiresAt < new Date()) {
         await db.sessions.deleteOne({ sessionToken: sessionToken });
         res.status(401).end()
         return
@@ -108,7 +109,7 @@ export async function getUser(data: Request | string) : Promise<UserModel | null
     if (!userSession) {
         return null;
     }
-    if (userSession.isExpired()) {
+    if (userSession.expiresAt < new Date()) {
         await db.sessions.deleteOne({ sessionToken: getToken() });
         return null;
     }
@@ -117,4 +118,9 @@ export async function getUser(data: Request | string) : Promise<UserModel | null
     function getToken() {
         return typeof data === 'string' ? data : data.cookies['token'];
     }
+}
+
+export async function isAuthorized(req: Request): Promise<boolean> {
+    const user = await getUser(req);
+    return user !== null;
 }

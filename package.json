@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "build": "tsc",
     "start": "node scripts/start.js",
+    "start-backend": "nodemon ./src/index.ts",
     "copy": "rimraf dist && tsc && copyfiles -u 1 src/static/**/* src/**/*.json src/**/*.html src/**/*.css dist/"
   },
   "repository": {

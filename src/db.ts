@@ -1,5 +1,8 @@
 import {Db, MongoClient} from 'mongodb';
 import config from './config';
+import { ExtensionModel } from './models/ExtensionModel';
+import { MenuItem } from './models/MenuItem';
+import { ObjectModel } from './models/ObjectModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
 
@@ -27,6 +30,15 @@ export class Database {
     }
     public get sessions() {
         return this.db.collection<Session>('sessions');
+    }
+    public get menu() {
+        return this.db.collection<MenuItem>('nav-menu');
+    }
+    public get extensions() {
+        return this.db.collection<ExtensionModel>('extensions');
+    }
+    public get objects() {
+        return this.db.collection<ObjectModel>('objects');
     }
 }
 
