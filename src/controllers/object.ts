@@ -45,7 +45,7 @@ router.post('/create', authGuard, async (req, res) => {
     res.status(200).send(id).end();
 });
 
-router.post('/remove/:id', authGuard, async (req, res) => {
+router.delete('/remove/:id', authGuard, async (req, res) => {
     const id = req.params.id;
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
@@ -71,7 +71,7 @@ router.post('/remove/:id', authGuard, async (req, res) => {
     }
 });
 
-router.post('/update/:id/object', authGuard, async (req, res) => {
+router.put('/update/:id/object', authGuard, async (req, res) => {
     const id = req.params.id;
     const obj = req.body as ObjectProperty[];
 
@@ -109,7 +109,7 @@ router.post('/update/:id/object', authGuard, async (req, res) => {
     res.status(200).send('Object updated.').end();
 });
 
-router.post('/update/:id', authGuard, async (req, res) => {
+router.put('/update/:id', authGuard, async (req, res) => {
     const id = req.params.id;
     const name = req.body.name;
     const allowAnonymous = req.body.allowAnonymous;
@@ -141,7 +141,7 @@ router.post('/update/:id', authGuard, async (req, res) => {
     res.status(200).send('Object updated.').end();
 });
 
-router.post('/update/:id/parent', authGuard, async (req, res) => {
+router.put('/update/:id/parent', authGuard, async (req, res) => {
     const id = req.params.id;
     const parentId = req.query.parentId;
     if (id == null || typeof id !== 'string') {
@@ -164,7 +164,7 @@ router.post('/update/:id/parent', authGuard, async (req, res) => {
     res.status(200).send('Object updated.').end();
 });
 
-router.post('/update/:id/children', authGuard, async (req, res) => {
+router.put('/update/:id/children', authGuard, async (req, res) => {
     const id = req.params.id;
     const children = req.query.children as string[];
     if (id == null || typeof id !== 'string') {
