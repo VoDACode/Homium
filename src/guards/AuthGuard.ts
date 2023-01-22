@@ -3,6 +3,7 @@ import db from "../db";
 import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
 import { UserModel } from "../models/UserModel";
+import config from "../config";
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
@@ -33,6 +34,10 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function authGuard(req: Request, res: Response, next: NextFunction) {
+    if(config.DEBUG.debug && config.DEBUG.allowAnonymous){
+        next();
+        return;
+    }
     if (!req.cookies) {
         res.status(401).end()
         return

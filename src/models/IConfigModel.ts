@@ -9,5 +9,9 @@ export interface IConfigModel {
         user: string;
         password: string;
         database: string;
+    },
+    DEBUG: {
+        debug: boolean;
+        allowAnonymous: boolean;
     }
 }

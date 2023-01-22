@@ -34,6 +34,9 @@ export function loadControllers() {
         if (controller.ROUTER) {
             name = controller.ROUTER;
         }
+        if(controller.IN_ROOT){
+            app.use('/api/' + name, controller);
+        }
         app.use('/api/controllers/' + name, controller);
         console.log('Loaded controller: ' + name);
     });

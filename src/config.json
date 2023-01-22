@@ -8,5 +8,9 @@
         "database": "homium",
         "user": "",
         "password": ""
+    },
+    "DEBUG": {
+        "debug": false,
+        "allowAnonymous": true
     }
 }

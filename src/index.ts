@@ -1,4 +1,5 @@
 import express from 'express';
+import expressWs from 'express-ws';
 import path from 'path';
 import db from './db';
 import config from './config';
@@ -7,6 +8,7 @@ import cookieParser from 'cookie-parser';
 import * as boot from './boot';
 
 const app = express();
+expressWs(app);
 const port = config.server.port || process.env.PORT;
 
 (async() => {
