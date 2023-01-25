@@ -24,9 +24,18 @@ router.ws('/object-update/:id', async (ws, req) => {
     }
 
     ObjectStorage.addEventListener(id, 'update', sendObject);
+    ObjectStorage.addEventListener(id, 'remove', onremove);
+
+    function onremove() {
+        ws.send(JSON.stringify({ error: 'Object removed'}));
+        ws.close();
+        ObjectStorage.removeEventListener(id, 'update', sendObject);
+        ObjectStorage.removeEventListener(id, 'remove', onremove);
+    }
 
     ws.on('close', () => {
         ObjectStorage.removeEventListener(id, 'update', sendObject);
+        ObjectStorage.removeEventListener(id, 'remove', onremove);
     });
 
     function sendObject(newObject: ObjectModel) {
@@ -56,9 +65,18 @@ router.ws('/object-update/:id/:prop', async (ws, req) => {
     }
 
     ObjectStorage.addEventListener(id, 'propertyUpdate', sendObject);
+    ObjectStorage.addEventListener(id, 'remove', onremove);
+
+    function onremove() {
+        ws.send(JSON.stringify({ error: 'Object removed'}));
+        ws.close();
+        ObjectStorage.removeEventListener(id, 'propertyUpdate', sendObject);
+        ObjectStorage.removeEventListener(id, 'remove', onremove);
+    }
 
     ws.on('close', () => {
         ObjectStorage.removeEventListener(id, 'propertyUpdate', sendObject);
+        ObjectStorage.removeEventListener(id, 'remove', onremove);
     });
 
     function sendObject(newObject: ObjectModel, property: string, value: any) {

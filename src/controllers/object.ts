@@ -28,6 +28,19 @@ router.post('/create', authGuard, async (req, res) => {
         else if (object[i].historyLimit != null && object[i].historyLimit < 0)
             return res.status(400).send('The property "historyLimit" must be a positive number.').end();
 
+        if (object[i].mqttProperty != null && typeof object[i].mqttProperty !== 'object')
+            return res.status(400).send('The property "mqttProperty" must be an object.').end();
+        else if (object[i].mqttProperty != null && typeof object[i].mqttProperty.display !== 'boolean')
+            return res.status(400).send('The property "mqttProperty.display" must be a boolean.').end();
+        else if (object[i].mqttProperty != null && typeof object[i].mqttProperty.subscribe !== 'boolean')
+            return res.status(400).send('The property "mqttProperty.subscribe" must be a boolean.').end();
+
+        if (object[i].mqttProperty.display != null)
+            object[i].mqttProperty.display = object[i].mqttProperty.display ?? false;
+        if (object[i].mqttProperty.subscribe != null)
+            object[i].mqttProperty.subscribe = object[i].mqttProperty.subscribe ?? false;
+
+        object[i].historyLimit = object[i].historyLimit ?? 0;
         object[i].canHaveHistory = object[i].canHaveHistory ?? false;
         object[i].history = [];
     }

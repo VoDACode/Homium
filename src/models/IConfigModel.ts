@@ -10,6 +10,13 @@ export interface IConfigModel {
         password: string;
         database: string;
     },
+    mqtt: {
+        enabled: boolean;
+        host: string;
+        port: number;
+        user: string;
+        password: string;
+    },
     DEBUG: {
         debug: boolean;
         allowAnonymous: boolean;

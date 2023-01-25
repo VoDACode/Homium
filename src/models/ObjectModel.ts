@@ -9,8 +9,9 @@ export class ObjectModel{
     public properties: ObjectProperty[] = [];
     public allowAnonymous: boolean;
     public systemObject: boolean;
+    public updatedAt: number = Date.now();
     
-    constructor(name: string, parentId: string | null, id: string, description: string | null, object: ObjectProperty[], allowAnonymous: boolean = false, systemObject: boolean = false){
+    constructor(name: string, parentId: string | null, id: string, description: string | null, object: ObjectProperty[], allowAnonymous: boolean = false, systemObject: boolean = false, updatedAt: number = Date.now()){
         this.name = name;
         this.parentId = parentId;
         this.id = id;
@@ -18,6 +19,7 @@ export class ObjectModel{
         this.properties = object;
         this.allowAnonymous = allowAnonymous;
         this.systemObject = systemObject;
+        this.updatedAt = updatedAt;
     }
 }
 

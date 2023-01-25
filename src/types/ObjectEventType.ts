@@ -1,1 +1,1 @@
-export type ObjectEventType = "create" | "update" | "delete" | "propertyUpdate";
+export type ObjectEventType = "update" | "remove" | "propertyUpdate";
