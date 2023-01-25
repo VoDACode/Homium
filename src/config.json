@@ -3,11 +3,18 @@
         "port": 3000
     },
     "db": {
-        "host": "localhost",
+        "host": "195.162.65.27",
         "port": 27017,
         "database": "homium",
-        "user": "",
-        "password": ""
+        "user": "Homium",
+        "password": "4Xklg(1B05.8n52jD4"
+    },
+    "mqtt":{
+        "enabled": false,
+        "host": "195.162.65.27",
+        "port": 1883,
+        "user": "Homium",
+        "password": "Homium_9z8df5b+dzf"
     },
     "DEBUG": {
         "debug": false,
