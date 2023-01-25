@@ -3,7 +3,7 @@ const path = require('path');
 
 const commands = [
     { command: "start nodemon ./src/index.ts", cwd: path.resolve(__dirname, '..'), _process: undefined },
-    { command: "start ng serve --proxy-config proxy.config.json", cwd: path.resolve(__dirname, '..', 'ClientApp'), _process: undefined }
+    { command: "start npm run start", cwd: path.resolve(__dirname, '..', 'ClientApp'), _process: undefined }
 ];
 
 console.log('Starting debug mode...\n\n');
