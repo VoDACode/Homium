@@ -9,8 +9,10 @@ import { UserModel } from './models/UserModel';
 import { MenuItem } from './models/MenuItem';
 import { uuid } from 'uuidv4';
 import { ExtensionModel } from './models/ExtensionModel';
+import { Logger } from './services/LogService';
 
 const app = express();
+const logger = new Logger('boot');
 
 export function bootExtensions() {
     return _bootExtensions('all');
@@ -21,6 +23,7 @@ export function bootNewExtensions() {
 }
 
 export function loadControllers() {
+    logger.info('Loading controllers...');
     const controllersPath = path.join(__dirname, 'controllers');
     fs.readdirSync(controllersPath).forEach((file) => {
         if (file.endsWith('.map')) {
@@ -34,42 +37,28 @@ export function loadControllers() {
         if (controller.ROUTER) {
             name = controller.ROUTER;
         }
+        logger.debug('Loading controller: ' + name);
         if(controller.IN_ROOT){
+            logger.debug('Controller in root: ' + name);
             app.use('/api/' + name, controller);
         }
+        logger.debug('Controller in controllers: ' + name);
         app.use('/api/controllers/' + name, controller);
-        console.log('Loaded controller: ' + name);
     });
     return app;
 }
 
 export async function firstStart() {
+    logger.info('Checking first start...');
     if (await db.users.countDocuments() === 0) {
+        logger.info('First start detected. Creating root user...');
         await db.users.insertOne(new UserModel("root", "toor"));
     }
-    if (await db.menu.countDocuments() === 0) {
-        await db.menu.insertMany([
-            new MenuItem("[HOME]", "", "", "/", [], "link"),
-            new MenuItem("[EXTENSION_MARKET]", "", "", "/admin/extensions/market", [], "link"),
-            new MenuItem("[EXTENSIONS]", "", "", "", [
-                new MenuItem("[EXTENSIONS]", "", "", "/admin/extensions", [], "link"),
-            ], "extentions"),
-            new MenuItem("[OBJECTS]", "", "", "", [
-                new MenuItem("[SYSTEM_OBJECTS]", "", "", "/admin/objects/system", [], "link"),
-                new MenuItem("[DEVICES]", "", "", "/admin/objects/devices", [], "link"),
-                new MenuItem("[SCRIPTS]", "", "", "/admin/objects/scripts", [], "link"),
-            ], "page"),
-            new MenuItem("[ADMINISTRATION]", "", "", "", [
-                new MenuItem("[USERS]", "", "", "/admin/users", [], "link"),
-                new MenuItem("[MENU]", "", "", "/admin/menu", [], "link"),
-                new MenuItem("[SETTINGS]", "", "", "/admin/settings", [], "link"),
-                new MenuItem("[LOGS]", "", "", "/admin/logs", [], "link"),
-            ], 'plugin'),
-        ]);
-    }
+    logger.info('First start check complete.');
 }
 
 function _bootExtensions(mode: 'onlyNew' | 'all') {
+    logger.info('Booting extensions...');
     const extensionsPath = path.join(__dirname, 'extensions');
     fs.readdirSync(extensionsPath).forEach(async (file) => {
         let isExist = false;
@@ -77,12 +66,15 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
         if (!fs.lstatSync(path.join(extensionsPath, file)).isDirectory()) {
             return;
         }
+        logger.info(`Checking extension ${file}...`);
 
         if (!fs.existsSync(path.join(extensionsPath, file, 'index.js'))) {
+            logger.warn(`Extension ${file} has no index.js file. Skipping...`);
             return;
         }
 
         if (!fs.existsSync(path.join(extensionsPath, file, 'package.json'))) {
+            logger.warn(`Extension ${file} has no package.json file. Skipping...`);
             return;
         }
 
@@ -98,19 +90,24 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
         // get dependencies from package.json
         const packageJson = JSON.parse(fs.readFileSync(path.join(extensionsPath, file, 'package.json'), 'utf8'));
         if (!packageJson.dependencies || !packageJson.version) {
+            logger.warn(`Extension ${file} has no dependencies or version in package.json file. Skipping...`);
             return;
         }
         if (!packageJson.id || packageJson.id === "") {
+            logger.info(`Extension ${file} has no id in package.json file. Generating...`);
             firstStart = true;
             do {
                 packageJson.id = uuid();
             } while ((await db.extensions.countDocuments({ id: packageJson.id })) != 0);
             fs.writeFileSync(path.join(extensionsPath, file, 'package.json'), JSON.stringify(packageJson));
+            logger.info(`Extension ${file} id generated: ${packageJson.id}`);
         }
 
         // check if dependencies are installed
+        logger.info(`Checking dependencies for extension ${file}...`);
         for (const dependency in packageJson.dependencies) {
             if (!fs.existsSync(path.join(extensionsPath, file, 'node_modules', dependency))) {
+                logger.info(`Dependency ${dependency} not found. Installing...`);
                 exec(`npm install ${dependency}`, { cwd: __dirname }, (error, stdout, stderr) => {
                     if (error) {
                         console.log(`error: ${error.message}`);
@@ -127,7 +124,12 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
 
         if (!isExist) {
             const extension: IExtension = new (require(path.join(extensionsPath, file)))();
+            logger.info(`Extension ${file} booted.`);
+            logger.info(`Extension ${file} version: ${packageJson.version}`);
+            logger.info(`Extension ${file} author: ${packageJson.author}`);
+
             app.use('/extensions/' + extension.name + '/static', express.static(path.join(extensionsPath, file, 'static')));
+            logger.info(`Extension ${file} static folder mounted.`);
 
             let apiRoutes = path.join(extensionsPath, file, 'routes');
             if (fs.existsSync(apiRoutes)) {
@@ -144,22 +146,23 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
                     if (controller.ROUTER) {
                         name = controller.ROUTER;
                     }
-                    console.log('Adding route: ' + '/extensions/' + extension.name + '/api/' + name);
+                    logger.info(`Extension ${file} api route ${name} mounted.`);
                     app.use('/extensions/' + extension.name + '/api/' + name, controller);
                 });
             }
-            let menu = await db.menu.findOne({ type: 'extentions' });
-            if (menu && menu.items.findIndex((item) => item.name === extension.name) == -1) {
-                menu.items.push(new MenuItem(extension.name, "", "", "/extensions/" + packageJson.id, [], "link"));
-                let res = await db.menu.updateOne({ type: 'extentions' }, { $set: { items: menu.items } });
-                console.log(res);
-            }
+
+            const info = new ExtensionModel(extension.name, packageJson.description || "", packageJson.version, packageJson.author || "", packageJson.authorUrl || "", packageJson.url || "", packageJson.id);
             if (firstStart) {
-                db.extensions.insertOne(new ExtensionModel(extension.name, packageJson.description || "", packageJson.version, packageJson.author || "", packageJson.authorUrl || "", packageJson.url || "", packageJson.id));
+                logger.info(`Extension ${file} first start. Adding to database...`);
+                db.extensions.insertOne(info);
+                logger.info(`Extension ${file} added to database.`);
             }
-            extensions.add(extension, file, packageJson.id);
+            extensions.add(extension, info, file);
+            logger.info(`Extension ${file} added to extensions list.`);
         }
+        logger.info(`Starting extension ${file}...`);
         extensions.get(file, 'folder')?.run();
+        logger.info(`Extension ${file} started.`);
     });
     return app;
 }

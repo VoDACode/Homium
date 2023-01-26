@@ -1,13 +1,14 @@
+import { ExtensionModel } from "../models/ExtensionModel";
 import { IExtension } from "../types/IExtension";
 
 class ExtansionExpanded{
     extension: IExtension;
+    info: ExtensionModel;
     folder: string;
-    id: string;
-    constructor(extension: IExtension, folder: string, id: string) {
+    constructor(extension: IExtension, info: ExtensionModel, folder: string) {
         this.extension = extension;
+        this.info = info;
         this.folder = folder;
-        this.id = id;
     }
 }
 
@@ -24,13 +25,13 @@ class ExtensionsStorage{
         return this.extensions.length;
     }
 
-    add(extension: IExtension, folder: string, id: string){
-        if(this.extensions.find(e => e.id === id))
+    add(extension: IExtension, info: ExtensionModel, folder: string): void {
+        if(this.extensions.find(e => e.info.id === info.id))
             return;
         if(!this.extensions.find((e) => e.extension.name === extension.name) || !this.extensions.find((e) => e.folder === folder)){
             return;
         }
-        this.extensions.push(new ExtansionExpanded(extension, folder, id));
+        this.extensions.push(new ExtansionExpanded(extension, info, folder));
     }
 
     get(name: string, searchBy: 'name' | 'folder' | 'id'): IExtension | undefined {
@@ -39,7 +40,7 @@ class ExtensionsStorage{
         }else if(searchBy == 'folder'){
             return this.extensions.find((e) => e.folder === name)?.extension;
         }else if(searchBy == 'id'){
-            return this.extensions.find((e) => e.id === name)?.extension;
+            return this.extensions.find((e) => e.info.id === name)?.extension;
         }
     }
 
@@ -65,6 +66,10 @@ class ExtensionsStorage{
 
     any(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         return this.get(name, searchBy) != undefined;
+    }
+
+    get allInfo(): ExtensionModel[] {
+        return this.extensions.map((e) => e.info);
     }
 }
 

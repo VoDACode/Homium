@@ -5,8 +5,10 @@ import { MenuItem } from './models/MenuItem';
 import { ObjectModel } from './models/ObjectModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
+import { Logger } from './services/LogService';
 
 export class Database {
+    private logger = new Logger('DB');
     private static _instance: Database;
     private constructor() { }
     public static get getInstance(): Database {
@@ -24,15 +26,18 @@ export class Database {
             return;
         }
         this._db = await MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`);
+        this._db.on('close', () => {
+            this.logger.warn('Connection to database closed');
+        });
+        this._db.on('error', (err) => {
+            this.logger.error(err.message);
+        });
     }
     public get users() {
         return this.db.collection<UserModel>('users');
     }
     public get sessions() {
         return this.db.collection<Session>('sessions');
-    }
-    public get menu() {
-        return this.db.collection<MenuItem>('nav-menu');
     }
     public get extensions() {
         return this.db.collection<ExtensionModel>('extensions');

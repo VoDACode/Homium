@@ -8,3 +8,4 @@
 * [Object](object.md)
   * [APIs](object.md#apis)
   * [Stream](stream.md)
+* [Menu](menu.md)

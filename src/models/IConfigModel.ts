@@ -17,6 +17,10 @@ export interface IConfigModel {
         user: string;
         password: string;
     },
+    log: {
+        level: string;
+        console: boolean;
+    },
     DEBUG: {
         debug: boolean;
         allowAnonymous: boolean;

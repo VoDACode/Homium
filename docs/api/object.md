@@ -55,8 +55,26 @@ Create a new object.
         "name": "LED",
         "description": "This is LED",
         "object": [
-            {"key": "status", "value": 0, "canHaveHistory": true, "historyLimit": 100},
-            {"key": "brightness", "value": 10, "canHaveHistory": true, "historyLimit": 100}
+            {
+                "key": "status",
+                "value": 0,
+                "canHaveHistory": true,
+                "historyLimit": 100,
+                "mqttProperty":{
+                    "display": true,
+                    "subscribe": false
+                }
+            },
+            {
+                "key": "brightness", 
+                "value": 10, 
+                "canHaveHistory": true, 
+                "historyLimit": 100,
+                "mqttProperty":{
+                    "display": true,
+                    "subscribe": true
+                }
+            }
         ],
         "allowAnonymous": true
         }'

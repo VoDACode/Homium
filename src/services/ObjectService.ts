@@ -4,6 +4,7 @@ import db from "../db";
 import mqtt from "./MqttService";
 import { convertAnyToCorrectType } from "../models/ObjectProperty";
 import config from "../config";
+import { Logger } from "./LogService";
 
 type UpdateEvent = (object: ObjectModel) => void;
 type PropertyUpdateEvent = (object: ObjectModel, property: string, value: any) => void;
@@ -57,6 +58,7 @@ class StoredObject {
 }
 
 class ObjectStorage {
+    private logger = new Logger("ObjectStorage");
     private _saveDelay: number = 1000 * 10;
     private _saveInterval: NodeJS.Timeout | undefined;
 
@@ -70,6 +72,7 @@ class ObjectStorage {
     }
 
     set saveDelay(value: number) {
+        this.logger.debug(`Save delay changed from ${this._saveDelay} to ${value}`);
         this._saveDelay = value;
         if (this._saveInterval) {
             clearTimeout(this._saveInterval);
@@ -103,20 +106,24 @@ class ObjectStorage {
     async add(object: ObjectModel): Promise<boolean> {
         if (this.objects.find(o => o.object.id === object.id))
             return false;
+        this.logger.debug(`Adding object ${object.id}`);
         // Push object to array
         this.objects.push(new StoredObject(object, new ObjectEventService()));
         // Save object to database
         await db.objects.insertOne(object);
         if (config.mqtt.enabled) {
+            this.logger.debug(`MQTT enabled, publishing object ${object.id}`);
             for (let prop of object.properties) {
                 if (!prop.mqttProperty.display)
                     continue;
                 // Publish property value to get topic
+                this.logger.debug(`Publishing property ${prop.key} to get topic`);
                 mqtt.publish(`Homium/objects/${object.id}/properties/${prop.key}/get`, prop.value);
                 if (prop.mqttProperty.subscribe) {
                     // Publish property value to set topic
                     mqtt.publish(`Homium/objects/${object.id}/properties/${prop.key}/set`, prop.value);
                     // Subscribe to set topic
+                    this.logger.debug(`Subscribing to set topic (Homium/objects/${object.id}/properties/${prop.key}/set)`)
                     mqtt.subscribe(`Homium/objects/${object.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                         // Call update function
                         this.update(object!.id, prop.key, message);
@@ -133,6 +140,7 @@ class ObjectStorage {
         if (!object) {
             let objFromDb = await db.objects.findOne({ id: id });
             if (!objFromDb) {
+                this.logger.warn(`Object ${id} not found`);
                 return undefined;
             }
             // Push object to array
@@ -142,11 +150,13 @@ class ObjectStorage {
                     if (!prop.mqttProperty.display)
                         continue;
                     // Publish property value to get topic
+                    this.logger.debug(`Publishing property ${prop.key} to get topic`);
                     mqtt.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/get`, prop.value);
                     if (prop.mqttProperty.subscribe) {
                         // Publish property value to set topic
                         mqtt.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, prop.value);
                         // Subscribe to set topic
+                        this.logger.debug(`Subscribing to set topic (Homium/objects/${objFromDb.id}/properties/${prop.key}/set)`)
                         mqtt.subscribe(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                             // Call update function
                             this._update(objFromDb!.id, prop.key, message, false);
@@ -175,6 +185,7 @@ class ObjectStorage {
             }
             return true;
         }
+        this.logger.warn(`Object ${id} not found`);
         return false;
     }
 
@@ -186,14 +197,17 @@ class ObjectStorage {
         // Try getting object from memory
         const index = this.objects.findIndex((o) => o.object.id === id);
         if (index > -1) {
+            this.logger.debug(`Updating property ${prop} of object ${id} from ${this.objects[index].object.properties.find(p => p.key === prop)!.value} to ${value}`);
             value = convertAnyToCorrectType(value, this.objects[index].object.properties.find(p => p.key === prop)!.value);
             // Alert listeners
             this.objects[index].events.dispatchEvent('update', this.objects[index].object);
             this.objects[index].events.dispatchEvent('propertyUpdate', this.objects[index].object, prop, value);
             if (config.mqtt.enabled && publishToMqtt) {
                 // If property is displayed, publish value to get topic
-                if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display)
+                if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display){
+                    this.logger.debug(`Publishing property ${prop} to get topic`);
                     mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
+                }
             }
             // Added object to updated objects array
             this.updatedObjects.add(id);
@@ -228,6 +242,7 @@ class ObjectStorage {
         // if mqtt is disabled, return
         if (!config.mqtt.enabled)
             return;
+        this.logger.debug('Publishing objects...');
         this.objects.forEach((o) => {
             // Loop through properties
             o.object.properties.forEach((p) => {
@@ -238,6 +253,7 @@ class ObjectStorage {
                 mqtt.publish(`Homium/objects/${o.object.id}/properties/${p.key}/get`, p.value);
             });
         });
+        this.logger.debug('Publishing objects done!');
     }
 
 
@@ -246,7 +262,7 @@ class ObjectStorage {
         if (this.updatedObjects.size == 0) {
             return;
         }
-        console.log('Saving objects...');
+        this.logger.debug('Saving objects...');
         // Loop through updated objects
         for(let id of this.updatedObjects){
             let object = this.objects.find((o) => o.object.id === id);
@@ -268,7 +284,7 @@ class ObjectStorage {
             // Remove object from updated objects array
             this.updatedObjects.delete(id);
         }
-        console.log('Objects saved.');
+        this.logger.debug('Saving objects done!');
     }
 }
 

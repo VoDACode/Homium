@@ -6,15 +6,23 @@ import config from './config';
 import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as boot from './boot';
+import {Logger} from './services/LogService';
 
 const app = express();
 expressWs(app);
 const port = config.server.port || process.env.PORT;
+const logger = new Logger("main");
 
 (async() => {
-    await db.connect();
-    await boot.firstStart();
-    start();
+    logger.info("Starting server...");
+    try {
+        await db.connect();
+        await boot.firstStart();
+        start();
+    } catch (error: any) {
+        logger.fatal(error);
+        process.exit(1);
+    }
 })();
 
 function start(){
@@ -22,13 +30,14 @@ function start(){
     app.use(cookieParser());
     
     app.use("/app/static", express.static(path.join(__dirname, 'static')));
-    
+    logger.info("Static files served from: " + path.join(__dirname, 'static'));
+
     app.use("/", boot.loadControllers());
     app.use("/", boot.bootExtensions());
     
     app.use("/", require('./router'));
     
     app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
+        logger.info(`Server running on port ${port}`);
     });
 }

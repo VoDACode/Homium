@@ -10,11 +10,15 @@
         "password": "4Xklg(1B05.8n52jD4"
     },
     "mqtt":{
-        "enabled": false,
+        "enabled": true,
         "host": "195.162.65.27",
         "port": 1883,
         "user": "Homium",
         "password": "Homium_9z8df5b+dzf"
+    },
+    "log": {
+        "level": "debug",
+        "console": true
     },
     "DEBUG": {
         "debug": false,

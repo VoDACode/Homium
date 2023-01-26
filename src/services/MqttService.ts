@@ -1,10 +1,12 @@
 import * as mqtt from 'mqtt';
 import config from '../config';
+import { Logger } from './LogService';
 
 //@ts-ignore
 process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 export class MqttService {
+    private logger = new Logger('MQTT');
     private mqttClient: mqtt.Client;
 
     private static _instance: MqttService;
@@ -20,15 +22,13 @@ export class MqttService {
             clientId: "Homium",
             clean: true
         });
-        console.log('Connecting to MQTT broker...');
+        this.logger.info('Connecting to MQTT broker...');
         this.mqttClient.on('error', (e) => {
-            console.error(e);
+            this.logger.error('Error connecting to MQTT broker!');
+            this.logger.error(e.message);
         });
         this.mqttClient.on('connect', (e) => {
-            if(!e){
-                console.log(e);
-            }
-            console.log('Connected to MQTT broker!');
+            this.logger.info('Connected to MQTT broker!');
         });
     }
 
