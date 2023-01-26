@@ -4,6 +4,8 @@
 
 > # [API documentation](docs/api/README.md)
 
+> # [Frontend](docs/frontend/README.md)
+
 > # [Extensions](docs/extensions/README.md)
 >
 >* [Structure](docs/extensions/structure.md)
