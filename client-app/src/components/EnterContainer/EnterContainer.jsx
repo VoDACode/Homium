@@ -5,7 +5,9 @@ const EnterContainer = ({children}) => {
     return (
         <div className={cl.background}>
             <div className={cl.main}>
-                {children}
+                <center>
+                    {children}
+                </center>
             </div>
         </div>
     );

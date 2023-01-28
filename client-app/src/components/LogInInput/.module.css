@@ -1,25 +1,13 @@
-.main {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%, 0);
-}
-
-.emailPng, .passwordPng {
-    height: 5vh;
-    width: 3vw;
-    margin-right: 8px;
-}
-
-.email {
+.user {
     width: 40vw;
     border: 3px solid green;
     outline: none;
     font-size: 5vh;
     background-color: whitesmoke;
     border-radius: 7px;
-    background: url(./email.png) no-repeat scroll 7px 7px;
+    background: url(./img/user.png) no-repeat scroll 0.5vw 0.8vh;
     background-size: 2.7vw 4.2vh;
-    padding-left: 7.5vh;
+    padding-left: 3.7vw;
 }
 
 .password {
@@ -29,11 +17,11 @@
     font-size: 5vh;
     background-color: whitesmoke;
     border-radius: 7px;
-    background: url(./password.png) no-repeat scroll 7px 7px;
+    background: url(./img/password.png) no-repeat scroll 0.5vw 0.8vh;
     background-size: 2.7vw 4.2vh;
-    padding-left: 7.5vh;
+    padding-left: 3.7vw;
 }
 
-.email::placeholder, .password::placeholder {
-    opacity: 0.6;
+.user::placeholder, .password::placeholder {
+    opacity: 0.7;
 }

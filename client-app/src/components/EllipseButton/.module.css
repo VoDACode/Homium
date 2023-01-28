@@ -1,0 +1,10 @@
+.b {
+    width: 10vw;
+    height: 8vh;
+    border: none;
+    border-radius: 50px;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: bold;
+    font-size: 3vh;
+    cursor: pointer;
+}
