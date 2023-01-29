@@ -11,6 +11,9 @@ import {Logger} from './services/LogService';
 const app = express();
 expressWs(app);
 const port = config.server.port || process.env.PORT;
+if(!port) 
+    throw new Error("Port not found");
+process.env.PORT = port.toString();
 const logger = new Logger("main");
 
 (async() => {
@@ -36,7 +39,6 @@ function start(){
     app.use("/", boot.bootExtensions());
     
     app.use("/", require('./router'));
-    
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
     });

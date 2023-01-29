@@ -2,9 +2,6 @@ import * as mqtt from 'mqtt';
 import config from '../config';
 import { Logger } from './LogService';
 
-//@ts-ignore
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-
 export class MqttService {
     private logger = new Logger('MQTT');
     private mqttClient: mqtt.Client;

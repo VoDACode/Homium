@@ -68,7 +68,7 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
         }
         logger.info(`Checking extension ${file}...`);
 
-        if (!fs.existsSync(path.join(extensionsPath, file, 'index.js'))) {
+        if (!fs.existsSync(path.join(extensionsPath, file, 'index.js')) && !fs.existsSync(path.join(extensionsPath, file, 'index.ts'))) {
             logger.warn(`Extension ${file} has no index.js file. Skipping...`);
             return;
         }
@@ -89,6 +89,10 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
 
         // get dependencies from package.json
         const packageJson = JSON.parse(fs.readFileSync(path.join(extensionsPath, file, 'package.json'), 'utf8'));
+        if(!packageJson.name){
+            logger.warn(`Extension ${file} has no name in package.json file. Skipping...`);
+            return;
+        }
         if (!packageJson.dependencies || !packageJson.version) {
             logger.warn(`Extension ${file} has no dependencies or version in package.json file. Skipping...`);
             return;
@@ -99,7 +103,6 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
             do {
                 packageJson.id = uuid();
             } while ((await db.extensions.countDocuments({ id: packageJson.id })) != 0);
-            fs.writeFileSync(path.join(extensionsPath, file, 'package.json'), JSON.stringify(packageJson));
             logger.info(`Extension ${file} id generated: ${packageJson.id}`);
         }
 
@@ -123,13 +126,18 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
         }
 
         if (!isExist) {
-            const extension: IExtension = new (require(path.join(extensionsPath, file)))();
+            const original = new (require(path.join(extensionsPath, file)))(packageJson.id);
+            const extension: IExtension = original as IExtension;
+            if(!(original.__proto__ instanceof IExtension)){
+                logger.warn(`Extension ${file} is not extending IExtension. Skipping...`);
+                return;
+            }
             logger.info(`Extension ${file} booted.`);
             logger.info(`Extension ${file} version: ${packageJson.version}`);
-            logger.info(`Extension ${file} author: ${packageJson.author}`);
+            logger.info(`Extension ${file} author: '${packageJson.author || 'Unknown'}'`);
 
-            app.use('/extensions/' + extension.name + '/static', express.static(path.join(extensionsPath, file, 'static')));
-            logger.info(`Extension ${file} static folder mounted.`);
+            app.use('/extensions/' + packageJson.name + '/static', express.static(path.join(extensionsPath, file, 'static')));
+            logger.debug(`Extension ${file} static folder mounted. [${path.join(extensionsPath, file, 'static')}] => [/extensions/${packageJson.name}/static]`);
 
             let apiRoutes = path.join(extensionsPath, file, 'routes');
             if (fs.existsSync(apiRoutes)) {
@@ -142,26 +150,32 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
                         return;
                     }
                     let controller = require(path.join(extensionsPath, file, 'routes', apiRouteFile));
-                    let name = file.replace(' ', '-').replace('.ts', '').replace('.js', '');
+                    let name = apiRouteFile.replace(' ', '-').replace('.ts', '').replace('.js', '');
                     if (controller.ROUTER) {
                         name = controller.ROUTER;
                     }
-                    logger.info(`Extension ${file} api route ${name} mounted.`);
-                    app.use('/extensions/' + extension.name + '/api/' + name, controller);
+                    logger.debug(`Extension ${file} api route ${name} mounted.`);
+                    app.use('/extensions/' + packageJson.name + '/api/' + name, controller);
                 });
             }
 
-            const info = new ExtensionModel(extension.name, packageJson.description || "", packageJson.version, packageJson.author || "", packageJson.authorUrl || "", packageJson.url || "", packageJson.id);
+            const info = new ExtensionModel(packageJson.name, packageJson.description || "", packageJson.version, packageJson.author || "", packageJson.authorUrl || "", packageJson.url || "", packageJson.id);
             if (firstStart) {
-                logger.info(`Extension ${file} first start. Adding to database...`);
+                logger.debug(`Extension ${file} first start. Adding to database...`);
                 db.extensions.insertOne(info);
-                logger.info(`Extension ${file} added to database.`);
+                fs.writeFileSync(path.join(extensionsPath, file, 'package.json'), JSON.stringify(packageJson));
+                logger.debug(`Extension ${file} added to database.`);
             }
-            extensions.add(extension, info, file);
-            logger.info(`Extension ${file} added to extensions list.`);
+            extensions.add(extension, original, info, file);
+            logger.debug(`Extension ${file} added to extensions list.`);
         }
         logger.info(`Starting extension ${file}...`);
-        extensions.get(file, 'folder')?.run();
+        try{
+            extensions.get(file, 'folder')?.start();
+        }catch(e){
+            logger.error(`Extension ${file} failed to start. Error: ${e}`);
+            return;
+        }
         logger.info(`Extension ${file} started.`);
     });
     return app;

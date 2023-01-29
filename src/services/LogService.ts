@@ -88,24 +88,24 @@ export class Logger{
         this._log(level, message);
     }
 
-    public debug(message: string): void {
-        this._log(LogLevel.DEBUG, message);
+    public debug(message: string, ...data: string[]): void {
+        this._log(LogLevel.DEBUG, message + " " + data.join(" "));
     }
 
-    public info(message: string): void {
-        this._log(LogLevel.INFO, message);
+    public info(message: string, ...data: string[]): void {
+        this._log(LogLevel.INFO, message + " " + data.join(" "));
     }
 
-    public warn(message: string): void {
-        this._log(LogLevel.WARN, message);
+    public warn(message: string, ...data: string[]): void {
+        this._log(LogLevel.WARN, message + " " + data.join(" "));
     }
 
-    public error(message: string): void {
-        this._log(LogLevel.ERROR, message);
+    public error(message: string, ...data: string[]): void {
+        this._log(LogLevel.ERROR, message + " " + data.join(" "));
     }
 
-    public fatal(message: string): void {
-        this._log(LogLevel.FATAL, message);
+    public fatal(message: string, ...data: string[]): void {
+        this._log(LogLevel.FATAL, message + " " + data.join(" "));
     }
 
     private _log(level: LogLevel, message: string): void {
