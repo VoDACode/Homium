@@ -35,7 +35,6 @@ class TelegramBotApp extends IExtension {
         }
         this._bot = new TelegramBot(await this.storage.get("token"), {polling: true});
         this._bot.on("message", this.onMessage.bind(this));
-        this.context.bot = this._bot;
         this.logger.info("Telegram bot started");
     }
 
