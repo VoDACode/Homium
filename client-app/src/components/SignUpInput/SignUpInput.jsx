@@ -3,7 +3,7 @@ import VertSpace from "../VertSpace/VertSpace";
 import cl from './.module.css';
 
 const SignUpInput = () => {
-    var space = (<VertSpace h={1.5} unit="vh"/>);
+    var space = (<VertSpace h={2} unit="vh"/>);
 
     return (
         <div>
