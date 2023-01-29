@@ -5,6 +5,7 @@
     border-radius: 50px;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;
-    font-size: 3vh;
+    font-size: 4vh;
+    padding-bottom: 1vh;
     cursor: pointer;
 }
