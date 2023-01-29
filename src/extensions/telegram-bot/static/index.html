@@ -1,0 +1,69 @@
+<html>
+
+<head>
+    <title>Telegram Bot</title>
+    <script src="libs/bootstrap/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="libs/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+
+<body>
+    <h1>Telegram Bot</h1>
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="pills-settings-tab" data-bs-toggle="pill"
+                data-bs-target="#pills-settings" type="button" role="tab" aria-controls="pills-settings"
+                aria-selected="true">Settings</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="pill" data-bs-target="#users"
+                type="button" role="tab" aria-controls="users" aria-selected="false">Users</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="pills-docs-tab" data-bs-toggle="pill" data-bs-target="#pills-docs"
+                type="button" role="tab" aria-controls="pills-docs" aria-selected="false">Documentation</button>
+        </li>
+        <li class="nav-item active" role="presentation">
+            <button class="nav-link" id="restart">Restart</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-settings" role="tabpanel" aria-labelledby="pills-settings-tab">
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="inputGroup-sizing-default">Token</span>
+                <input type="text" class="form-control" id="token" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="enable-webhook">
+                <label class="form-check-label" for="enable-webhook">
+                    Webhook
+                </label>
+            </div>
+            <div id="webhook-settings">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="inputGroup-sizing-default">Host name</span>
+                    <input type="text" class="form-control" id="webhook-host"
+                        aria-describedby="inputGroup-sizing-default">
+                </div>
+                <div class="mb-3">
+                    <label for="webhook-certificate" class="form-label">Certificate</label>
+                    <input class="form-control" type="file" id="webhook-certificate">
+                </div>
+            </div>
+            <div class="controll">
+                <button type="button" class="btn btn-primary" id="save">Save</button>
+                <button type="button" class="btn btn-danger" id="close">Close</button>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+            <iframe src="./pages/users.html" frameborder="0" width="100%" height="100%"></iframe>
+        </div>
+        <div class="tab-pane fade" id="pills-docs" role="tabpanel" aria-labelledby="pills-docs-tab">
+            Documentation
+        </div>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+
+</html>
