@@ -6,6 +6,7 @@ export class ExtensionModel{
     public authorUrl: string;
     public url: string;
     public id: string;
+    public storage: Object | {} = {};
     
     constructor(name: string, description: string, version: string, author: string, authorUrl: string, url: string, folder: string){
         this.name = name;

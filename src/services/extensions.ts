@@ -3,10 +3,12 @@ import { IExtension } from "../types/IExtension";
 
 class ExtansionExpanded{
     extension: IExtension;
+    original: any;
     info: ExtensionModel;
     folder: string;
-    constructor(extension: IExtension, info: ExtensionModel, folder: string) {
+    constructor(extension: IExtension, original: any, info: ExtensionModel, folder: string) {
         this.extension = extension;
+        this.original = original;
         this.info = info;
         this.folder = folder;
     }
@@ -25,13 +27,26 @@ class ExtensionsStorage{
         return this.extensions.length;
     }
 
-    add(extension: IExtension, info: ExtensionModel, folder: string): void {
-        if(this.extensions.find(e => e.info.id === info.id))
+    add(extension: IExtension, original: any, info: ExtensionModel, folder: string): void {
+        if(!(original.__proto__ instanceof IExtension)){
+            throw new Error("Extension must be inherited from IExtension");
+        }
+        if(this.extensions.findIndex(e => e.info.id == info.id) != -1)
             return;
-        if(!this.extensions.find((e) => e.extension.name === extension.name) || !this.extensions.find((e) => e.folder === folder)){
+        if(this.extensions.findIndex((e) => e.extension.name == extension.name) != -1){
             return;
         }
-        this.extensions.push(new ExtansionExpanded(extension, info, folder));
+        this.extensions.push(new ExtansionExpanded(extension, original, info, folder));
+    }
+
+    getOriginal(name: string, searchBy: 'name' | 'folder' | 'id'): any {
+        if(searchBy == 'name'){
+            return this.extensions.find((e) => e.extension.name === name)?.original;
+        }else if(searchBy == 'folder'){
+            return this.extensions.find((e) => e.folder === name)?.original;
+        }else if(searchBy == 'id'){
+            return this.extensions.find((e) => e.info.id === name)?.original;
+        }
     }
 
     get(name: string, searchBy: 'name' | 'folder' | 'id'): IExtension | undefined {
@@ -48,7 +63,7 @@ class ExtensionsStorage{
         let extension = this.get(name, searchBy);
         if(extension){
             extension.stop();
-            extension.run();
+            extension.start();
             return true;
         }
         return false;
