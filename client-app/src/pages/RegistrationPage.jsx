@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import AccountOffer from "../components/AccountOffer/AccountOffer";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EllipseButton from "../components/EllipseButton/EllipseButton";
@@ -16,7 +17,7 @@ const RegistrationPage = () => {
                 <VertSpace h={4} unit="vh"/>
                 <EllipseButton text="Sign up" bColor="blue"/>
                 <VertSpace h={4} unit="vh"/>
-                <AccountOffer headerColor="rgb(0, 0, 100)" headerText="Do have an account already?" linkText="Sign in now" linkTo="/auth"/>
+                <Link to="/auth" style={{fontFamily: 'sans-serif', fontWeight: 'bold', fontSize: '3vh'}}>Back to the authorization page</Link>
             </EnterContainer>
         </div>
     );
