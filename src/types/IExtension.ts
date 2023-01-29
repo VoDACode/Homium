@@ -27,10 +27,6 @@ export abstract class IExtension{
         this.start();
     }
 
-    public get context(): any {
-        return this.context;
-    }
-
     public get id(): string {
         return this._id;
     }
