@@ -1,12 +1,12 @@
 import React from "react";
 import SceneCell from "../components/SceneCell/SceneCell";
 import SceneContainer from "../components/SceneContainer/SceneContainer";
-import TopMenu from "../components/TopMenu/TopMenu";
+import TopBar from "../components/TopBar/TopBar";
 
 const HomePage = () => {
     return (
         <div>
-            <TopMenu/>
+            <TopBar/>
             <SceneContainer>
                 <SceneCell/>
                 <SceneCell/>
