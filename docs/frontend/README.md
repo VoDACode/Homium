@@ -22,7 +22,8 @@ The frontend is built using [React](https://reactjs.org/).
 /admin/objects/:id - The details of an object and its edit form
 /admin/objects/:id/:property - Object property details and property edit form [IDEA: maybe this should be a modal instead of a separate page?]
 /admin/objects/new - The form to create a new object
-/login - Login form
+/reg - Registration form
+/auth - Login form
 ```
 
 # Pages
@@ -61,9 +62,9 @@ This page has the following structure:
 │    ├── Actions
 │    │    ├── [Action Name]
 │    │    └── Other Actions...
-│    ├── Children
-│    │    ├── [Child Name. Next, everything is in a recursive form]
-│    │    └── Other Children...
+│    └── Children
+│         ├── [Child Name. Next, everything is in a recursive form]
+│         └── Other Children...
 └── Other Objects...
 ```
 
@@ -86,8 +87,7 @@ The navigation panel has the following structure:
 │    ├── Devices (Route: /admin/devices)
 │    │   ├── [Device Name] (Route: /admin/devices/:id)
 │    │   └── Other Devices...
-│    ├── Rooms (Route: /admin/rooms)
-│    └── Scenes (Route: /admin/scenes)
+│    └── Rooms (Route: /admin/rooms)
 ├── Automation
 │    ├── Schedules (Route: /admin/schedules)
 │    ├── Scripts (Route: /admin/scripts)
