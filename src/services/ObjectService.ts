@@ -5,6 +5,8 @@ import mqtt from "./MqttService";
 import { convertAnyToCorrectType } from "../models/ObjectProperty";
 import config from "../config";
 import { Logger } from "./LogService";
+import ScriptService from "./ScriptService";
+import { ScriptArgument, ScriptTargetEvent } from "../models/ScriptModel";
 
 type UpdateEvent = (object: ObjectModel) => void;
 type PropertyUpdateEvent = (object: ObjectModel, property: string, value: any) => void;
@@ -16,14 +18,14 @@ class ObjectEventService {
         this._eventMap = new Map<string, Array<Function>>();
     }
 
-    public addEventListener(eventType: ObjectEventType, callback: Function): void {
+    public addEventListener(eventType: ObjectEventType | ScriptTargetEvent, callback: Function): void {
         if (!this._eventMap.has(eventType)) {
             this._eventMap.set(eventType, []);
         }
         this._eventMap.get(eventType)?.push(callback);
     }
 
-    public removeEventListener(eventType: ObjectEventType, callback: Function): void {
+    public removeEventListener(eventType: ObjectEventType | ScriptTargetEvent, callback: Function): void {
         if (this._eventMap.has(eventType)) {
             let callbacks = this._eventMap.get(eventType);
             if (callbacks) {
@@ -35,7 +37,7 @@ class ObjectEventService {
         }
     }
 
-    public dispatchEvent(eventType: ObjectEventType, ...args: any[]): void {
+    public dispatchEvent(eventType: ObjectEventType | ScriptTargetEvent, ...args: any[]): void {
         if (this._eventMap.has(eventType)) {
             this._eventMap.get(eventType)?.forEach((callback) => {
                 callback(...args);
@@ -49,11 +51,26 @@ class ObjectEventService {
 }
 
 class StoredObject {
-    object: ObjectModel;
-    events: ObjectEventService;
+    private _object: ObjectModel;
+    private _events: ObjectEventService;
+    private _lastUpdated: Date;
+    
     constructor(object: ObjectModel, events: ObjectEventService) {
-        this.object = object;
-        this.events = events;
+        this._object = object;
+        this._events = events;
+        this._lastUpdated = new Date();
+    }
+
+    get object(): ObjectModel {
+        this._lastUpdated = new Date();
+        return this._object;
+    }
+    get events(): ObjectEventService {
+        this._lastUpdated = new Date();
+        return this._events;
+    }
+    get lastUpdated(): Date {
+        return this._lastUpdated;
     }
 }
 
@@ -177,6 +194,7 @@ class ObjectStorage {
             this.objects[index].events.dispatchEvent('remove', this.objects[index].object);
             // Remove object from memory
             this.objects.splice(index, 1);
+
             // Remove object from database
             await db.objects.deleteOne({ id: id });
             if (config.mqtt.enabled) {
@@ -220,7 +238,7 @@ class ObjectStorage {
         return false;
     }
 
-    addEventListener(id: string, eventType: ObjectEventType, callback: UpdateEvent | PropertyUpdateEvent | Function): boolean {
+    addEventListener(id: string, eventType: ObjectEventType | ScriptTargetEvent, callback: UpdateEvent | PropertyUpdateEvent | Function | ((args: ScriptArgument) => void)): boolean {
         const object = this.objects.find((o) => o.object.id === id);
         if (object) {
             object.events.addEventListener(eventType, callback);
@@ -229,7 +247,7 @@ class ObjectStorage {
         return false;
     }
 
-    removeEventListener(id: string, eventType: ObjectEventType, callback: Function): boolean {
+    removeEventListener(id: string, eventType: ObjectEventType | ScriptTargetEvent, callback: Function): boolean {
         const object = this.objects.find((o) => o.object.id === id);
         if (object) {
             object.events.removeEventListener(eventType, callback);
@@ -242,7 +260,6 @@ class ObjectStorage {
         // if mqtt is disabled, return
         if (!config.mqtt.enabled)
             return;
-        this.logger.debug('Publishing objects...');
         this.objects.forEach((o) => {
             // Loop through properties
             o.object.properties.forEach((p) => {
@@ -253,7 +270,6 @@ class ObjectStorage {
                 mqtt.publish(`Homium/objects/${o.object.id}/properties/${p.key}/get`, p.value);
             });
         });
-        this.logger.debug('Publishing objects done!');
     }
 
 
