@@ -9,3 +9,4 @@
   * [APIs](object.md#apis)
   * [Stream](stream.md)
 * [Menu](menu.md)
+* [Scripts](scripts.md)
