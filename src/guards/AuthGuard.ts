@@ -39,26 +39,25 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
         return;
     }
     if (!req.cookies) {
-        res.status(401).end()
+        res.status(401).redirect("/auth");
         return
     }
 
-    const sessionToken = req.cookies['token']
-    console.log(req.cookies);
+    const sessionToken = req.cookies['token'];
     if (!sessionToken) {
-        res.status(401).send("Sessino not found").end();
+        res.status(401).redirect("/auth");
         return;
     }
 
     const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
     if (!userSession) {
-        res.status(401).send("User not found").end();
+        res.status(401).redirect("/auth");
         return;
     }
 
     if (userSession.expiresAt < new Date()) {
         await db.sessions.deleteOne({ sessionToken: sessionToken });
-        res.status(401).send("Old session").end();
+        res.status(401).redirect("/auth");
         return;
     }
 

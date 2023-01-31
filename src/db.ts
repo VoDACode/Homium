@@ -3,6 +3,7 @@ import config from './config';
 import { ExtensionModel } from './models/ExtensionModel';
 import { MenuItem } from './models/MenuItem';
 import { ObjectModel } from './models/ObjectModel';
+import { ScriptModel } from './models/ScriptModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
 import { Logger } from './services/LogService';
@@ -44,6 +45,9 @@ export class Database {
     }
     public get objects() {
         return this.db.collection<ObjectModel>('objects');
+    }
+    public get scripts() {
+        return this.db.collection<ScriptModel>('scripts');
     }
 }
 

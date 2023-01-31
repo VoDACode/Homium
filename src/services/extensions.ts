@@ -27,6 +27,14 @@ class ExtensionsStorage{
         return this.extensions.length;
     }
 
+    get getContext(): any {
+        let context: any = {};
+        this.extensions.forEach(e => {
+            context[e.extension.name.replace('-', "")] = e.original;
+        });
+        return context;
+    }
+
     add(extension: IExtension, original: any, info: ExtensionModel, folder: string): void {
         if(!(original.__proto__ instanceof IExtension)){
             throw new Error("Extension must be inherited from IExtension");
@@ -81,6 +89,11 @@ class ExtensionsStorage{
 
     any(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         return this.get(name, searchBy) != undefined;
+    }
+
+    on(name: string, searchBy: 'name' | 'folder' | 'id', event: string, callback: (...args: any[]) => void): void {
+        let extension = this.get(name, searchBy);
+        extension?.on(event, callback);
     }
 
     get allInfo(): ExtensionModel[] {

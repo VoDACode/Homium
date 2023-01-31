@@ -1,4 +1,5 @@
 import db from "../db";
+import { ScriptArgument } from "../models/ScriptModel";
 import extensions from "../services/extensions";
 import { Logger } from "../services/LogService";
 
@@ -6,6 +7,10 @@ export abstract class IExtension{
     private _id: string;
     private _storage: Storage;
     private _logger: Logger;
+    private _events: [string, Function][] = [];
+    private _eventsNames: string[] = [];
+
+    abstract globalName: string;
 
     abstract name: string;
 
@@ -25,6 +30,37 @@ export abstract class IExtension{
     public restart(): void {
         this.stop();
         this.start();
+    }
+
+    get eventsNames(): string[] {
+        return this._eventsNames;
+    }
+
+    protected addEventNames(names: string[] | string): void {
+        if(typeof names == 'string')
+            names = [names];
+        names.forEach((n) => {
+            if(this._eventsNames.findIndex((e) => e == n) == -1)
+                this._eventsNames.push(n);
+        });
+    }
+
+    protected emit(event: string, args: ScriptArgument): void {
+        this._events.forEach((e) => {
+            if(e[0] == event)
+                e[1](args);
+        });
+    }
+
+    on(event: string, callback: Function): void {
+        if(this._events.findIndex((e) => e[0] == event && e[1] == callback) == -1)
+            this._events.push([event, callback]);
+    }
+
+    off(event: string, callback: Function): void {
+        let index = this._events.findIndex((e) => e[0] == event && e[1] == callback);
+        if(index != -1)
+            this._events.splice(index, 1);
     }
 
     public get id(): string {
