@@ -1,0 +1,8 @@
+.main {
+    border: 1vh solid rgb(184, 147, 1);
+    border-radius: 3vh;
+    width: 21.7vw;
+    height: 21.7vh;
+    background-color: rgb(255, 255, 54);
+    margin: 2vh;
+}

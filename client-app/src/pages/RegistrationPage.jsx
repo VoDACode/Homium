@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import AccountOffer from "../components/AccountOffer/AccountOffer";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EllipseButton from "../components/EllipseButton/EllipseButton";
 import EnterContainer from "../components/EnterContainer/EnterContainer";
