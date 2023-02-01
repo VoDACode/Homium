@@ -8,6 +8,7 @@
         "database": "homium",
         "user": "Homium",
         "password": "4Xklg(1B05.8n52jD4"
+        "password": "D7CAA711A21C4D3199BCAAD79EFF4E10"
     },
     "mqtt":{
         "enabled": true,
@@ -21,7 +22,6 @@
         "console": true
     },
     "DEBUG": {
-        "debug": false,
         "allowAnonymous": true
     }
 }

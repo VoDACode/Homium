@@ -3,6 +3,7 @@ import config from './config';
 import { ExtensionModel } from './models/ExtensionModel';
 import { MenuItem } from './models/MenuItem';
 import { ObjectModel } from './models/ObjectModel';
+import { SceneModel } from './models/SceneModel';
 import { ScriptModel } from './models/ScriptModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
@@ -26,7 +27,7 @@ export class Database {
         if (this._db) {
             return;
         }
-        this._db = await MongoClient.connect(`mongodb://${config.db.host}:${config.db.port}`);
+        this._db = await MongoClient.connect(`mongodb://${config.db.user}:${config.db.password}@${config.db.host}:${config.db.port}/?authMechanism=DEFAULT`);
         this._db.on('close', () => {
             this.logger.warn('Connection to database closed');
         });
@@ -48,6 +49,9 @@ export class Database {
     }
     public get scripts() {
         return this.db.collection<ScriptModel>('scripts');
+    }
+    public get scenes() {
+        return this.db.collection<SceneModel>('scenes');
     }
 }
 
