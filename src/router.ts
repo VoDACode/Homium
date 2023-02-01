@@ -17,10 +17,10 @@ router.use('/api', (req, res, next) => {
     let urlParts = url?.split('/');
     if(urlParts?.[1] == 'extensions'){
         let extensionName = urlParts?.[2];
-        let extension = extensions.get(extensionName, 'name');
+        let extension = extensions.get(extensionName, 'id');
         if(extension){
-            logger.debug('Redirecting to /extensions/', extension.name + req.originalUrl);
-            res.redirect(308, '/extensions/' + extension.name + req.originalUrl);
+            logger.debug('Redirecting to /extensions/', extension.id + req.originalUrl);
+            res.redirect(308, '/extensions/' + extension.id + req.originalUrl);
         }else{
             logger.debug('Extension not found');
             res.status(404).send('Extension not found');
@@ -42,10 +42,10 @@ router.use('/static', (req, res, next) => {
     let urlParts = url?.split('/');
     if(urlParts?.[1] == 'extensions'){
         let extensionName = urlParts?.[2];
-        let extension = extensions.get(extensionName, 'name');
+        let extension = extensions.get(extensionName, 'id');
         if(extension){
-            logger.debug('Redirecting to extensions/', extension.name + req.originalUrl);
-            res.redirect(308, '/extensions/' + extension.name + req.originalUrl);
+            logger.debug('Redirecting to extensions/', extension.id + req.originalUrl);
+            res.redirect(308, '/extensions/' + extension.id + req.originalUrl);
         }else{
             logger.debug('Extension not found');
             res.send('Extension not found');

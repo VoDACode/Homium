@@ -136,8 +136,8 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
             logger.info(`Extension ${file} version: ${packageJson.version}`);
             logger.info(`Extension ${file} author: '${packageJson.author || 'Unknown'}'`);
 
-            app.use('/extensions/' + packageJson.name + '/static', express.static(path.join(extensionsPath, file, 'static')));
-            logger.debug(`Extension ${file} static folder mounted. [${path.join(extensionsPath, file, 'static')}] => [/extensions/${packageJson.name}/static]`);
+            app.use('/extensions/' + packageJson.id + '/static', express.static(path.join(extensionsPath, file, 'static')));
+            logger.debug(`Extension ${file} static folder mounted. [${path.join(extensionsPath, file, 'static')}] => [/extensions/${packageJson.id}/static]`);
 
             let apiRoutes = path.join(extensionsPath, file, 'routes');
             if (fs.existsSync(apiRoutes)) {
@@ -155,7 +155,7 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
                         name = controller.ROUTER;
                     }
                     logger.debug(`Extension ${file} api route ${name} mounted.`);
-                    app.use('/extensions/' + packageJson.name + '/api/' + name, controller);
+                    app.use('/extensions/' + packageJson.id + '/api/' + name, controller);
                 });
             }
 
