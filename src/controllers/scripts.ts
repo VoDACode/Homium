@@ -78,11 +78,58 @@ router.get('/:id', authGuard, async (req, res) => {
 });
 
 router.put('/:id', authGuard, async (req, res) => {
-    let script = req.body as ScriptModel;
+    const name: string | undefined = req.body.name;
+    const code: string | undefined = req.body.code;
+    const targetEvent: ScriptTargetEvent | undefined = req.body.targetEvent as ScriptTargetEvent;
+    const allowAnonymous: boolean | undefined = req.body.allowAnonymous;
+    const description: string | undefined = req.body.description;
+
+    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+        res.status(400).send({ error: "Invalid id" });
+        return;
+    }
+
+    let script = await ScriptService.getScript(req.params.id);
     if(!script){
         res.status(400).send({ error: "Invalid script" });
         return;
     }
+    
+    if(name !== undefined && (typeof name !== 'string' || name.length < 1)){
+        res.status(400).send({ error: "Invalid name" });
+        return;
+    }else if(name !== undefined && name !== script.name && name.length > 0){
+        script.name = name;
+    }
+
+    if(code !== undefined && (typeof code !== 'string' || code.length < 1)){
+        res.status(400).send({ error: "Invalid code" });
+        return;
+    }else if(code !== undefined && code !== script.code && code.length > 0){
+        script.code = code;
+    }
+
+    if(targetEvent !== undefined && (typeof targetEvent !== 'string' || targetEvent.length < 1)){
+        res.status(400).send({ error: "Invalid target event" });
+        return;
+    }else if(targetEvent !== undefined && targetEvent !== script.targetEvent && targetEvent.length > 0){
+        script.targetEvent = targetEvent;
+    }
+
+    if(allowAnonymous !== undefined && typeof allowAnonymous !== 'boolean'){
+        res.status(400).send({ error: "Invalid allow anonymous" });
+        return;
+    }else if(allowAnonymous !== undefined && allowAnonymous !== script.allowAnonymous){
+        script.allowAnonymous = allowAnonymous;
+    }
+
+    if(description !== undefined && typeof description !== 'string'){
+        res.status(400).send({ error: "Invalid description" });
+        return;
+    }else if(description !== undefined && description !== script.description){
+        script.description = description;
+    }
+
     try{
         await ScriptService.updateScript(script);
         res.status(200).send({ success: true });
