@@ -97,7 +97,7 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
             logger.warn(`Extension ${file} has no dependencies or version in package.json file. Skipping...`);
             return;
         }
-        if (!packageJson.id || packageJson.id === "") {
+        if (!packageJson.id || await db.extensions.countDocuments({ id: packageJson.id }) == 0) {
             logger.info(`Extension ${file} has no id in package.json file. Generating...`);
             firstStart = true;
             do {
