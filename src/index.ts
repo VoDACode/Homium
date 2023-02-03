@@ -7,6 +7,7 @@ import * as bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import * as boot from './boot';
 import {Logger} from './services/LogService';
+import ScriptService from './services/ScriptService';
 
 const app = express();
 expressWs(app);
@@ -21,14 +22,14 @@ const logger = new Logger("main");
     try {
         await db.connect();
         await boot.firstStart();
-        start();
+        await start();
     } catch (error: any) {
         logger.fatal(error);
         process.exit(1);
     }
 })();
 
-function start(){
+async function start(){
     app.use(bodyParser.json());
     app.use(cookieParser());
     
@@ -37,6 +38,8 @@ function start(){
 
     app.use("/", boot.loadControllers());
     app.use("/", boot.bootExtensions());
+
+    await ScriptService.init();
     
     app.use("/", require('./router'));
     app.listen(port, () => {

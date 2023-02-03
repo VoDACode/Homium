@@ -24,5 +24,6 @@ export interface IConfigModel {
     DEBUG: {
         debug: boolean;
         allowAnonymous: boolean;
+        checkRights: boolean;
     }
 }

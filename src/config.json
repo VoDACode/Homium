@@ -21,6 +21,8 @@
         "console": true
     },
     "DEBUG": {
-        "allowAnonymous": true
+        "debug": true,
+        "allowAnonymous": true,
+        "checkRights": true
     }
 }

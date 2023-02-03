@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { uuid } from 'uuidv4';
 import db from '../db';
-import { authGuard } from '../guards/AuthGuard';
+import { authGuard, hasPermission } from '../guards/AuthGuard';
 import { SceneModel } from '../models/SceneModel';
 import { SceneObject } from '../models/SceneObject';
 import { Logger } from '../services/LogService';
@@ -67,6 +67,13 @@ router.get('/screen/:id', authGuard, (req, res) => {
 });
 
 router.post('/create', authGuard, async (req, res) => {
+
+    if(await hasPermission(req, p => p.scense.create) !== true){
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+
     const name = req.body.name as string;
     const description: string = req.body.description || '';
     const sceneObjects = req.body.sceneObjects as SceneObject[];
@@ -98,6 +105,13 @@ router.post('/create', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id', authGuard, async (req, res) => {
+
+    if(await hasPermission(req, p => p.scense.update) !== true){
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+
     const id = req.params.id as string;
     const name = req.body.name as string;
     const description: string = req.body.description || '';
@@ -140,13 +154,30 @@ router.put('/update/:id', authGuard, async (req, res) => {
     res.status(200).send('Scene updated').end();
 });
 
-router.delete('/delete/:id', authGuard, (req, res) => {
+router.delete('/delete/:id', authGuard, async (req, res) => {
+
+    if(await hasPermission(req, p => p.scense.remove) !== true){
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id as string;
 
     if(!id || typeof id !== 'string' || id.length !== 36){
         res.status(400).send('Invalid scene id').end();
         return;
     }
+
+    const scene = await db.scenes.findOne({id: id});
+
+    if(!scene){
+        res.status(404).send('Scene not found').end();
+        return;
+    }
+
+    await db.scenes.deleteOne({id: id});
+
+    res.status(200).send('Scene deleted').end();
 });
 
 

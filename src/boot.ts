@@ -52,7 +52,8 @@ export async function firstStart() {
     logger.info('Checking first start...');
     if (await db.users.countDocuments() === 0) {
         logger.info('First start detected. Creating root user...');
-        await db.users.insertOne(new UserModel("root", "toor"));
+        let root = new UserModel("root", "toor", undefined, undefined, UserModel.getTemplatePermissions('admin'));
+        await db.users.insertOne(root);
     }
     logger.info('First start check complete.');
 }

@@ -40,30 +40,38 @@ class ScriptStoreModel {
 class ScriptService {
     private logger: Logger = new Logger("ScriptService");
     private scripts: ScriptStoreModel[] = [];
+    private inicelized: boolean = false;
 
     private static _instance: ScriptService;
 
     public static get instance(): ScriptService {
         return this._instance || (this._instance = new this());
     }
-    private constructor() {
-        this.logger.info("Initializing");
-        db.scripts.find().toArray().then(scripts => {
-            this.logger.info(`Found ${scripts.length} scripts`);
-            scripts.forEach(script => {
-                this.logger.debug(`Initializing script ${script.id}`);
-                this.scripts.push(new ScriptStoreModel(script));
-                this.initTarget(script);
-                this.logger.debug(`Initialized script ${script.id}`);
-            });
-            this.logger.info("Initialized");
+    private constructor() { }
+
+    async init() {
+        if (ScriptService.instance.inicelized == true) {
+            return;
+        }
+        let list = await db.scripts.find().toArray();
+        ScriptService.instance.logger.info("Initializing");
+        ScriptService.instance.logger.info(`Found ${list.length} script${list.length == 1 ? "" : "s"}`);
+
+        list.forEach(script => {
+            ScriptService.instance.logger.debug(`Initializing script ${script.id}`);
+            ScriptService.instance.scripts.push(new ScriptStoreModel(script));
+            ScriptService.instance.initTarget(script);
+            ScriptService.instance.logger.debug(`Initialized script ${script.id}`);
         });
+
+        ScriptService.instance.logger.info("Initialized");
+        ScriptService.instance.inicelized = true;
     }
 
     public async executeScript(id: string, args: ScriptArgument): Promise<any> {
         let context = {
             _context: {
-                extensions:{
+                extensions: {
                     ...extensions.getContext,
                 },
                 services: {
@@ -124,7 +132,6 @@ class ScriptService {
         await this.updateScript(script);
     }
 
-
     public async isAllowAnonymous(id: string): Promise<boolean> {
         let script = this.scripts.find(s => s.script.id === id);
         if (script) {
@@ -164,10 +171,9 @@ class ScriptService {
     }
 
     private async initTarget(script: ScriptModel) {
-        this.logger.debug(`Initializing target for script ${script.id}`);
-        if(script.targetType === "Object") {
+        if (script.targetType === "Object") {
             let obj = await ObjectService.get(script.targetId);
-            if(!obj) {
+            if (!obj) {
                 throw new Error("Object not found");
             }
             ObjectService.addEventListener(obj.id, "remove", () => {
@@ -176,9 +182,9 @@ class ScriptService {
             ObjectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
                 this.executeScript(script.id, args);
             });
-        } else if(script.targetType === "Extension") {
+        } else if (script.targetType === "Extension") {
             let ext = extensions.get(script.targetId, 'id');
-            if(!ext) {
+            if (!ext) {
                 throw new Error("Extension not found");
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {

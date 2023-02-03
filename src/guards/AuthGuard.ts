@@ -2,24 +2,30 @@ import { NextFunction, Response, Request } from "express";
 import db from "../db";
 import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
-import { UserModel } from "../models/UserModel";
+import { UserModel, UserPermissions } from "../models/UserModel";
 import config from "../config";
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
     if (!username) {
-        res.status(401).end()
-        return
+        res.status(401).end();
+        return;
     }
 
-    const expectedPassword = (await db.users.findOne({ username: username }))?.password;
+    const user = await db.users.findOne({ username: username });
+    const expectedPassword = user?.password;
     if (!expectedPassword || expectedPassword !== password) {
-        res.status(401).end()
+        res.status(401).end();
         return
     }
 
-    const sessionToken = uuid()
-    const now = new Date()
+    if(user.enabled === false){
+        res.status(401).send("User is disabled").end();
+        return;
+    }
+
+    const sessionToken = uuid();
+    const now = new Date();
     now.setDate(now.getDate() + 3);
     const expiresAt = now;
     const session = new Session(username, expiresAt, sessionToken);
@@ -127,4 +133,20 @@ export async function getUser(data: Request | string) : Promise<UserModel | null
 export async function isAuthorized(req: Request): Promise<boolean> {
     const user = await getUser(req);
     return user !== null;
+}
+
+export async function getPermissions(req: Request | string): Promise<UserPermissions | null> {
+    const user = await getUser(req);
+    if(user === null){
+        return null;
+    }
+    return user.permissions;
+}
+
+export async function hasPermission(req: Request, perm: (p: UserPermissions) => any): Promise<boolean> {
+    const user = await getUser(req);
+    if(user === null){
+        return false;
+    }
+    return perm(user.permissions);
 }

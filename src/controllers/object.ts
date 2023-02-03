@@ -1,7 +1,7 @@
 import express from 'express';
 import { uuid } from 'uuidv4';
 import db from '../db';
-import { authGuard, isAuthorized } from '../guards/AuthGuard';
+import { authGuard, hasPermission, isAuthorized } from '../guards/AuthGuard';
 import { getPropertyToJsonObject, ObjectModel, objectPropertyToJson } from '../models/ObjectModel';
 import { ObjectProperty, pushObjectPropertyHistory } from '../models/ObjectProperty';
 import ObjectService from '../services/ObjectService';
@@ -14,6 +14,11 @@ router.post('/create', authGuard, async (req, res) => {
     const description: string | null = req.body.description;
     const object = req.body.object as ObjectProperty[];
     const allowAnonymous: boolean = req.body.allowAnonymous ?? false;
+
+    if (await hasPermission(req, p => p.object.create) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
 
     if (object == null || !Array.isArray(object))
         return res.status(400).send('The object must be an array.').end();
@@ -59,6 +64,12 @@ router.post('/create', authGuard, async (req, res) => {
 });
 
 router.delete('/remove/:id', authGuard, async (req, res) => {
+
+    if (await hasPermission(req, p => p.object.remove) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id;
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
@@ -85,6 +96,12 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id/object', authGuard, async (req, res) => {
+
+    if (await hasPermission(req, p => p.object.update) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id;
     const obj = req.body as ObjectProperty[];
 
@@ -123,6 +140,12 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id', authGuard, async (req, res) => {
+
+    if (await hasPermission(req, p => p.object.update) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id;
     const name = req.body.name;
     const allowAnonymous = req.body.allowAnonymous;
@@ -155,6 +178,12 @@ router.put('/update/:id', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id/parent', authGuard, async (req, res) => {
+
+    if (await hasPermission(req, p => p.object.update) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id;
     const parentId = req.query.parentId;
     if (id == null || typeof id !== 'string') {
@@ -178,6 +207,12 @@ router.put('/update/:id/parent', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id/children', authGuard, async (req, res) => {
+
+    if (await hasPermission(req, p => p.object.update) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const id = req.params.id;
     const children = req.query.children as string[];
     if (id == null || typeof id !== 'string') {
@@ -214,9 +249,16 @@ router.get('/get/:id', async (req, res) => {
     if (!object) {
         return res.status(404).send('Object not found.').end();
     }
-    if (!object.allowAnonymous && !isAuthorized(req)) {
-        return res.status(401).send('You are not authorized to view this object.').end();
+
+    if (!object.allowAnonymous) {
+        if (!await isAuthorized(req)) {
+            return res.status(401).send('You are not authorized to view this object.').end();
+        } else if (await hasPermission(req, p => p.object.read) !== true) {
+            res.status(401).send('Permission denied!').end();
+            return;
+        }
     }
+
     res.status(200).send(getPropertyToJsonObject(object)).end();
 });
 
@@ -229,9 +271,16 @@ router.get('/get/:id/children', async (req, res) => {
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
-    if (!object.allowAnonymous && !isAuthorized(req)) {
-        return res.status(401).send('You are not authorized to view this object.').end();
+
+    if (!object.allowAnonymous) {
+        if (!await isAuthorized(req)) {
+            return res.status(401).send('You are not authorized to view this object.').end();
+        } else if (await hasPermission(req, p => p.object.read) !== true) {
+            res.status(401).send('Permission denied!').end();
+            return;
+        }
     }
+
     res.status(200).send(object.children).end();
 });
 
@@ -250,8 +299,13 @@ router.get('/get/:id/:prop/history', async (req, res) => {
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
-    if (!object.allowAnonymous && !isAuthorized(req)) {
-        return res.status(401).send('You are not authorized to view this object.').end();
+    if (!object.allowAnonymous) {
+        if (!await isAuthorized(req)) {
+            return res.status(401).send('You are not authorized to view this object.').end();
+        } else if (await hasPermission(req, p => p.object.read) !== true) {
+            res.status(401).send('Permission denied!').end();
+            return;
+        }
     }
     const index = object.properties.findIndex(p => p.key === prop);
     if (index == -1) {
@@ -264,6 +318,11 @@ router.get('/get/:id/:prop/history', async (req, res) => {
 });
 
 router.get('/get-root', authGuard, async (req, res) => {
+    if (await hasPermission(req, p => p.object.read) !== true) {
+        res.status(401).send('Permission denied!').end();
+        return;
+    }
+
     const object = await db.objects.find({ parentId: null }).toArray();
     if (object == null) {
         return res.status(404).send('Object not found.').end();
@@ -294,9 +353,16 @@ router.get('/set/:id', async (req, res) => {
     if (!object) {
         return res.status(404).send('Object not found.').end();
     }
-    if (!object.allowAnonymous && !isAuthorized(req)) {
-        return res.status(401).send('You are not authorized to modify this object.').end();
+
+    if (!object.allowAnonymous) {
+        if (!await isAuthorized(req)) {
+            return res.status(401).send('You are not authorized to modify this object.').end();
+        } else if (await hasPermission(req, p => p.object.canUse) !== true) {
+            res.status(401).send('Permission denied!').end();
+            return;
+        }
     }
+
     if (object.systemObject) {
         return res.status(403).send('This object is a system object and cannot be modified.').end();
     }
