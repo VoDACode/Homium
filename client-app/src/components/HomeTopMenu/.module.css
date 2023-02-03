@@ -1,6 +1,6 @@
 .main {
     background: rgb(234,255,17);
-    background: linear-gradient(90deg, rgba(234,255,17,1) 0%, rgba(206,252,27,1) 12%, rgba(102,188,25,1) 16%, rgba(25,185,40,1) 50%, rgba(102,188,25,1) 80%, rgba(234,255,17,1) 85%);
+    background: linear-gradient(90deg, rgba(234,255,17,1) 0%, rgba(206,252,27,1) 12%, rgba(102,188,25,1) 16%, rgba(25,185,40,1) 50%, rgba(102,188,25,1) 76%, rgba(234,255,17,1) 82%);
     height: 10vh;
 }
 
@@ -15,26 +15,27 @@
     color: rgb(0, 124, 0);
 }
 
-.log_out {
+.main img {
     cursor: pointer;
     position: absolute;
-    background-color: aqua;
     border: 0.4vh solid rgb(0, 124, 0);
     border-radius: 1vh;
     padding: 0.8vh;
     height: 5.5vh;
     top: 1.2vh;
+}
+
+.log_out {
+    background-color: rgb(223, 207, 238);
     right: 2.5vw;
 }
 
 .settings {
-    cursor: pointer;
-    position: absolute;
     background-color: rgb(255, 228, 118);
-    border: 0.4vh solid rgb(0, 124, 0);
-    border-radius: 1vh;
-    padding: 0.8vh;
-    height: 5.5vh;
-    top: 1.2vh;
     right: 8vw;
+}
+
+.admin {
+    background-color: rgb(211, 229, 235);
+    right: 13.5vw;
 }

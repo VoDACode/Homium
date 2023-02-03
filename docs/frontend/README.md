@@ -80,8 +80,8 @@ If the client is not authorized, it redirects to this page.
 
 The navigation panel has the following structure:
 ```
-├── Title (Route: /)
-├── Dashboard (Route: /admin)
+├── Home page (Route: /)
+├── System info (Route: /admin)
 ├── Objects
 │    ├── List (Route: /admin/objects)
 │    ├── Devices (Route: /admin/devices)

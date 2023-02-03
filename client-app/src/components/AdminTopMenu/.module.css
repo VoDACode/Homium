@@ -1,0 +1,49 @@
+.main {
+    position: relative;
+    background: rgb(1,255,0);
+    background: linear-gradient(0deg, rgba(1,255,0,1) 5%, rgba(49,255,29,1) 23%, rgba(42,242,72,1) 34%, rgba(37,230,159,1) 73%, rgba(40,217,219,1) 92%);
+    height: 10vh;
+}
+
+.logo {
+    cursor: default;
+    position: absolute;
+    top: 1.1vh;
+    left: 1vw;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 5vh;
+    font-weight: bold;
+    color: blue;
+}
+
+.page_list {
+    position: absolute;
+    display: inline-block;
+    top: 50%;
+    left: 20vw;
+    transform: translateY(-50%);
+}
+
+.var {
+    cursor: pointer;
+    font-family:sans-serif;
+    font-size: 3.5vh;
+    font-weight: 800;
+    color: rgb(128, 0, 255);
+}
+
+.page_list .var:not(:last-child) {
+    margin-right: 4vw;
+}
+
+.log_out {
+    cursor: pointer;
+    position: absolute;
+    border: 0.4vh solid blue;
+    border-radius: 1vh;
+    padding: 0.8vh;
+    height: 5.5vh;
+    top: 1.2vh;
+    background-color: rgb(207, 238, 207);
+    right: 2.5vw;
+}
