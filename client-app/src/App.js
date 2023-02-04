@@ -5,6 +5,7 @@ import SystemInfoPage from "./pages/SystemInfoPage";
 import AuthorizationPage from "./pages/AuthorizationPage";
 import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
+import ObjectListPage from "./pages/ObjectListPage";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/reg" element={<RegistrationPage/>}/>
         <Route path="/admin" element={<AdminLayout/>}>
           <Route index element={<SystemInfoPage/>}/>
+          <Route path="objects" element={<ObjectListPage/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

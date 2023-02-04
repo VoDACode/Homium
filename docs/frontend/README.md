@@ -59,9 +59,6 @@ This page has the following structure:
 │    ├── Properties
 │    │    ├── [Property Name and Value]
 │    │    └── Other Properties...
-│    ├── Actions
-│    │    ├── [Action Name]
-│    │    └── Other Actions...
 │    └── Children
 │         ├── [Child Name. Next, everything is in a recursive form]
 │         └── Other Children...
