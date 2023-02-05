@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import SceneCell from "../components/SceneCell/SceneCell";
 import SceneContainer from "../components/SceneContainer/SceneContainer";
@@ -6,6 +6,10 @@ import HomeTopMenu from "../components/HomeTopMenu/HomeTopMenu";
 import VertSpace from "../components/VertSpace/VertSpace";
 
 const HomePage = () => {
+    useEffect(() => {
+        document.body.style.backgroundColor = 'whitesmoke';
+    }, []);
+
     return (
         <div>
             <HomeTopMenu/>
