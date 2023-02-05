@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Children } from 'react';
 import cl from './.module.css';
 
 const ObjectSection = ({name, children, properties}) => {
@@ -20,9 +20,9 @@ const ObjectSection = ({name, children, properties}) => {
                 </li>
                 <li className={cl.children}>
                     <span className={cl.header} onClick={() => setChildrenState(!isChildrenOpened)}>{isChildrenOpened ? '-' : '+'} Children</span>
-                    <span className={cl.count}> ({children.length})</span>
+                    <span className={cl.count}> ({Children.count(children)})</span>
                     <ul style={{display: isChildrenOpened ? 'block' : 'none'}}>
-                        {children.map(el => <li className={cl.el} key={el.id}>{el.val}</li>)}
+                        {children}
                         <li className={cl.adder}><span>Add new child</span></li>
                     </ul>
                 </li>

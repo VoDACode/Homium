@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EllipseButton from "../components/EllipseButton/EllipseButton";
@@ -7,10 +7,14 @@ import SignUpInput from "../components/SignUpInput/SignUpInput";
 import VertSpace from "../components/VertSpace/VertSpace";
 
 const RegistrationPage = () => {
+    useEffect(() => {
+        document.body.style.backgroundColor = 'white';
+    }, []);
+
     return (
         <div>
             <EnterContainer backColor="rgba(0, 45, 100, 0.38)">
-                <CustomHeader text="Create an account" textColor={'rgb(22, 22, 165)'}/>
+                <CustomHeader text="Create an account" textColor={'rgb(22, 22, 165)'} isCenter={true}/>
                 <VertSpace h={4} unit="vh"/>
                 <SignUpInput/>
                 <VertSpace h={4} unit="vh"/>

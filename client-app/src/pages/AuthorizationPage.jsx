@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AccountOffer from "../components/AccountOffer/AccountOffer";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EllipseButton from "../components/EllipseButton/EllipseButton";
@@ -7,10 +7,14 @@ import LogInInput from "../components/LogInInput/LogInInput";
 import VertSpace from "../components/VertSpace/VertSpace";
 
 const AuthorizationPage = () => {
+    useEffect(() => {
+        document.body.style.backgroundColor = 'white';
+    }, []);
+
     return (
         <div>
             <EnterContainer backColor="rgba(0, 135, 67, 0.38)">
-                <CustomHeader text="Sign in to Homium" textColor={'#298c44'}/>
+                <CustomHeader text="Sign in to Homium" textColor={'#298c44'} isCenter={true}/>
                 <VertSpace h={8} unit="vh"/>
                 <LogInInput/>
                 <VertSpace h={5} unit="vh"/>
