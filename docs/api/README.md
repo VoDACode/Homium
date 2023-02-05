@@ -10,3 +10,4 @@
   * [Stream](stream.md)
 * [Menu](menu.md)
 * [Scripts](scripts.md)
+* [Users](user.md)
