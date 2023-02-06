@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import axios from 'axios';
 import AccountOffer from "../components/AccountOffer/AccountOffer";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EllipseButton from "../components/EllipseButton/EllipseButton";
@@ -17,8 +18,6 @@ const AuthorizationPage = () => {
                 <CustomHeader text="Sign in to Homium" textColor={'#298c44'} isCenter={true}/>
                 <VertSpace h={8} unit="vh"/>
                 <LogInInput/>
-                <VertSpace h={5} unit="vh"/>
-                <EllipseButton text="Sign in" bColor="green"/>
                 <VertSpace h={6} unit="vh"/>
                 <AccountOffer headerColor="rgb(11, 49, 0)" headerText="Don't have an account?" linkText="Sign up now" linkTo="/reg"/>
                 <VertSpace h={2} unit="vh"/>
