@@ -20,6 +20,9 @@
         "level": "debug",
         "console": true
     },
+    "extensions": {
+        "enabled": true
+    },
     "DEBUG": {
         "debug": true,
         "allowAnonymous": true,

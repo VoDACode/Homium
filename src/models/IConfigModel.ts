@@ -17,6 +17,9 @@ export interface IConfigModel {
         user: string;
         password: string;
     },
+    extensions: {
+        enabled: boolean;
+    },
     log: {
         level: string;
         console: boolean;

@@ -37,7 +37,9 @@ async function start(){
     logger.info("Static files served from: " + path.join(__dirname, 'static'));
 
     app.use("/", boot.loadControllers());
-    app.use("/", boot.bootExtensions());
+    if(config.extensions.enabled == true){
+        app.use("/", boot.bootExtensions());
+    }
 
     await ScriptService.init();
     
