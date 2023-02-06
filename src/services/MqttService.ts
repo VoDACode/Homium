@@ -4,7 +4,7 @@ import { Logger } from './LogService';
 
 export class MqttService {
     private logger = new Logger('MQTT');
-    private mqttClient: mqtt.Client;
+    private mqttClient: mqtt.Client | null = null;
 
     private static _instance: MqttService;
 
@@ -13,6 +13,10 @@ export class MqttService {
     }
 
     private constructor() {
+        if(config.mqtt.enabled !== true) {
+            this.logger.info('MQTT is disabled in config!');
+            return;
+        }
         this.mqttClient = mqtt.connect(`mqtt://${config.mqtt.host}:${config.mqtt.port}`, {
             username: config.mqtt.user,
             password: config.mqtt.password,
@@ -30,11 +34,11 @@ export class MqttService {
     }
 
     public get isConnected(): boolean {
-        return this.mqttClient.connected;
+        return this.mqttClient!.connected;
     }
 
     public publish(topic: string, message: string | number | boolean) {
-        this.mqttClient.publish(topic, message.toString(), { qos: 1 }, (err) => {
+        this.mqttClient?.publish(topic, message.toString(), { qos: 1 }, (err) => {
             if (err) {
                 console.error(err);
             }
@@ -42,14 +46,14 @@ export class MqttService {
     }
 
     public subscribe(topic: string, callback: (topic: string, message: string) => void) {
-        this.mqttClient.subscribe(topic);
-        this.mqttClient.on('message', (topic, message) => {
+        this.mqttClient?.subscribe(topic);
+        this.mqttClient?.on('message', (topic, message) => {
             callback(topic, message.toString());
         });
     }
 
     public unsubscribe(topic: string) {
-        this.mqttClient.unsubscribe(topic);
+        this.mqttClient?.unsubscribe(topic);
     }
 }
 
