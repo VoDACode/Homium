@@ -15,7 +15,7 @@
 
 # Description
 
-If you want to get information about yourself, you can use the keyword `my` as the username.
+If you want to get information about yourself, you can use the keyword `self` as the username.
 
 # API
 

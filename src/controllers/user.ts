@@ -20,7 +20,7 @@ router.get('/list/:username', authGuard, async (req, res) => {
         return;
     }
     const username = req.params.username;
-    const user = username == 'my' ? await getUser(req) : (await db.users.findOne({ username: username }));
+    const user = username == 'self' ? await getUser(req) : (await db.users.findOne({ username: username }));
     if (!user) {
         res.status(404).end();
         return;
@@ -33,13 +33,13 @@ router.get('/list/:username/permissions', authGuard, async (req, res) => {
         res.status(400).send('Invalid request').end();
         return;
     }
-    if (req.params.username != 'my' && (await getUser(req))?.permissions.user.read !== true) {
+    if (req.params.username != 'self' && (await getUser(req))?.permissions.user.read !== true) {
         res.status(401).send('Permission denied!');
         return;
     }
     const username = req.params.username;
 
-    const permissions = username == 'my' ? await getPermissions(req) : (await db.users.findOne({ username: username }))?.permissions;
+    const permissions = username == 'self' ? await getPermissions(req) : (await db.users.findOne({ username: username }))?.permissions;
     if (!permissions) {
         res.status(401).end();
         return;
