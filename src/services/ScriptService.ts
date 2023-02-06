@@ -1,5 +1,6 @@
 import { uuid } from 'uuidv4';
 import * as vm from 'vm';
+import config from '../config';
 import db from '../db';
 import { ScriptArgument, ScriptModel } from '../models/ScriptModel';
 import extensions from './extensions';
@@ -183,6 +184,10 @@ class ScriptService {
                 this.executeScript(script.id, args);
             });
         } else if (script.targetType === "Extension") {
+            if(config.extensions.enabled == false) {
+                this.logger.warn(`Script ${script.id} is targetted to extension ${script.targetId} but extensions are disabled.`);
+                return;
+            }
             let ext = extensions.get(script.targetId, 'id');
             if (!ext) {
                 throw new Error("Extension not found");
