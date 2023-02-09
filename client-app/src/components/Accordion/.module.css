@@ -1,0 +1,54 @@
+.title{
+    cursor: pointer;
+    position: relative;
+}
+.main__box{
+    position: relative;
+    padding: 5px;
+    margin: 5px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+.title,
+.arrow__up,
+.arrow__down{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px;
+    margin: 5px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: #f1f1f1;
+    color: #000;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.4s;
+}
+.arrow__up,
+.arrow__down{ 
+    float: right;
+    margin-right: 10px;
+    color: #ccc;
+    height: 32px;
+}
+.arrow__up:hover,
+.arrow__down:hover{
+    background-color: #00000010;
+}
+.arrow__down{
+    rotate: 180deg;
+}
+.content{
+    position: absolute;
+    width: 100%;
+}
+.content > div{
+    position: relative;
+}
+.box{
+    position: relative;
+    overflow: hidden;
+    transition: height 0.5s linear 0s;
+    height: 0;
+}
