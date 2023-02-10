@@ -163,7 +163,7 @@ router.put('/list/:username', authGuard, async (req, res) => {
         user.email = email ?? user.email;
     }
 
-    if (enabled !== undefined && typeof enabled !== 'boolean') {
+    if (enabled !== undefined && typeof enabled !== 'boolean' && user.permissions.isAdministrator !== true) {
         user.enabled = enabled;
     }
 
@@ -176,6 +176,9 @@ router.put('/list/:username', authGuard, async (req, res) => {
             res.status(401).send('Permission denied!').end();
             return;
         }
+        if(user.permissions.isAdministrator){
+            permissions.isAdministrator = true;
+        }
         // user can`t create user with higher permissions
         for (const key in permissions) {
             if (Object.prototype.hasOwnProperty.call(permissions, key) && typeof (permissions as any)[key] === 'object') {
@@ -187,6 +190,8 @@ router.put('/list/:username', authGuard, async (req, res) => {
         }
         user.permissions = permissions;
     }
+
+    await db.users.updateOne({ username: username }, { $set: user });
 
     res.status(200).end();
 });

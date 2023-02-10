@@ -205,9 +205,13 @@ export class UserView {
     lastname: string;
     firstname: string;
     username: string;
+    email: string | undefined;
+    enabled: boolean;
     constructor(user: UserModel) {
         this.username = user.username;
         this.firstname = user.firstname;
         this.lastname = user.lastname;
+        this.email = user.email;
+        this.enabled = user.enabled;
     }
 }
