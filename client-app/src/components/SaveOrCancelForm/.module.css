@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.saveDisabled,
+.save,
+.cancel {
+    cursor: pointer;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.cancel {
+    background-color: #f44336;
+}
+
+.save {
+    background-color: #4CAF50;
+}
+
+.save:hover,
+.cancel:hover {
+    opacity: 0.8;
+}
+
+.saveDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.save:active,
+.cancel:active {
+    transform: translateY(2px);
+}

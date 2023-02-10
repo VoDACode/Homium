@@ -1,0 +1,32 @@
+.box {
+    position: relative;
+    width: fit-content;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.title {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.title {
+    min-width: 100px;
+}
+
+.error {
+    border-color: rgb(255, 89, 89) !important;
+}
+
+.input[type="text"] {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100%;
+    height: 30px;
+    padding: 0 5px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    color: rgb(100, 100, 100);
+}

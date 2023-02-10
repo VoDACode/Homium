@@ -1,0 +1,33 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.top {
+    align-items: flex-start;
+}
+
+.bottom {
+    align-items: flex-end;
+}
+
+.center {
+    align-items: center;
+}
+
+.left {
+    justify-content: flex-start;
+}
+
+.right {
+    justify-content: flex-end;
+}
+
+.middle {
+    justify-content: center;
+}
+
+.items {
+    width: inherit;
+}
