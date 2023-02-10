@@ -6,6 +6,8 @@ import AuthorizationPage from "./pages/AuthorizationPage";
 import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import ObjectListPage from "./pages/ObjectListPage";
+import UserAdministrationPage from "./pages/UserAdministrationPage";
+import UserEditPage from "./pages/UserEditPage";
 
 function App() {
   return (
@@ -17,6 +19,10 @@ function App() {
         <Route path="/admin" element={<AdminLayout/>}>
           <Route index element={<SystemInfoPage/>}/>
           <Route path="objects" element={<ObjectListPage/>}/>
+          <Route path="users">
+            <Route index element={<UserAdministrationPage/>}/>
+            <Route path=":username" element={<UserEditPage/>}/>
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
