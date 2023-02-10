@@ -10,6 +10,7 @@ export default class Accordion extends React.Component {
             isEnabled: props.enabled ?? true
         };
         this.contentRef = React.createRef(null);
+        this.boxRex = React.createRef(null);
         this.contentHeight = 0;
         this.itemsSizes = [];
     }
@@ -17,7 +18,9 @@ export default class Accordion extends React.Component {
         for (let i = 0; i < this.contentRef.current.children.length; i++) {
             this.itemsSizes.push(this.contentRef.current.children[i].offsetHeight);
             let resizeObserver = new ResizeObserver((e) => {
-                this.itemsSizes[i] = e[0].target.offsetHeight + e[0].contentRect.top;
+                let style = e[0].target.currentStyle || window.getComputedStyle(e[0].target);
+                const getMargin = (margin) => Number(margin.replace('px', ''));
+                this.itemsSizes[i] = e[0].target.offsetHeight + getMargin(style.marginTop) + getMargin(style.marginBottom);
                 this.contentHeight = this.itemsSizes.reduce((acc, item) => acc + item, 0);
                 this.forceUpdate();
             });
@@ -34,11 +37,12 @@ export default class Accordion extends React.Component {
                     if (this.state.isEnabled) {
                         this.setState({ isExpanded: !this.state.isExpanded });
                     }
+                    console.log(this.contentHeight, this.itemsSizes.reduce((acc, item) => acc + item, 0));
                 }}>
                     {this.props.title}
                     <img src={arrowUp} className={this.state.isExpanded ? style.arrow__down : style.arrow__up} alt="arrow" />
                 </div>
-                <div className={style.box} style={{ 'height': this.state.isExpanded ? `${this.contentRef == null ? '0' : this.contentHeight}px` : 0 }}>
+                <div className={style.box} ref={this.boxRex} style={{ 'height': this.state.isExpanded ? `${this.contentRef == null ? '0' : this.contentHeight}px` : 0 }}>
                     <div className={style.content} ref={this.contentRef}>
                         {items}
                     </div>

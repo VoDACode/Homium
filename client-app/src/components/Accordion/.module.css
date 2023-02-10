@@ -51,4 +51,5 @@
     overflow: hidden;
     transition: height 0.5s linear 0s;
     height: 0;
+    margin: 5px;
 }
