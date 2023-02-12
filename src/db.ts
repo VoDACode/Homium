@@ -5,6 +5,8 @@ import { MenuItem } from './models/MenuItem';
 import { ObjectModel } from './models/ObjectModel';
 import { SceneModel } from './models/SceneModel';
 import { ScriptModel } from './models/ScriptModel';
+import { SectionModel } from './models/SectionModel';
+import { SectorModel } from './models/SectorModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
 import { Logger } from './services/LogService';
@@ -52,6 +54,9 @@ export class Database {
     }
     public get scenes() {
         return this.db.collection<SceneModel>('scenes');
+    }
+    public get sectors() {
+        return this.db.collection<SectorModel>('sectors');
     }
 }
 
