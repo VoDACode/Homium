@@ -3,6 +3,7 @@
     background: rgb(1,255,0);
     background: linear-gradient(0deg, rgba(1,255,0,1) 5%, rgba(49,255,29,1) 23%, rgba(42,242,72,1) 34%, rgba(37,230,159,1) 73%, rgba(40,217,219,1) 92%);
     height: 10vh;
+    z-index: 1;
 }
 
 .logo {
@@ -18,21 +19,57 @@
 
 .page_list {
     position: absolute;
-    display: inline-block;
+    display: flex;
     top: 50%;
     left: 20vw;
     transform: translateY(-50%);
 }
 
+.menu_container {
+    position: relative;
+}
+
 .var {
+    user-select: none;
+    border: 0.5vh solid rgba(0, 0, 0, 0);
+    border-radius: 0.5vh;
     cursor: pointer;
-    font-family:sans-serif;
-    font-size: 4vh;
+    font-family: sans-serif;
+    font-size: 3.8vh;
     font-weight: 600;
     color: rgb(128, 0, 255);
 }
 
-.page_list .var:not(:last-child) {
+.var:hover {
+    border-color: rgb(206, 0, 0);
+}
+
+.items {
+    position: absolute;
+    top: 5vh;
+    text-align: center;
+    background-color: rgb(255, 242, 224);
+    border-radius: 1vh;
+}
+
+.items .comp {
+    border: 0.5vh solid rgba(0, 0, 0, 0);
+    cursor: pointer;
+    color: rgb(122, 42, 165);
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 3vh;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    border-radius: 0.6vh;
+    text-decoration: none;
+}
+
+.items .comp:hover {
+    border-color: rgb(122, 42, 165);
+}
+
+.page_list .menu_container:not(:last-child) {
     margin-right: 4vw;
 }
 
@@ -47,4 +84,11 @@
     top: 1.2vh;
     background-color: rgb(207, 238, 207);
     right: 2.5vw;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.active_link {
+    background-color: rgb(242, 255, 56);
 }

@@ -9,15 +9,15 @@ const ObjectListPage = () => {
 
     return (
         <div>
-            <CustomHeader text="Object list" textColor="#3e5c58" textSize="5vh" isCenter={true}/>
+            <CustomHeader text="Object list" textColor="#3e5c58" textSize="45px" isCenter={true}/>
             <ul className="object_list">
-                <ObjectSection name="Object 1" properties={[{id: 1, val: 'on'}, {id: 2, val: 'off'}]}>
-                    <ObjectSection name="Lamp" properties={[{id: 1, val: 'on'}, {id: 2, val: 'off'}]}>
+                <ObjectSection name="Object 1" properties={[{id: 1, name: 'Power', val: 'on'}]}>
+                    <ObjectSection name="Lamp" properties={[{id: 1, name: 'Power', val: 'on'}]}>
                     </ObjectSection>
                 </ObjectSection>
-                <ObjectSection name="Object 2" properties={[{id: 1, val: 'on'}, {id: 2, val: 'off'}]}>
+                <ObjectSection name="Object 2" properties={[{id: 1, name: 'Power', val: 'on'}]}>
                 </ObjectSection>
-                <ObjectSection name="Object 3" properties={[{id: 1, val: 'on'}, {id: 2, val: 'off'}]}>
+                <ObjectSection name="Object 3" properties={[{id: 1, name: 'Power', val: 'on'}]}>
                 </ObjectSection>
                 <li 
                     style={{

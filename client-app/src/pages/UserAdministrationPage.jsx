@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import UserRecord from "../components/UserRecord/UserRecord";
 
 const UserAdministrationPage = () => {
+
     const [users, setData] = useState([]);
     let items = [];
+
     useEffect(() => {
+        document.body.style.backgroundColor = 'whitesmoke';
         updateUsers();
     }, []);
     const updateUsers = () => {

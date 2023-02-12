@@ -7,7 +7,7 @@ const AccountOffer = ({headerText, linkText, linkTo, headerColor}) => {
     return (
         <div className={cl.main}>
             <p className={cl.header} style={{color: headerColor || '#000000'}}>{headerText || '...'}</p>
-            <VertSpace h={2} unit="vh"/>
+            <VertSpace height="2vh"/>
             <Link className={cl.link} to={linkTo || '/'}>{linkText || '...'}</Link>
         </div>
     );

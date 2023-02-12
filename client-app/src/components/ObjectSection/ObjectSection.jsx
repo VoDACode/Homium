@@ -14,7 +14,7 @@ const ObjectSection = ({name, children, properties}) => {
                     <span className={cl.header} onClick={() => setPropsState(!isPropsOpened)}>{isPropsOpened ? '-' : '+'} Properties</span>
                     <span className={cl.count}> ({properties.length})</span>
                     <ul style={{display: isPropsOpened ? 'block' : 'none'}}>
-                        {properties.map(el => <li className={cl.el} key={el.id}>{el.val}</li>)}
+                        {properties.map(el => <li className={cl.el} key={el.id}>{el.name}: {el.val}</li>)}
                         <li className={cl.adder}><span>Add new property</span></li>
                     </ul>
                 </li>

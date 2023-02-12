@@ -2,6 +2,9 @@
     background: rgb(234,255,17);
     background: linear-gradient(90deg, rgba(234,255,17,1) 0%, rgba(206,252,27,1) 12%, rgba(102,188,25,1) 16%, rgba(25,185,40,1) 50%, rgba(102,188,25,1) 76%, rgba(234,255,17,1) 82%);
     height: 10vh;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .logo {

@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VertSpace from "../VertSpace/VertSpace";
 import cl from './.module.css';
@@ -28,9 +27,9 @@ const LogInInput = () => {
     return (
         <div className={cl.main}>
             <input className={cl.user} type="text" placeholder="Username *" ref={usernameInputRef}/>
-            <VertSpace h={3} unit="vh"/>
+            <VertSpace height="3vh"/>
             <input className={cl.password} type="password" placeholder="Password *" ref={passwordInputRef}/>
-            <VertSpace h={5} unit="vh"/>
+            <VertSpace height="5vh"/>
             <button className={cl.exec} onClick={() => SignInRequest(usernameInputRef.current.value, passwordInputRef.current.value)}>Sign in</button>
         </div>
     );

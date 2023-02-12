@@ -1,24 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import cl from './.module.css';
 import logOutPng from './img/log-out.png';
 
 const AdminTopMenu = () => {
     const navigate = useNavigate();
-    const homePageNavigate = () => navigate('/');
-    const authPageNavigate = () => navigate('/auth');
+    const [chosenMenu, openMenu] = useState(null);
+
+    function MoveTo(path) {
+        openMenu(null);
+        navigate(path);
+    }
 
     return (
         <header className={cl.main}>
-            <p className={cl.logo} onClick={homePageNavigate}>Homium</p>
+            <p className={cl.logo} onClick={() => MoveTo('/')}>Homium</p>
             <div className={cl.page_list}>
-                <span className={cl.var}>System info</span>
-                <span className={cl.var}>Objects</span>
-                <span className={cl.var}>Automation</span>
-                <span className={cl.var}>Extensions</span>
-                <span className={cl.var}>Users</span>
+                <div className={cl.menu_container}>
+                    <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'sys-info' ? 'sys-info' : null)}>System info</span>
+                    <div className={cl.items} style={{display: chosenMenu === 'sys-info' ? 'block' : 'none'}}>
+                        <p className={cl.comp} onClick={() => MoveTo('/admin')}>Info</p>
+                    </div>
+                </div>
+                <div className={cl.menu_container}>
+                    <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'obj' ? 'obj' : null)}>Objects</span>
+                    <div className={cl.items} style={{display: chosenMenu === 'obj' ? 'block' : 'none'}}>
+                        <p className={cl.comp} onClick={() => MoveTo('/admin/objects')}>List</p>
+                        <p className={cl.comp}>Devices</p>
+                        <p className={cl.comp}>Rooms</p>
+                    </div>
+                </div>
+                <div className={cl.menu_container}>
+                    <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'auto' ? 'auto' : null)}>Automation</span>
+                    <div className={cl.items} style={{display: chosenMenu === 'auto' ? 'block' : 'none'}}>
+                        <p className={cl.comp}>Schedules</p>
+                        <p className={cl.comp}>Scripts</p>
+                        <p className={cl.comp}>Triggers</p>
+                    </div>
+                </div>
+                <div className={cl.menu_container}>
+                    <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'ext' ? 'ext' : null)}>Extensions</span>
+                    <div className={cl.items} style={{display: chosenMenu === 'ext' ? 'block' : 'none'}}>
+                        <p className={cl.comp}>Repositories</p>
+                        <p className={cl.comp}>Installed</p>
+                    </div>
+                </div>
+                <div className={cl.menu_container}>
+                    <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'users' ? 'users' : null)}>Users</span>
+                    <div className={cl.items} style={{display: chosenMenu === 'users' ? 'block' : 'none'}}>
+                        <p className={cl.comp} onClick={() => MoveTo('/admin/users')}>List</p>
+                    </div>
+                </div>
             </div>
-            <img className={cl.log_out} src={logOutPng} onClick={authPageNavigate} title="log out" alt="log out"/>
+            <img className={cl.log_out} src={logOutPng} onClick={() => MoveTo('/auth')} title="log out" alt="log out"/>
         </header>
     );
 }

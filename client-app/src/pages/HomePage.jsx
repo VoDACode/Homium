@@ -6,7 +6,7 @@ import HomeTopMenu from "../components/HomeTopMenu/HomeTopMenu";
 import VertSpace from "../components/VertSpace/VertSpace";
 
 const HomePage = () => {
-    const [curUsername, setCurUsername] = useState(undefined);
+    const [curUsername, setCurUsername] = useState(null);
 
     useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
@@ -19,8 +19,8 @@ const HomePage = () => {
     return (
         <div>
             <HomeTopMenu/>
-            <CustomHeader text={`Welcome, ${curUsername}!`} textColor="#00a000" textSize="5vh" isCenter={true}/>
-            <VertSpace h={3} unit="vh"/>
+            <CustomHeader text={curUsername ? `Welcome, ${curUsername}!` : null} textColor="#00a000" textSize="5vh" isCenter={true}/>
+            <VertSpace height="3vh"/>
             <SceneContainer>
                 <SceneCell/>
                 <SceneCell/>

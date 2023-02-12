@@ -11,12 +11,13 @@
 }
 
 ul {
+    user-select: none;
     list-style: none;
     padding-left: 2.5vw;
     margin-top: 1vh;
     margin-bottom: 1vh;
     font-family:'Roboto', sans-serif;;
-    font-size: 3.5vh;
+    font-size: 35px;
     font-weight: bold;
     width: fit-content;
 }
