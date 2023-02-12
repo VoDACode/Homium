@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import style from './.module.css';
 import arrowUp from './images/arrow-up.png';
 
@@ -37,7 +37,6 @@ export default class Accordion extends React.Component {
                     if (this.state.isEnabled) {
                         this.setState({ isExpanded: !this.state.isExpanded });
                     }
-                    console.log(this.contentHeight, this.itemsSizes.reduce((acc, item) => acc + item, 0));
                 }}>
                     {this.props.title}
                     <img src={arrowUp} className={this.state.isExpanded ? style.arrow__down : style.arrow__up} alt="arrow" />

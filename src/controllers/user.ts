@@ -110,8 +110,8 @@ router.put('/list/:username', authGuard, async (req, res) => {
         return;
     }
     const username = req.params.username;
-    let user = await getUser(req);
-    if (user?.permissions.user.update !== true) {
+    let self = await getUser(req);
+    if (self?.permissions.user.update !== true) {
         res.status(401).send('Permission denied!');
         return;
     }
@@ -128,7 +128,7 @@ router.put('/list/:username', authGuard, async (req, res) => {
         return;
     }
 
-    user = await db.users.findOne({ username: username });
+    let user = await db.users.findOne({ username: username });
 
     if (!user) {
         res.status(404).send('User not found').end();
@@ -172,22 +172,16 @@ router.put('/list/:username', authGuard, async (req, res) => {
     }
 
     if (permissions) {
-        if (permissions.isAdministrator && !user.permissions.isAdministrator) {
-            res.status(401).send('Permission denied!').end();
-            return;
-        }
-        if(user.permissions.isAdministrator){
-            permissions.isAdministrator = true;
-        }
         // user can`t create user with higher permissions
         for (const key in permissions) {
             if (Object.prototype.hasOwnProperty.call(permissions, key) && typeof (permissions as any)[key] === 'object') {
-                if (!validatePermissions(permissions, user, p => (p as any)[key])) {
+                if (!validatePermissions(permissions, self, p => (p as any)[key])) {
                     res.status(401).send('Permission denied!').end();
                     return;
                 }
             }
         }
+        permissions.isAdministrator = user.permissions.isAdministrator;
         user.permissions = permissions;
     }
 

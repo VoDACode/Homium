@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminLayout from "./components/AdminLayout/AdminLayout";
 import SystemInfoPage from "./pages/SystemInfoPage";
@@ -8,8 +8,20 @@ import RegistrationPage from "./pages/RegistrationPage";
 import ObjectListPage from "./pages/ObjectListPage";
 import UserAdministrationPage from "./pages/UserAdministrationPage";
 import UserEditPage from "./pages/UserEditPage";
+import { ApiAuth } from "./services/api/auth";
 
 function App() {
+
+  useEffect(() => {
+    ApiAuth.status().then((response) => {
+      if (response.status === 401) {
+        if(window.location.pathname !== "/auth") {
+          window.location.replace("/auth");
+        }
+      }
+    });
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>

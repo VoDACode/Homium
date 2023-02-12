@@ -18,7 +18,7 @@
     border-color: rgb(255, 89, 89) !important;
 }
 
-.input[type="text"] {
+.input[type="text"], .input[type="password"] {
     display: inline-block;
     vertical-align: middle;
     width: 100%;
@@ -29,4 +29,18 @@
     outline: none;
     font-size: 16px;
     color: rgb(100, 100, 100);
+}
+
+.input[type="button"] {
+    display: inline-block;
+    vertical-align: middle;
+    width: 100px;
+    height: 30px;
+    margin-left: 5px;
+    border: 1px solid rgb(200, 200, 200);
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    color: rgb(100, 100, 100);
+    cursor: pointer;
 }

@@ -45,25 +45,25 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
         return;
     }
     if (!req.cookies) {
-        res.status(401).redirect("/auth");
+        res.status(401).end();
         return
     }
 
     const sessionToken = req.cookies['token'];
     if (!sessionToken) {
-        res.status(401).redirect("/auth");
+        res.status(401).end();
         return;
     }
 
     const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
     if (!userSession) {
-        res.status(401).redirect("/auth");
+        res.status(401).end();
         return;
     }
 
     if (userSession.expiresAt < new Date()) {
         await db.sessions.deleteOne({ sessionToken: sessionToken });
-        res.status(401).redirect("/auth");
+        res.status(401).end();
         return;
     }
 
@@ -71,7 +71,7 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
 }
 
 export async function signout(req: Request, res: Response, next: NextFunction) {
-    if (!req.cookies || req.cookies['token']) {
+    if (!req.cookies || req.cookies['token'] === undefined) {
         res.status(401).end()
         return
     }

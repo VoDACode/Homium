@@ -4,6 +4,7 @@ import SceneCell from "../components/SceneCell/SceneCell";
 import SceneContainer from "../components/SceneContainer/SceneContainer";
 import HomeTopMenu from "../components/HomeTopMenu/HomeTopMenu";
 import VertSpace from "../components/VertSpace/VertSpace";
+import { ApiUsers } from "../services/api/users";
 
 const HomePage = () => {
     const [curUsername, setCurUsername] = useState(null);
@@ -11,7 +12,7 @@ const HomePage = () => {
     useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
 
-        fetch('/api/users/list/self').then(res => res.json()).then(data => {
+        ApiUsers.getSeflUser().then(data => {
             setCurUsername(data.username);
         });
     }, []);

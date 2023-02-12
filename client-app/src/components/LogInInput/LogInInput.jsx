@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import VertSpace from "../VertSpace/VertSpace";
 import cl from './.module.css';
+import { ApiAuth } from "../../services/api/auth";
 
 const LogInInput = () => {
     const navigate = useNavigate();
@@ -9,18 +10,10 @@ const LogInInput = () => {
     const passwordInputRef = useRef();
 
     function SignInRequest(username, password) {
-        fetch('/api/auth/signin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: username, password: password})
-        }).then(res => {
+        ApiAuth.signIn(username, password).then(res => {
             if (res.ok) {
                 navigate('/');
             }
-        }).catch(error => {
-            console.error('Error:', error);
         });
     }
 

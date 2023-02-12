@@ -143,7 +143,7 @@ export type PermissionTemplate = 'admin' | 'guest' | 'controlPanel' | 'userDevic
 
 export class UserModel {
 
-    static readonly RESERVED_USERNAMES = ['admin', 'guest', 'controlPanel', 'userDevice', 'system', 'templates'];
+    static readonly RESERVED_USERNAMES = ['admin', 'guest', 'controlPanel', 'userDevice', 'system', 'templates', 'add'];
 
     lastname: string;
     firstname: string;
