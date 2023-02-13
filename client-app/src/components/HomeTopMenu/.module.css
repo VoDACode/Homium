@@ -18,7 +18,7 @@
     color: rgb(0, 124, 0);
 }
 
-.main img {
+.img_button {
     cursor: pointer;
     position: absolute;
     border: 0.4vh solid rgb(0, 124, 0);
@@ -27,6 +27,10 @@
     height: 5.5vh;
     width: 2.75vw;
     top: 1.2vh;
+}
+
+.img_button:hover {
+    border: 0.4vh solid greenyellow;
 }
 
 .log_out {

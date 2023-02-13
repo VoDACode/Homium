@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ApiAuth } from "../../services/api/auth";
+import LogOutPanel from "../LogOutPanel/LogOutPanel";
+import ModalWindow from "../ModalWindow/ModalWindow";
 import cl from './.module.css';
 import logOutPng from './img/log-out.png';
 
 const AdminTopMenu = () => {
-    const navigate = useNavigate();
     const [chosenMenu, openMenu] = useState(null);
+    const [isModWinVisible, setModWinVisibility] = useState(false);
+
+    const navigate = useNavigate();
+    const authPageNavigate = () => {
+        ApiAuth.signOut().then(res => {
+            navigate('/auth');
+        });
+    }
 
     function MoveTo(path) {
         openMenu(null);
@@ -14,6 +24,9 @@ const AdminTopMenu = () => {
 
     return (
         <header className={cl.main}>
+            <ModalWindow visible={isModWinVisible}>
+                <LogOutPanel onLogOutClick={authPageNavigate} onCancelClick={() => setModWinVisibility(false)}/>
+            </ModalWindow>
             <p className={cl.logo} onClick={() => MoveTo('/')}>Homium</p>
             <div className={cl.page_list}>
                 <div className={cl.menu_container}>
@@ -52,7 +65,7 @@ const AdminTopMenu = () => {
                     </div>
                 </div>
             </div>
-            <img className={cl.log_out} src={logOutPng} onClick={() => MoveTo('/auth')} title="log out" alt="log out"/>
+            <img className={cl.log_out} src={logOutPng} onClick={() => setModWinVisibility(true)} title="log out" alt="log out"/>
         </header>
     );
 }

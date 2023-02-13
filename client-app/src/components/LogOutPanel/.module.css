@@ -1,0 +1,48 @@
+.main {
+    position: relative;
+}
+
+.header {
+    cursor: default;
+    font-family: sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+}
+
+.buttons {
+    float: right;
+}
+
+.log_out {
+    cursor: pointer;
+    margin-right: 40px;
+    background-color: blue;
+    border-radius: 10px;
+    border: none;
+    width: 100px;
+    height: 55px;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.log_out:hover {
+    background-color: rgb(0, 0, 196);
+}
+
+.cancel {
+    cursor: pointer;
+    background-color: rgb(255, 255, 186);
+    border: none;
+    width: 100px;
+    height: 55px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.cancel:hover {
+    background-color: rgb(224, 224, 162);
+}
