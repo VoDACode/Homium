@@ -1,9 +1,9 @@
 import React from "react";
-import VertSpace from "../VertSpace/VertSpace";
+import Space from "../Space/Space";
 import cl from './.module.css';
 
 const SignUpInput = () => {
-    var space = (<VertSpace height="2vh"/>);
+    var space = (<Space size="2vh"/>);
 
     return (
         <div>

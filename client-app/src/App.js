@@ -9,6 +9,7 @@ import ObjectListPage from "./pages/ObjectListPage";
 import UserAdministrationPage from "./pages/UserAdministrationPage";
 import UserEditPage from "./pages/UserEditPage";
 import { ApiAuth } from "./services/api/auth";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/" element={<HomePage/>}/>
         <Route path="/auth" element={<AuthorizationPage/>}/>
         <Route path="/reg" element={<RegistrationPage/>}/>
+        <Route path="/settings" element={<SettingsPage/>}/>
         <Route path="/admin" element={<AdminLayout/>}>
           <Route index element={<SystemInfoPage/>}/>
           <Route path="objects" element={<ObjectListPage/>}/>

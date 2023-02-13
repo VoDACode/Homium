@@ -8,7 +8,7 @@ const CustomHeader = ({text, textColor, textSize, isCenter}) => {
         <div>
             <h1 className={cl.header} 
                 style={{color: `${textColor || '#000000'}`,
-                        fontSize: textSize || '7vh',
+                        fontSize: textSize || '0px',
                         textAlign: center}}>
                             {text || '...'}
             </h1>

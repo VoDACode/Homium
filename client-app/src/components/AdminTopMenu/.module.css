@@ -80,6 +80,26 @@
     margin-right: 4vw;
 }
 
+.settings {
+    cursor: pointer;
+    position: absolute;
+    border: 0.4vh solid blue;
+    border-radius: 1vh;
+    padding: 0.8vh;
+    height: 5.5vh;
+    width: 2.75vw;
+    top: 1.2vh;
+    background-color: rgb(255, 237, 165);
+    right: 8vw;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.settings:hover {
+    border: 0.4vh solid rgb(92, 184, 255);
+}
+
 .log_out {
     cursor: pointer;
     position: absolute;

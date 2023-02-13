@@ -5,12 +5,16 @@ import LogOutPanel from "../LogOutPanel/LogOutPanel";
 import ModalWindow from "../ModalWindow/ModalWindow";
 import cl from './.module.css';
 import logOutPng from './img/log-out.png';
+import settingsPng from './img/settings.png';
 
 const AdminTopMenu = () => {
     const [chosenMenu, openMenu] = useState(null);
     const [isModWinVisible, setModWinVisibility] = useState(false);
 
     const navigate = useNavigate();
+    const settingsPageNavigate = () => {
+        navigate('/settings');
+    }
     const authPageNavigate = () => {
         ApiAuth.signOut().then(res => {
             navigate('/auth');
@@ -65,6 +69,7 @@ const AdminTopMenu = () => {
                     </div>
                 </div>
             </div>
+            <img className={cl.settings} src={settingsPng} onClick={() => settingsPageNavigate()} title="settings" alt="settings"/>
             <img className={cl.log_out} src={logOutPng} onClick={() => setModWinVisibility(true)} title="log out" alt="log out"/>
         </header>
     );

@@ -5,7 +5,7 @@ export class ApiUsers{
         return await BaseApi.getTextOrJson(await BaseApi.get("users/list"));
     }
 
-    static async getSeflUser() {
+    static async getSelfUser() {
         return await BaseApi.getTextOrJson(await BaseApi.get("users/list/self"));
     }
 
