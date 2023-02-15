@@ -1,0 +1,38 @@
+.main {
+    position: relative;
+    height: 10vh;
+    border-bottom: 0.5vh solid black;
+    background: rgb(140,140,140);
+    background: linear-gradient(90deg, rgba(140,140,140,1) 73%, rgba(191,191,191,1) 76%, rgba(255,255,255,1) 79%);
+}
+
+.home, .admin, .log_out {
+    cursor: pointer;
+    position: absolute;
+    border: 0.5vh solid black;
+    border-radius: 1vh;
+    padding: 0.8vh;
+    height: 5.5vh;
+    width: 2.75vw;
+    top: 1.2vh;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.home:hover, .admin:hover, .log_out:hover {
+    border: 0.5vh solid rgb(21, 0, 255);
+    background-color: aquamarine;
+}
+
+.home {
+    right: 13.5vw;
+}
+
+.admin {
+    right: 8vw;
+}
+
+.log_out {
+    right: 2.5vw;
+}

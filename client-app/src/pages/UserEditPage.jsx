@@ -65,6 +65,8 @@ const UserEditPage = () => {
     const [permissionsEnabled, setPermissionsEnabled] = useState(new DefaultPermissions());
 
     useEffect(() => {
+        document.body.style.backgroundColor = 'whitesmoke';
+
         setEditMode(username !== 'add');
         if (username !== 'add') {
             ApiUsers.getUser(username).then(data => {

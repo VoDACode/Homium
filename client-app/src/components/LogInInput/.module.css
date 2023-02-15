@@ -5,9 +5,8 @@
     font-size: 5vh;
     background-color: whitesmoke;
     border-radius: 7px;
-    background: url(./img/user.png) no-repeat scroll 0.5vw 0.8vh;
     background-size: 2.7vw 4.2vh;
-    padding-left: 3.7vw;
+    padding-left: 0.6vw;
 }
 
 .password {
@@ -17,9 +16,23 @@
     font-size: 5vh;
     background-color: whitesmoke;
     border-radius: 7px;
-    background: url(./img/password.png) no-repeat scroll 0.5vw 0.8vh;
     background-size: 2.7vw 4.2vh;
-    padding-left: 3.7vw;
+    padding-left: 0.6vw;
+}
+
+.username_cont, .password_cont {
+    position: relative;
+}
+
+.user_img, .password_img {
+    position: absolute;
+    top: 0.5vh;
+    left: 12px;
+    width: 3.3vw;
+    height: 5vh;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .exec {
