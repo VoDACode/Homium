@@ -61,7 +61,7 @@ export class UserPermissionDevice extends UserBasePermission {
     }
 };
 
-export class UserPermissionScense implements UserCreatePermission, UserUpdatePermission, UserRemovePermission {
+export class UserPermissionScene implements UserCreatePermission, UserUpdatePermission, UserRemovePermission {
     remove: boolean;
     update: boolean;
     create: boolean;
@@ -124,7 +124,7 @@ export class UserPermissions {
     user: UserBasePermission;
     script: UserPermissionExecute;
     object: UserPermissionObject;
-    scense: UserPermissionScense;
+    scene: UserPermissionScene;
     devices: UserPermissionDevice;
     extensions: UserPermissionExtension;
     isAdministrator: boolean = false;
@@ -133,7 +133,7 @@ export class UserPermissions {
         this.user = new UserBasePermission(deff, deff, deff, deff);
         this.script = new UserPermissionExecute(deff, deff, deff, deff);
         this.object = new UserPermissionObject(deff, deff, deff, deff, deff);
-        this.scense = new UserPermissionScense(deff, deff, deff);
+        this.scene = new UserPermissionScene(deff, deff, deff);
         this.devices = new UserPermissionDevice(deff, deff, deff, deff, deff);
         this.extensions = new UserPermissionExtension(deff, deff, deff, deff, deff);
     }
@@ -182,7 +182,7 @@ export class UserModel {
                 permissions.user = new UserBasePermission(false, true, false, false);
                 permissions.script = new UserPermissionExecute(false, false, false, true);
                 permissions.object = new UserPermissionObject(false, true, false, false, true);
-                permissions.scense = new UserPermissionScense(false, false, false);
+                permissions.scene = new UserPermissionScene(false, false, false);
                 permissions.devices = new UserPermissionDevice(false, true, false, false, true);
                 permissions.extensions = new UserPermissionExtension(true, false, false, false, true);
                 break;
@@ -190,7 +190,7 @@ export class UserModel {
                 permissions.user = new UserBasePermission(false, false, false, false);
                 permissions.script = new UserPermissionExecute(false, false, false, false);
                 permissions.object = new UserPermissionObject(false, true, false, false, true);
-                permissions.scense = new UserPermissionScense(false, false, false);
+                permissions.scene = new UserPermissionScene(false, false, false);
                 permissions.devices = new UserPermissionDevice(false, true, false, false, true);
                 permissions.extensions = new UserPermissionExtension(false, false, false, false, false);
                 break;

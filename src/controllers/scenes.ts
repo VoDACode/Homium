@@ -68,7 +68,7 @@ router.get('/screen/:id', authGuard, (req, res) => {
 
 router.post('/create', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.scense.create) !== true){
+    if(await hasPermission(req, p => p.scene.create) !== true){
         res.status(403).send('Permission denied!').end();
         return;
     }
@@ -106,7 +106,7 @@ router.post('/create', authGuard, async (req, res) => {
 
 router.put('/update/:id', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.scense.update) !== true){
+    if(await hasPermission(req, p => p.scene.update) !== true){
         res.status(403).send('Permission denied!').end();
         return;
     }
@@ -156,7 +156,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
 
 router.delete('/delete/:id', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.scense.remove) !== true){
+    if(await hasPermission(req, p => p.scene.remove) !== true){
         res.status(403).send('Permission denied!').end();
         return;
     }
