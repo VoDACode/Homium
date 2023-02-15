@@ -1,7 +1,8 @@
 import * as fs from "fs";
 import path from "path";
-import archiver from "archiver";
 import config from "../config";
+
+export type LogListener = (logRecord: LogRecord) => void;
 
 export enum LogLevel {
     DEBUG = 0,
@@ -30,19 +31,13 @@ class LogStorage{
     private startDate: Date = new Date();
     private startDateToFile: string = this.startDate.toISOString().replace(/:/g, "-");
     private logRecords: LogRecord[] = [];
+    private logListeners: LogListener[] = [];
     private static _instance: LogStorage;
     private constructor() {
         if(!fs.existsSync(this.logDir)){
             fs.mkdirSync(this.logDir);
         }
         fs.writeFileSync(path.join(this.logDir, `${this.startDateToFile}-all.log`), "");
-        process.on('exit', () => {
-            let archiv = archiver('zip', {
-                zlib: { level: 9 },
-            });
-            archiv.file(path.join(this.logDir, `${this.startDateToFile}-all.log`), { name: `${this.startDateToFile}-all.log.zip` });
-            archiv.finalize();
-        });
     }
     public static get instance(): LogStorage {
         if (!LogStorage._instance) {
@@ -56,6 +51,9 @@ class LogStorage{
         if(config.log.console){
             console.log(`[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}`);
         }
+        this.logListeners.forEach((listener) => {
+            listener(new LogRecord(level, message, serviceName));
+        });
         new Promise<void>((resolve, reject) => {
             fs.appendFile(path.join(this.logDir, `${this.startDateToFile}-all.log`), `[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}\n`, (err) => {
                 if(err){
@@ -73,6 +71,17 @@ class LogStorage{
 
     public getLogRecords(): LogRecord[] {
         return this.logRecords;
+    }
+
+    public on(listener: LogListener): void {
+        this.logListeners.push(listener);
+    }
+
+    public off(listener: LogListener): void {
+        const index = this.logListeners.indexOf(listener);
+        if(index > -1){
+            this.logListeners.splice(index, 1);
+        }
     }
 }
 
@@ -110,5 +119,17 @@ export class Logger{
 
     private _log(level: LogLevel, message: string): void {
         this.logStorage.log(level, message, this.serviceName);
+    }
+
+    public on(listener: LogListener): void {
+        this.logStorage.on(listener);
+    }
+
+    public off(listener: LogListener): void {
+        this.logStorage.off(listener);
+    }
+
+    public getLogRecords(): LogRecord[] {
+        return this.logStorage.getLogRecords();
     }
 }

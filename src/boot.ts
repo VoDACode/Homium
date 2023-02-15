@@ -98,6 +98,12 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
             logger.warn(`Extension ${file} has no dependencies or version in package.json file. Skipping...`);
             return;
         }
+
+        if(packageJson.disabled === true){
+            logger.warn(`Extension ${file} is disabled. Skipping...`);
+            return;
+        }
+
         if (!packageJson.id || await db.extensions.countDocuments({ id: packageJson.id }) == 0) {
             logger.info(`Extension ${file} has no id in package.json file. Generating...`);
             firstStart = true;
@@ -136,6 +142,7 @@ function _bootExtensions(mode: 'onlyNew' | 'all') {
             logger.info(`Extension ${file} booted.`);
             logger.info(`Extension ${file} version: ${packageJson.version}`);
             logger.info(`Extension ${file} author: '${packageJson.author || 'Unknown'}'`);
+            logger.info(`Extension ${file} id: ${packageJson.id}`);
 
             app.use('/extensions/' + packageJson.id + '/static', express.static(path.join(extensionsPath, file, 'static')));
             logger.debug(`Extension ${file} static folder mounted. [${path.join(extensionsPath, file, 'static')}] => [/extensions/${packageJson.id}/static]`);

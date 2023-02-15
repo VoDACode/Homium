@@ -3,7 +3,6 @@ import db from "../db";
 import { SectionModel } from "../models/SectionModel";
 import { DeviceModel } from "../models/DeviceModel";
 import ObjectService from "./ObjectService";
-import { ObjectModel } from "../models/ObjectModel";
 
 class SectorService {
     private static _instance: SectorService;

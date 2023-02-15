@@ -56,4 +56,33 @@ router.use('/static', (req, res, next) => {
     }
 });
 
+router.use('/extension-info', (req, res, next) => {
+    if(req.originalUrl.startsWith('/extension-info') && req.originalUrl != '/extension-info'){
+        return next();
+    }
+    logger.debug('Extension info request: ', req.originalUrl);
+    let url = req.headers.referer;
+    url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');
+    let urlParts = url?.split('/');
+    if(urlParts?.[1] == 'extensions'){
+        let extensionName = urlParts?.[2];
+        let extension = extensions.get(extensionName, 'id');
+        if(extension){
+            res.send({
+                id: extension.id,
+                api: `/extensions/${extension.id}/api`,
+                static: `/extensions/${extension.id}/static`
+            }).end();
+        }else{
+            logger.debug('Extension not found');
+            res.send({ error: 'Extension not found' });
+        }
+    }else{
+        logger.debug('Extension not found');
+        res.send({ error: 'Extension not found' });
+    }
+});
+    
+
+
 module.exports = router;

@@ -1,0 +1,48 @@
+.content{
+    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+.display{
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #f5f5f5;
+}
+.display .item div{
+    display: inline-flex;
+    text-align: center;
+}
+.item :not(.message) span{
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+}
+.item :not(:last-child) span::before{
+    content: '[';
+}
+.item :not(:last-child) span::after{
+    content: ']';
+}
+.item .service::after{
+    content: ':';
+}
+.item[data-type="WARNING"]{
+    background-color: #ff9800;
+}
+.item[data-type="INFO"]{
+    background-color: #2196f3;
+}
+.item[data-type="DEBUG"]{
+    background-color: #4caf50;
+}
+.item[data-type="FATAL"]{
+    background-color: #f44336;
+}
+.item[data-type="ERROR"]{
+    background-color: #ff756b;
+}

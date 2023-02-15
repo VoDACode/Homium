@@ -196,7 +196,7 @@ Scripts are a way to automate tasks in the house. They a written in the JavaScri
 
 #### Request
 
-`POST /api/scripts/:id/execute`
+`GET /api/scripts/:id/execute`
 
 #### Response
 

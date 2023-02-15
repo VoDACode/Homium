@@ -16,7 +16,7 @@ router.post('/create', authGuard, async (req, res) => {
     const allowAnonymous: boolean = req.body.allowAnonymous ?? false;
 
     if (await hasPermission(req, p => p.object.create) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -66,7 +66,7 @@ router.post('/create', authGuard, async (req, res) => {
 router.delete('/remove/:id', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.remove) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -98,7 +98,7 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
 router.put('/update/:id/object', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -142,7 +142,7 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 router.put('/update/:id', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -180,7 +180,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
 router.put('/update/:id/parent', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -209,7 +209,7 @@ router.put('/update/:id/parent', authGuard, async (req, res) => {
 router.put('/update/:id/children', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -254,7 +254,7 @@ router.get('/get/:id', async (req, res) => {
         if (!await isAuthorized(req)) {
             return res.status(401).send('You are not authorized to view this object.').end();
         } else if (await hasPermission(req, p => p.object.read) !== true) {
-            res.status(401).send('Permission denied!').end();
+            res.status(403).send('Permission denied!').end();
             return;
         }
     }
@@ -276,7 +276,7 @@ router.get('/get/:id/children', async (req, res) => {
         if (!await isAuthorized(req)) {
             return res.status(401).send('You are not authorized to view this object.').end();
         } else if (await hasPermission(req, p => p.object.read) !== true) {
-            res.status(401).send('Permission denied!').end();
+            res.status(403).send('Permission denied!').end();
             return;
         }
     }
@@ -303,7 +303,7 @@ router.get('/get/:id/:prop/history', async (req, res) => {
         if (!await isAuthorized(req)) {
             return res.status(401).send('You are not authorized to view this object.').end();
         } else if (await hasPermission(req, p => p.object.read) !== true) {
-            res.status(401).send('Permission denied!').end();
+            res.status(403).send('Permission denied!').end();
             return;
         }
     }
@@ -319,7 +319,7 @@ router.get('/get/:id/:prop/history', async (req, res) => {
 
 router.get('/get-root', authGuard, async (req, res) => {
     if (await hasPermission(req, p => p.object.read) !== true) {
-        res.status(401).send('Permission denied!').end();
+        res.status(403).send('Permission denied!').end();
         return;
     }
 
@@ -358,7 +358,7 @@ router.get('/set/:id', async (req, res) => {
         if (!await isAuthorized(req)) {
             return res.status(401).send('You are not authorized to modify this object.').end();
         } else if (await hasPermission(req, p => p.object.canUse) !== true) {
-            res.status(401).send('Permission denied!').end();
+            res.status(403).send('Permission denied!').end();
             return;
         }
     }

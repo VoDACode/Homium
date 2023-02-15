@@ -41,7 +41,7 @@ class ScriptStoreModel {
 class ScriptService {
     private logger: Logger = new Logger("ScriptService");
     private scripts: ScriptStoreModel[] = [];
-    private inicelized: boolean = false;
+    private initialized: boolean = false;
 
     private static _instance: ScriptService;
 
@@ -51,7 +51,7 @@ class ScriptService {
     private constructor() { }
 
     async init() {
-        if (ScriptService.instance.inicelized == true) {
+        if (ScriptService.instance.initialized == true) {
             return;
         }
         let list = await db.scripts.find().toArray();
@@ -59,14 +59,18 @@ class ScriptService {
         ScriptService.instance.logger.info(`Found ${list.length} script${list.length == 1 ? "" : "s"}`);
 
         list.forEach(script => {
-            ScriptService.instance.logger.debug(`Initializing script ${script.id}`);
-            ScriptService.instance.scripts.push(new ScriptStoreModel(script));
-            ScriptService.instance.initTarget(script);
-            ScriptService.instance.logger.debug(`Initialized script ${script.id}`);
+            try {
+                ScriptService.instance.logger.debug(`Initializing script ${script.id}`);
+                ScriptService.instance.scripts.push(new ScriptStoreModel(script));
+                ScriptService.instance.initTarget(script);
+                ScriptService.instance.logger.debug(`Initialized script ${script.id}`);
+            } catch (e) {
+                ScriptService.instance.logger.error(`Error initializing script ${script.id}.`);
+            }
         });
 
         ScriptService.instance.logger.info("Initialized");
-        ScriptService.instance.inicelized = true;
+        ScriptService.instance.initialized = true;
     }
 
     public async executeScript(id: string, args: ScriptArgument): Promise<any> {
@@ -184,13 +188,14 @@ class ScriptService {
                 this.executeScript(script.id, args);
             });
         } else if (script.targetType === "Extension") {
-            if(config.extensions.enabled == false) {
-                this.logger.warn(`Script ${script.id} is targetted to extension ${script.targetId} but extensions are disabled.`);
+            if (config.extensions.enabled == false) {
+                this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
                 return;
             }
             let ext = extensions.get(script.targetId, 'id');
             if (!ext) {
-                throw new Error("Extension not found");
+                this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extension is not loaded.`);
+                return;
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {
                 this.executeScript(script.id, args);
