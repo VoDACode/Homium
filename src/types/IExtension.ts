@@ -2,6 +2,7 @@ import db from "../db";
 import { ScriptArgument } from "../models/ScriptModel";
 import extensions from "../services/extensions";
 import { Logger } from "../services/LogService";
+import * as path from 'path';
 
 export abstract class IExtension{
     private _id: string;
@@ -23,8 +24,8 @@ export abstract class IExtension{
     abstract start(): void;
     abstract stop(): void;
 
-    protected static _getOriginal<T>(path: string): T {
-        return extensions.getOriginal(path.split('extensions\\')[1].split("\\")[0], 'folder') as T;
+    protected static _getOriginal<T>(pathRoot: string): T {
+        return extensions.getOriginal(pathRoot.split(`extensions${path.sep}`)[1].split(path.sep)[0], 'folder') as T;
     }
 
     public restart(): void {
