@@ -1,7 +1,7 @@
 import React from "react";
 import cl from './.module.css';
 
-const CustomSelect = ({options}) => {
+const CustomSelect = ({options, chosenValue, onValueChanged}) => {
 
     function RenderOptions() {
         if (options === undefined || options === null || options.length === 0) {
@@ -10,15 +10,16 @@ const CustomSelect = ({options}) => {
             var res = [];
             var i = 1;
             options.map((el) => {
-                res.push(<option key={i}>{el}</option>);
+                res.push(<option value={el.val} key={i}>{el.name}</option>);
                 i++;
+                return true;
             });
             return res;
         }
     }
 
     return (
-        <select className={cl.menu}>
+        <select className={cl.menu} value={chosenValue} onChange={(e) => {if (onValueChanged) {onValueChanged(e.target.value)}}}>
             {RenderOptions()}
         </select>
     );
