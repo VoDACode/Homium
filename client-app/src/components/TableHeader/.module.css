@@ -12,7 +12,8 @@
     font-family: 'Verdana', sans-serif;
 }
 
-.attribute {
+.attribute, .sort_sign {
+    cursor: pointer;
     width: 100%;
     font-size: 1.5rem;
     font-weight: 600;

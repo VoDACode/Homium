@@ -1,28 +1,9 @@
 import React from "react";
 import cl from './.module.css';
-import { useNavigate } from 'react-router-dom';
-import { ApiUsers } from "../../services/api/users";
 
-const UserRecord = ({ username, firstname, lastname, email, onUpdate, canEdit, canDelete }) => {
-    const navigate = useNavigate();
+const UserRecord = ({ username, firstname, lastname, email, OnDeleteClick, OnEditClick, canEdit, canDelete }) => {
+
     const user = { username, firstname, lastname, email };
-
-    const editUser = () => {
-        navigate(`/admin/users/${user.username}`);
-    }
-
-    const deleteUser = () => {
-        let input = prompt("Are you sure you want to delete this user? Type 'yes' to confirm.");
-        if (input === "yes") {
-            ApiUsers.deleteUser(user.username).then(async response => {
-                if (response.status === 200) {
-                    onUpdate();
-                } else {
-                    alert(await response.text());
-                }
-            });
-        }
-    }
 
     return (
         <div className={cl.box}>
@@ -40,8 +21,8 @@ const UserRecord = ({ username, firstname, lastname, email, onUpdate, canEdit, c
             </div>
             <div className={cl.buttons}>
                 <div>
-                    <button type="edit" onClick={editUser} className={cl.baseButton}>{canEdit ? "Edit" : "Info"}</button>
-                    {(canDelete ? <button type="delete" onClick={deleteUser} className={cl.baseButton}>Delete</button> : "")}
+                    <button type="edit" onClick={() => OnEditClick()} className={cl.baseButton}>{canEdit ? "Edit" : "Info"}</button>
+                    {(canDelete ? <button type="delete" onClick={() => OnDeleteClick()} className={cl.baseButton}>Delete</button> : "")}
                 </div>
             </div>
         </div>

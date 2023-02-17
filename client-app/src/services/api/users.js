@@ -30,6 +30,6 @@ export class ApiUsers{
     }
 
     static async deleteUser(username) {
-        return await BaseApi.getTextOrJson(await BaseApi.delete(`users/list/${username}`));
+        return await BaseApi.delete(`users/list/${username}`);
     }
 }

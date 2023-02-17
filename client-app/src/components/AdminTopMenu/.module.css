@@ -3,7 +3,6 @@
     background: rgb(1,255,0);
     background: linear-gradient(0deg, rgba(1,255,0,1) 5%, rgba(49,255,29,1) 23%, rgba(42,242,72,1) 34%, rgba(37,230,159,1) 73%, rgba(40,217,219,1) 92%);
     height: 10vh;
-    z-index: 1;
 }
 
 .logo {

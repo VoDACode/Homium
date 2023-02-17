@@ -1,0 +1,32 @@
+import React, { useRef } from "react";
+import Space from "../Space/Space";
+import cl from './.module.css';
+
+const DeleteUserPanel = ({ usernameForDel, onDeleteClick, onCancelClick }) => {
+
+    const inputRef = useRef();
+
+    function DeleteEvent() {
+        if (inputRef.current.value === 'yes') {
+            onDeleteClick(usernameForDel);
+        }
+        else {
+            alert('Invalid input');
+        }
+    }
+
+    return (
+        <div className={cl.main}>
+            <p className={cl.header}>Type 'yes' to confirm that you want to delete the user.</p>
+            <Space size="30px" />
+            <input className={cl.in} placeholder="write here" ref={inputRef} />
+            <Space size="30px" />
+            <div className={cl.buttons}>
+                <button className={cl.delete} onClick={() => DeleteEvent()}>Delete</button>
+                <button className={cl.cancel} onClick={() => onCancelClick()}>Cancel</button>
+            </div>
+        </div>
+    );
+}
+
+export default DeleteUserPanel;

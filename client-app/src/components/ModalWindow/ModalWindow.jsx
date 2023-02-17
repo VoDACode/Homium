@@ -1,7 +1,7 @@
 import React from "react";
 import cl from './.module.css';
 
-const ModalWindow = ({children, visible}) => {
+const ModalWindow = ({ children, visible }) => {
     var contentVisibility = visible ? "flex" : "none";
 
     return (
