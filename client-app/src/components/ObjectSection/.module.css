@@ -42,7 +42,7 @@ li {
 }
 
 .header:hover {
-    background-color: burlywood;
+    background-color: rgb(255, 215, 162);
     border-radius: 1vh;
 }
 

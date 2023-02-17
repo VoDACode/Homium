@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./.module.css";
 
-const ItemsContainer = ({ title = undefined, children, className = "", horizontal = "left", vertical = "top", margin = {}, width = 'auto' }) => {
+const ItemsContainer = ({ title = undefined, children, className = "", horizontal = "center", vertical = "top", margin = {}, width = 'auto' }) => {
     margin = {
         top: margin.top ?? 0,
         right: margin.right ?? 0,

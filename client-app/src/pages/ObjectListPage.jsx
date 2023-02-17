@@ -4,7 +4,7 @@ import ObjectSection from "../components/ObjectSection/ObjectSection";
 
 const ObjectListPage = () => {
     useEffect(() => {
-        document.body.style.backgroundColor = '#adf5ff';
+        document.body.style.backgroundColor = '#e8f0ff';
     }, []);
 
     return (

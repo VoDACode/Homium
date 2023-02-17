@@ -1,11 +1,10 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import AdminTopMenu from "../AdminTopMenu/AdminTopMenu";
-import cl from './.module.css';
 
 const AdminLayout = () => {
     return (
-        <div className={cl.main}>
+        <div>
             <AdminTopMenu/>
             <Outlet/>
         </div>

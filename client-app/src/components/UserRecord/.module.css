@@ -1,39 +1,52 @@
-* {
-    font-family: 'Roboto', sans-serif;
-}
-
 .box {
     width: calc(100% - 40px);
     height: 100%;
     background-color: #fff;
+    border: solid;
+    border-color: rgb(0, 0, 172);
+    border-width: 4px;
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     padding: 20px;
-    margin: 20px 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 0.5fr 1fr 1fr 1fr;
 }
 
-.item_text {
-    font-size: 1.2rem;
-    font-weight: 500;
+.username, .first_name, .last_name, .email {
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 600;
     color: #000;
     text-align: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.buttons {
+    position: relative;
+}
+
+.buttons div {
+    position: absolute;
+    left: 30%;
+    transform: translateY(-50%);
 }
 
 .baseButton {
     margin-left: 10px;
     margin-right: 10px;
     padding: 5px;
-    font-size: 16px;
+    font-size: 20px;
     border-radius: 5px;
     border: 3px solid #000;
     cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .baseButton[type="edit"]:active {

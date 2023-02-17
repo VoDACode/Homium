@@ -22,11 +22,11 @@ export class ApiUsers{
     }
 
     static async createUser(user) {
-        return await BaseApi.getTextOrJson(await BaseApi.post("users/list", user));
+        return await BaseApi.post("users/list", user);
     }
 
     static async updateUser(user) {
-        return await BaseApi.getTextOrJson(await BaseApi.put(`users/list/${user.username}`, user));
+        return await BaseApi.put(`users/list/${user.username}`, user);
     }
 
     static async deleteUser(username) {

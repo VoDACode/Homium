@@ -1,0 +1,20 @@
+.main {
+    width: calc(100% - 14px);
+    background-color: #e4e4e4;
+    color: rgb(57, 75, 108);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    display: grid;
+    font-family: 'Verdana', sans-serif;
+}
+
+.attribute {
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}

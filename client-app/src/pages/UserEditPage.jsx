@@ -190,7 +190,9 @@ const UserEditPage = () => {
         }
     }
 
-    const navToUserList = () => navigate('../');
+    const navToUserList = () => {
+        navigate('/admin/users');
+    };
 
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>

@@ -3,7 +3,7 @@ import CustomHeader from "../components/CustomHeader/CustomHeader";
 
 const SystemInfoPage = () => {
     useEffect(() => {
-        document.body.style.backgroundColor = '#fbedff';
+        document.body.style.backgroundColor = '#e8f0ff';
     }, []);
 
     return (

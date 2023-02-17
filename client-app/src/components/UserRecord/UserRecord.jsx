@@ -3,17 +3,17 @@ import cl from './.module.css';
 import { useNavigate } from 'react-router-dom';
 import { ApiUsers } from "../../services/api/users";
 
-const UserRecord = ({ username, firstname, lastname, onUpdate, canEdit, canDelete }) => {
+const UserRecord = ({ username, firstname, lastname, email, onUpdate, canEdit, canDelete }) => {
     const navigate = useNavigate();
-    const [user, setUser] = React.useState({ username, firstname, lastname });
+    const user = { username, firstname, lastname, email };
 
     const editUser = () => {
-        navigate(`${user.username}`);
+        navigate(`/admin/users/${user.username}`);
     }
 
     const deleteUser = () => {
-        let data = prompt("Are you sure you want to delete this user? Type 'yes' to confirm.");
-        if (data === "yes") {
+        let input = prompt("Are you sure you want to delete this user? Type 'yes' to confirm.");
+        if (input === "yes") {
             ApiUsers.deleteUser(user.username).then(async response => {
                 if (response.status === 200) {
                     onUpdate();
@@ -27,14 +27,22 @@ const UserRecord = ({ username, firstname, lastname, onUpdate, canEdit, canDelet
     return (
         <div className={cl.box}>
             <div>
-                <span className={cl.item_text}>{user.username}</span>
+                <p className={cl.username}>{user.username ?? "-"}</p>
             </div>
             <div>
-                <span className={cl.item_text}>{user.firstname ?? ""} {user.lastname ?? ""}</span>
+                <p className={cl.first_name}>{user.firstname ?? "-"}</p>
             </div>
             <div>
-                <button type="edit" onClick={editUser} className={cl.baseButton}>{canEdit ? "Edit" : "Info"}</button>
-                {(canDelete ? <button type="delete" onClick={deleteUser} className={cl.baseButton}>Delete</button> : "")}
+                <p className={cl.last_name}>{user.lastname ?? "-"}</p>
+            </div>
+            <div>
+                <p className={cl.email}>{user.email ?? "-"}</p>
+            </div>
+            <div className={cl.buttons}>
+                <div>
+                    <button type="edit" onClick={editUser} className={cl.baseButton}>{canEdit ? "Edit" : "Info"}</button>
+                    {(canDelete ? <button type="delete" onClick={deleteUser} className={cl.baseButton}>Delete</button> : "")}
+                </div>
             </div>
         </div>
     );
