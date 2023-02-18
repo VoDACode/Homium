@@ -4,5 +4,6 @@
     "name": "telegram-bot",
     "description": "telegram bot",
     "author": "VoDACode",
-    "id": "1246588d-ea81-4a3f-a68f-c546f9dd495c"
+    "id": "1246588d-ea81-4a3f-a68f-c546f9dd495c",
+    "disabled": true
 }

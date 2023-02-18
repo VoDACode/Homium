@@ -11,13 +11,13 @@ const UserRecord = ({ username, firstname, lastname, email, OnDeleteClick, OnEdi
                 <p className={cl.username}>{user.username ?? "-"}</p>
             </div>
             <div>
-                <p className={cl.first_name}>{user.firstname ?? "-"}</p>
+                <p className={cl.first_name}>{user.firstname === '' ? '-' : user.firstname}</p>
             </div>
             <div>
-                <p className={cl.last_name}>{user.lastname ?? "-"}</p>
+                <p className={cl.last_name}>{user.lastname === '' ? '-' : user.lastname}</p>
             </div>
             <div>
-                <p className={cl.email}>{user.email ?? "-"}</p>
+                <p className={cl.email}>{user.email === '' ? '-' : user.email}</p>
             </div>
             <div className={cl.buttons}>
                 <div>

@@ -6,7 +6,7 @@ import { CookieManager } from './services/CookieManager';
 
 i18n.use(LangBackend).use(LangDetector).use(initReactI18next).init({
     lng: CookieManager.getCookie('language') || 'en',
-    debug: true,
+    debug: false,
     detection: {
         order: ['queryString', 'cookie'],
         cache: ['cookie']

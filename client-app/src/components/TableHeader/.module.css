@@ -1,8 +1,9 @@
 .main {
-    width: calc(100% - 14px);
+    width: 100%;
     background-color: #e4e4e4;
     color: rgb(57, 75, 108);
-    padding: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -12,10 +13,18 @@
     font-family: 'Verdana', sans-serif;
 }
 
-.attribute, .sort_sign {
-    cursor: pointer;
+.cont {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-align: center;
+}
+
+.attribute, .sort_sign {
+    user-select: none;
+    cursor: pointer;
+    width: fit-content;
+    font-size: 1.5vw;
+    font-weight: 500;
 }

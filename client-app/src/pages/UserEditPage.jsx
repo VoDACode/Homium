@@ -6,6 +6,7 @@ import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
 import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
 import { useNavigate } from "react-router-dom";
 import { ApiUsers } from "../services/api/users";
+import Space from "../components/Space/Space";
 
 class DefaultPermissions {
     constructor(val = false) {
@@ -45,7 +46,12 @@ class DefaultPermissions {
 }
 
 const UserEditPage = () => {
+
     const navigate = useNavigate();
+    const navToUserList = () => {
+        navigate('/admin/users');
+    };
+    
     let { username } = useParams();
 
     const [canChange, setCanChange] = useState(true);
@@ -63,34 +69,6 @@ const UserEditPage = () => {
     const [selfPermissions, setSelfPermissions] = useState(new DefaultPermissions());
     const [permissions, setPermissions] = useState(new DefaultPermissions());
     const [permissionsEnabled, setPermissionsEnabled] = useState(new DefaultPermissions());
-
-    useEffect(() => {
-        document.body.style.backgroundColor = 'whitesmoke';
-
-        setEditMode(username !== 'add');
-        if (username !== 'add') {
-            ApiUsers.getUser(username).then(data => {
-                data.password = "";
-                setUserData(data);
-            });
-            ApiUsers.getUserPermissions(username).then(data => {
-                setPermissions(data);
-            });
-        }
-        ApiUsers.getSelfPermissions().then(data => {
-            if (username === 'add') {
-                if (!data.user.create)
-                    navToUserList();
-            } else {
-                setCanChange(data.user.update);
-            }
-            setSelfPermissions(data);
-        });
-        ApiUsers.getSelfUser().then(data => {
-            setSelfUser(data);
-        });
-        disablePermissions();
-    }, []);
 
     function switchPermission(prop) {
         setPermissions(prevState => {
@@ -190,9 +168,33 @@ const UserEditPage = () => {
         }
     }
 
-    const navToUserList = () => {
-        navigate('/admin/users');
-    };
+    useEffect(() => {
+        document.body.style.backgroundColor = 'whitesmoke';
+
+        setEditMode(username !== 'add');
+        if (username !== 'add') {
+            ApiUsers.getUser(username).then(data => {
+                data.password = "";
+                setUserData(data);
+            });
+            ApiUsers.getUserPermissions(username).then(data => {
+                setPermissions(data);
+            });
+        }
+        ApiUsers.getSelfPermissions().then(data => {
+            if (username === 'add') {
+                if (!data.user.create)
+                    navToUserList();
+            } else {
+                setCanChange(data.user.update);
+            }
+            setSelfPermissions(data);
+        });
+        ApiUsers.getSelfUser().then(data => {
+            setSelfUser(data);
+        });
+        disablePermissions();
+    }, []);
 
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>
@@ -255,6 +257,7 @@ const UserEditPage = () => {
                     </Accordion>
                 </Accordion>
                 <SaveOrCancelForm onSave={async () => await save()} disabledSave={errors.includes(true)} onCancel={() => navToUserList()} />
+                <Space size="25px" />
             </ItemsContainer>
         </ItemsContainer>
     );

@@ -3,6 +3,7 @@
     width: fit-content;
     margin-top: 5px;
     margin-bottom: 5px;
+    font-family: 'Robotic', sans-serif;
 }
 
 .title {
@@ -27,7 +28,7 @@
     border: 1px solid rgb(200, 200, 200);
     border-radius: 5px;
     outline: none;
-    font-size: 16px;
+    font-size: 20px;
     color: rgb(100, 100, 100);
 }
 
@@ -40,7 +41,7 @@
     border: 1px solid rgb(200, 200, 200);
     border-radius: 5px;
     outline: none;
-    font-size: 16px;
+    font-size: 20px;
     color: rgb(100, 100, 100);
     cursor: pointer;
 }

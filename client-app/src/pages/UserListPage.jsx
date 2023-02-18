@@ -12,14 +12,70 @@ import DeleteUserPanel from "../components/DeleteUserPanel/DeleteUserPanel";
 
 const UserListPage = () => {
 
-    const [isModWinVisible, setModWinVisibility] = useState(false);
     const [users, setUsers] = useState([]);
+    const [isModWinVisible, setModWinVisibility] = useState(false);
     const [usernameForDelete, setDeletingUsername] = useState(null);
     const [search, setSearch] = useState('');
     const [selfPermission, setSelfPermission] = useState({});
+    const [sortMode, setSortMode] = useState({parameter: '', dir: ''});
 
     const navigation = useNavigate();
     const navToAddUser = () => navigation('add');
+
+    function SortUserList(list, mode) {
+        var arr = [...list];
+
+        switch (mode.parameter) {
+            case 'username':
+                arr.sort((a, b) => {
+                    if ( a.username.toLowerCase() < b.username.toLowerCase() ){
+                        return mode.dir === 'asc' ? -1 : 1;
+                      }
+                      if ( a.username.toLowerCase() > b.username.toLowerCase() ){
+                        return mode.dir === 'asc' ? 1 : -1;
+                      }
+                      return 0;
+                  });
+                break;
+            case 'firstname':
+                arr.sort((a, b) => {
+                    if ( a.firstname.toLowerCase() < b.firstname.toLowerCase() ){
+                        return mode.dir === 'asc' ? -1 : 1;
+                      }
+                      if ( a.firstname.toLowerCase() > b.firstname.toLowerCase() ){
+                        return mode.dir === 'asc' ? 1 : -1;
+                      }
+                      return 0;
+                  });
+                break;
+            case 'lastname':
+                arr.sort((a, b) => {
+                    if ( a.lastname.toLowerCase() < b.lastname.toLowerCase() ){
+                        return mode.dir === 'asc' ? -1 : 1;
+                      }
+                      if ( a.lastname.toLowerCase() > b.lastname.toLowerCase() ){
+                        return mode.dir === 'asc' ? 1 : -1;
+                      }
+                      return 0;
+                  });
+                break;
+            case 'email':
+                arr.sort((a, b) => {
+                    if ( a.email.toLowerCase() < b.email.toLowerCase() ){
+                        return mode.dir === 'asc' ? -1 : 1;
+                      }
+                      if ( a.email.toLowerCase() > b.email.toLowerCase() ){
+                        return mode.dir === 'asc' ? 1 : -1;
+                      }
+                      return 0;
+                  });
+                break;
+            default:
+                break;
+        }
+
+        return arr;
+    }
     
     function DeleteUserRequest(username) {
         setModWinVisibility(true);
@@ -41,29 +97,45 @@ const UserListPage = () => {
         ApiUsers.getUsers().then(data => {
             setUsers(data);
         });
+
+        ApiUsers.getSelfPermissions().then(data => {
+            setSelfPermission(data);
+        });
     }
 
     function RenderUserList() {
         var res = [];
+        var fixedUsers = [];
 
-        for (let i = 0; i < users.length; i++) {
-            if (search !== '' && !users[i].username.toLowerCase().includes(search.toLowerCase()) &&
-                !users[i].firstname.toLowerCase().includes(search.toLowerCase()) &&
-                !users[i].lastname.toLowerCase().includes(search.toLowerCase())) {
+        for (var i = 0; i < users.length; i++) {
+            fixedUsers.push({
+                username: users[i].username === '' ? '-' : users[i].username,
+                firstname: users[i].firstname === '' ? '-' : users[i].firstname,
+                lastname: users[i].lastname === '' ? '-' : users[i].lastname,
+                email: users[i].email === '' ? '-' : users[i].email
+            });
+        }
+
+        const sortedUsers = SortUserList(fixedUsers, sortMode);
+
+        for (let i = 0; i < sortedUsers.length; i++) {
+            if (search !== '' && !sortedUsers[i].username.toLowerCase().includes(search.toLowerCase()) &&
+                !sortedUsers[i].firstname.toLowerCase().includes(search.toLowerCase()) &&
+                !sortedUsers[i].lastname.toLowerCase().includes(search.toLowerCase())) {
                 continue;
             }
             res.push(
                 <div key={i}>
                     <Space size="20px" />
                     <UserRecord
-                        OnEditClick={() => navigation(`/admin/users/${users[i].username}`)}
-                        OnDeleteClick={() => DeleteUserRequest(users[i].username)}
+                        OnEditClick={() => navigation(`/admin/users/${sortedUsers[i].username}`)}
+                        OnDeleteClick={() => DeleteUserRequest(sortedUsers[i].username)}
                         canEdit={selfPermission?.user?.update}
                         canDelete={selfPermission?.user?.remove}
-                        username={users[i].username}
-                        firstname={users[i].firstname}
-                        lastname={users[i].lastname}
-                        email={users[i].email} />
+                        username={sortedUsers[i].username}
+                        firstname={sortedUsers[i].firstname}
+                        lastname={sortedUsers[i].lastname}
+                        email={sortedUsers[i].email} />
                 </div>
             );
         }
@@ -74,9 +146,6 @@ const UserListPage = () => {
     useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         UpdateUsers();
-        ApiUsers.getSelfPermissions().then(data => {
-            setSelfPermission(data);
-        });
     }, []);
 
     return (
@@ -85,15 +154,31 @@ const UserListPage = () => {
                 <DeleteUserPanel usernameForDel={usernameForDelete} onDeleteClick={DeleteUser} onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>
             <CustomHeader text="User list" textColor="#0036a3" textSize="45px" isCenter={true} />
-            <ItemsContainer width="100%">
+            <ItemsContainer width="98%">
                 <InputBox width="100%" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
-                {(selfPermission?.user?.create ? <InputBox type="button" value="Add User" onClick={() => navToAddUser()} /> : "")}
+                {(selfPermission?.user?.create ? 
+                    <div style={{display: 'flex'}}>
+                        <Space isHorizontal={true} size="25px" />
+                        <InputBox type="button" value="Add User" onClick={() => navToAddUser()} /> 
+                    </div>
+                    : "")}
             </ItemsContainer>
             <Space size="30px" />
-            <ItemsContainer width="98%">
-                <TableHeader components={['username', 'first name', 'last name', 'email', 'actions']} gridMarkUpCols='1fr 0.5fr 1fr 1fr 1fr' />
-                {RenderUserList()}
-            </ItemsContainer>
+            <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                <div style={{width: '96%'}}>
+                    <TableHeader 
+                        components={[
+                            {text: 'username', val: 'username'}, 
+                            {text: 'first name', val: 'firstname'}, 
+                            {text: 'last name', val: 'lastname'}, 
+                            {text: 'email', val: 'email'}, 
+                            {text: 'actions', val: null}]} 
+                        gridMarkUpCols='1fr 1fr 1fr 1fr 1fr'
+                        sortInfo={sortMode}
+                        onChange={(param, direction) => setSortMode({parameter: param ?? '', dir: direction ?? ''})} />
+                    {RenderUserList()}
+                </div>
+            </div>
         </div>
     );
 }
