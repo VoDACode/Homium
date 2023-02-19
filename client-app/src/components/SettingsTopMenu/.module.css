@@ -2,8 +2,8 @@
     position: relative;
     height: 10vh;
     border-bottom: 0.5vh solid black;
-    background: rgb(140,140,140);
-    background: linear-gradient(90deg, rgba(140,140,140,1) 73%, rgba(191,191,191,1) 76%, rgba(255,255,255,1) 79%);
+    background: rgb(35,0,212);
+    background: linear-gradient(90deg, rgba(35,0,212,1) 75%, rgba(140,138,255,1) 78%, rgba(203,210,255,1) 80%);
 }
 
 .home, .admin, .log_out {

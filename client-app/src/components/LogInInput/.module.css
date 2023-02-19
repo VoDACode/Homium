@@ -1,6 +1,6 @@
 .user {
     width: 40vw;
-    border: 3px solid green;
+    border: 3px solid blue;
     outline: none;
     font-size: 5vh;
     background-color: whitesmoke;
@@ -11,7 +11,7 @@
 
 .password {
     width: 40vw;
-    border: 3px solid green;
+    border: 3px solid blue;
     outline: none;
     font-size: 5vh;
     background-color: whitesmoke;
@@ -40,7 +40,7 @@
     height: 8vh;
     border: none;
     border-radius: 50px;
-    background-color: green;
+    background-color: blue;
     color: white;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-weight: bold;

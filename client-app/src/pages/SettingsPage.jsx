@@ -45,7 +45,7 @@ const SettingsPage = () => {
                 <LogOutPanel onLogOutClick={authPageNavigate} onCancelClick={() => setModWinVisibility(false)}/>
             </ModalWindow>
             <SettingsTopMenu onHomeClick={homePageNavigate} onAdminClick={adminPageNavigate} onLogOutClick={() => setModWinVisibility(true)}/>
-            <CustomHeader text="Settings" textSize="50px" isCenter={true} />
+            <CustomHeader text="Settings" textSize="50px" textColor="#0036a3" isCenter={true} />
             <Space size="10px" />
             <CustomHeader text="Night mode:" textSize="30px" />
             <Space size="10px" />

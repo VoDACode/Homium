@@ -1,6 +1,6 @@
 .main {
-    background: rgb(234,255,17);
-    background: linear-gradient(90deg, rgba(234,255,17,1) 0%, rgba(206,252,27,1) 12%, rgba(102,188,25,1) 16%, rgba(25,185,40,1) 50%, rgba(102,188,25,1) 76%, rgba(234,255,17,1) 82%);
+    background: rgb(203,210,255);
+    background: linear-gradient(90deg, rgba(203,210,255,1) 12%, rgba(140,138,255,1) 14%, rgba(35,0,212,1) 16%, rgba(35,0,212,1) 75%, rgba(140,138,255,1) 78%, rgba(203,210,255,1) 80%);
     height: 10vh;
     -moz-user-select: none;
     -webkit-user-select: none;
@@ -15,22 +15,25 @@
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 5vh;
     font-weight: bold;
-    color: rgb(0, 124, 0);
+    color: rgb(0, 0, 196);
 }
 
 .img_button {
     cursor: pointer;
     position: absolute;
-    border: 0.4vh solid rgb(0, 124, 0);
+    border: 0.5vh solid blue;
     border-radius: 1vh;
     padding: 0.8vh;
     height: 5.5vh;
     width: 2.75vw;
     top: 1.2vh;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .img_button:hover {
-    border: 0.4vh solid greenyellow;
+    background-color: aquamarine;
 }
 
 .log_out {
@@ -44,6 +47,6 @@
 }
 
 .admin {
-    background-color: rgb(211, 229, 235);
+    background-color: rgb(122, 222, 255);
     right: 13.5vw;
 }

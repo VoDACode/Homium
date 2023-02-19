@@ -1,10 +1,10 @@
 .main {
     cursor: pointer;
-    border: 1vh solid rgb(184, 147, 1);
+    border: 1vh solid rgb(8, 0, 161);
     border-radius: 3vh;
     width: 21.7vw;
     height: 21.7vh;
-    background-color: rgb(255, 255, 54);
+    background-color: rgb(54, 208, 255);
     margin: 2vh;
 }
 

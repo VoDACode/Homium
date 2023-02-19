@@ -12,12 +12,10 @@ const AuthorizationPage = () => {
 
     return (
         <div>
-            <EnterContainer backColor="rgba(0, 135, 67, 0.38)">
-                <CustomHeader text="Sign in to Homium" textColor={'#298c44'} textSize="7vh" isCenter={true}/>
-                <Space size="8vh"/>
+            <EnterContainer backColor="rgba(0, 45, 100, 0.38)">
+                <CustomHeader text="Sign in to Homium" textColor='rgb(22, 22, 165)' textSize="7vh" isCenter={true}/>
+                <Space size="4vh"/>
                 <LogInInput/>
-                <Space size="6vh"/>
-                <AccountOffer headerColor="rgb(11, 49, 0)" headerText="Don't have an account?" linkText="Sign up now" linkTo="/reg"/>
                 <Space size="2vh"/>
             </EnterContainer>
         </div>

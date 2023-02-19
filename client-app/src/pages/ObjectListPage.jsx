@@ -4,12 +4,12 @@ import ObjectSection from "../components/ObjectSection/ObjectSection";
 
 const ObjectListPage = () => {
     useEffect(() => {
-        document.body.style.backgroundColor = '#e8f0ff';
+        document.body.style.backgroundColor = 'whitesmoke';
     }, []);
 
     return (
         <div>
-            <CustomHeader text="Object list" textColor="#3e5c58" textSize="45px" isCenter={true}/>
+            <CustomHeader text="Object list" textColor="#0036a3" textSize="45px" isCenter={true}/>
             <ul className="object_list">
                 <ObjectSection name="Object 1" properties={[{id: 1, name: 'Power', val: 'on'}]}>
                     <ObjectSection name="Lamp" properties={[{id: 1, name: 'Power', val: 'on'}]}>

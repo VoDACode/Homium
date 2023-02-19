@@ -83,7 +83,7 @@
 .settings {
     cursor: pointer;
     position: absolute;
-    border: 0.4vh solid blue;
+    border: 0.5vh solid blue;
     border-radius: 1vh;
     padding: 0.8vh;
     height: 5.5vh;
@@ -97,13 +97,13 @@
 }
 
 .settings:hover {
-    border: 0.4vh solid rgb(92, 184, 255);
+    background-color: aquamarine;
 }
 
 .log_out {
     cursor: pointer;
     position: absolute;
-    border: 0.4vh solid blue;
+    border: 0.5vh solid blue;
     border-radius: 1vh;
     padding: 0.8vh;
     height: 5.5vh;
@@ -117,7 +117,7 @@
 }
 
 .log_out:hover {
-    border: 0.4vh solid rgb(92, 184, 255);
+    background-color: aquamarine;
 }
 
 .active_link {
