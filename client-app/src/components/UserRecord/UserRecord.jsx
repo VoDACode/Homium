@@ -7,17 +7,17 @@ const UserRecord = ({ username, firstname, lastname, email, OnDeleteClick, OnEdi
 
     return (
         <div className={cl.box}>
-            <div>
-                <p className={cl.username}>{user.username ?? "-"}</p>
+            <div className={cl.content_un}>
+                <p className={cl.username}>{user.username ?? ""}</p>
             </div>
-            <div>
-                <p className={cl.first_name}>{user.firstname ?? "-"}</p>
+            <div className={cl.content_fn}>
+                <p className={cl.first_name}>{user.firstname ?? ""}</p>
             </div>
-            <div>
-                <p className={cl.last_name}>{user.lastname ?? "-"}</p>
+            <div className={cl.content_ln}>
+                <p className={cl.last_name}>{user.lastname ?? ""}</p>
             </div>
-            <div>
-                <p className={cl.email}>{user.email ?? "-"}</p>
+            <div className={cl.content_e}>
+                <p className={cl.email}>{user.email ?? ""}</p>
             </div>
             <div className={cl.buttons}>
                 <div>

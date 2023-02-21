@@ -11,11 +11,15 @@
     align-items: center;
     position: relative;
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     word-break: break-all;
 }
 
-.username, .first_name, .last_name, .email {
+.cont {
+    overflow: hidden;
+}
+
+.name {
     cursor: default;
     width: 100%;
     font-size: 1.5rem;
@@ -24,6 +28,23 @@
     text-align: center;
     font-family: 'Roboto', sans-serif;
     padding-inline: 1px;
+
+}
+
+.description {
+    cursor: default;
+    width: 100%;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #000;
+    font-family: 'Roboto', sans-serif;
+    padding-inline: 1px;
+    overflow: hidden;
+    display: -webkit-box;
+    text-align: justify;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    white-space: pre-wrap;
 }
 
 .buttons {
@@ -33,7 +54,7 @@
 
 .buttons div {
     position: absolute;
-    left: 30%;
+    left: 31%;
     transform: translateY(-50%);
 }
 
@@ -50,6 +71,10 @@
     user-select: none;
 }
 
+.baseButton[type="exec"]:active {
+    background-color: #00e608;
+}
+
 .baseButton[type="edit"]:active {
     box-shadow: #009ace 0px 0px 3px 0px;
 }
@@ -58,12 +83,22 @@
     box-shadow: #d80000 0px 0px 3px 0px;
 }
 
+.baseButton[type="exec"]:hover {
+    background-color: #7be17f;
+}
+
 .baseButton[type="edit"]:hover {
     background-color: #00bfffb4 !important;
 }
 
 .baseButton[type="delete"]:hover {
     background-color: #ff0000b4 !important;
+}
+
+.baseButton[type="exec"] {
+    background-color: #00e608;
+    border-color: #00a908;
+    color: #fff;
 }
 
 .baseButton[type="edit"] {

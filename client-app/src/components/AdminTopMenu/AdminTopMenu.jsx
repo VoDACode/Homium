@@ -51,7 +51,7 @@ const AdminTopMenu = () => {
                     <span className={cl.var} onClick={() => openMenu(chosenMenu !== 'auto' ? 'auto' : null)}>Automation</span>
                     <div className={cl.items} style={{display: chosenMenu === 'auto' ? 'block' : 'none'}}>
                         <p className={cl.comp}>Schedules</p>
-                        <p className={cl.comp}>Scripts</p>
+                        <p className={cl.comp} onClick={() => MoveTo('/admin/scripts')}>Scripts</p>
                         <p className={cl.comp}>Triggers</p>
                     </div>
                 </div>

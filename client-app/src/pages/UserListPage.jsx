@@ -8,7 +8,7 @@ import CustomHeader from "../components/CustomHeader/CustomHeader";
 import TableHeader from "../components/TableHeader/TableHeader";
 import Space from "../components/Space/Space";
 import ModalWindow from "../components/ModalWindow/ModalWindow";
-import DeleteUserPanel from "../components/DeleteUserPanel/DeleteUserPanel";
+import DeletePanel from "../components/DeletePanel/DeletePanel";
 
 const UserListPage = () => {
 
@@ -125,7 +125,7 @@ const UserListPage = () => {
                 continue;
             }
             res.push(
-                <div key={i}>
+                <div key={sortedUsers[i].username}>
                     <Space size="20px" />
                     <UserRecord
                         OnEditClick={() => navigation(`/admin/users/${sortedUsers[i].username}`)}
@@ -151,14 +151,18 @@ const UserListPage = () => {
     return (
         <div>
             <ModalWindow visible={isModWinVisible}>
-                <DeleteUserPanel usernameForDel={usernameForDelete} onDeleteClick={DeleteUser} onCancelClick={() => setModWinVisibility(false)} />
+                <DeletePanel 
+                    header="Type 'yes' to confirm that you want to delete the user." 
+                    usernameForDel={usernameForDelete} 
+                    onDeleteClick={DeleteUser} 
+                    onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>
             <CustomHeader text="User list" textColor="#0036a3" textSize="45px" isCenter={true} />
-            <ItemsContainer width="98%">
+            <ItemsContainer width="96%">
                 <InputBox width="100%" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 {(selfPermission?.user?.create ? 
                     <div style={{display: 'flex'}}>
-                        <Space isHorizontal={true} size="25px" />
+                        <Space isHorizontal={true} size="12px" />
                         <InputBox type="button" value="Add User" onClick={() => navToAddUser()} /> 
                     </div>
                     : "")}

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import AccountOffer from "../components/AccountOffer/AccountOffer";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import EnterContainer from "../components/EnterContainer/EnterContainer";
 import LogInInput from "../components/LogInInput/LogInInput";

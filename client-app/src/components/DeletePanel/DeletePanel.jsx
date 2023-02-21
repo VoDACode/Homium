@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
-const DeleteUserPanel = ({ usernameForDel, onDeleteClick, onCancelClick }) => {
+const DeletePanel = ({ header, usernameForDel, onDeleteClick, onCancelClick }) => {
 
     const inputRef = useRef();
 
@@ -17,7 +17,7 @@ const DeleteUserPanel = ({ usernameForDel, onDeleteClick, onCancelClick }) => {
 
     return (
         <div className={cl.main}>
-            <p className={cl.header}>Type 'yes' to confirm that you want to delete the user.</p>
+            <p className={cl.header}>{header}</p>
             <Space size="30px" />
             <input className={cl.in} placeholder="write here" ref={inputRef} />
             <Space size="30px" />
@@ -29,4 +29,4 @@ const DeleteUserPanel = ({ usernameForDel, onDeleteClick, onCancelClick }) => {
     );
 }
 
-export default DeleteUserPanel;
+export default DeletePanel;
