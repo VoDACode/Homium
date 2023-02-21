@@ -8,6 +8,12 @@ import cookieParser from 'cookie-parser';
 import * as boot from './boot';
 import {Logger} from './services/LogService';
 import ScriptService from './services/ScriptService';
+import { platform } from 'os';
+
+if(platform() != "linux"){
+    console.error("This application is only supported on linux");
+    process.exit(1);
+}
 
 const app = express();
 expressWs(app);

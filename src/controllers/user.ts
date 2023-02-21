@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import express from 'express';
 import db from '../db';
 import { authGuard, getPermissions, getUser } from '../guards/AuthGuard';
@@ -140,6 +141,20 @@ router.put('/list/:username', authGuard, async (req, res) => {
         return;
     } else {
         user.password = password ?? user.password;
+        if(user.username == "root"){
+            // change root password in linux user
+            exec(`(echo '${user.password}'; echo '${user.password}') | passwd homium`, (error, stdout, stderr) => {
+                if (error) {
+                    console.log(`error: ${error.message}`);
+                    return;
+                }
+                if (stderr) {
+                    console.log(`stderr: ${stderr}`);
+                    return;
+                }
+                console.log(`stdout: ${stdout}`);
+            });
+        }
     }
 
     if (lastname && lastname.length > 50) {
