@@ -49,11 +49,22 @@ export function loadControllers() {
 }
 
 export async function firstStart() {
+    let firstStart = false;
     logger.info('Checking first start...');
     if (await db.users.countDocuments() === 0) {
         logger.info('First start detected. Creating root user...');
         let root = new UserModel("root", "toor", undefined, undefined, UserModel.getTemplatePermissions('admin'));
         await db.users.insertOne(root);
+        firstStart = true;
+    }
+    if(firstStart){
+        logger.info('First start detected. Creating new linux user...');
+        exec('useradd -m -s /bin/bash -p $(openssl passwd -1 toor) homium', (err, stdout, stderr) => {
+            if(err){
+                logger.error('Error while creating linux user: ' + err);
+            }
+            logger.info('Linux user created.');
+        });
     }
     logger.info('First start check complete.');
 }
