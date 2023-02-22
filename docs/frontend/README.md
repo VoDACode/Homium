@@ -12,6 +12,7 @@ The frontend is built using [React](https://reactjs.org/).
 >   * [Login](#login)
 > * [Components](#components)
 >   * [Admin Navigation](#admin-navigation)
+>   * [Navigation panel details](#navigation-panel-details)
 
 ## Routes
 
@@ -96,8 +97,91 @@ The navigation panel has the following structure:
 │       └── Other Extensions...
 ├── Users (Route: /admin/users)
 ├── System
+│     ├── API (Route: /admin/system/api)
 │     ├── Logs (Route: /admin/system/logs)
 │     ├── Statistics (Route: /admin/system/statistics)
 │     └── Settings (Route: /admin/system/settings)
 └── Logout (Action: logout)
 ```
+
+### Navigation panel details
+
+>#### Home page
+>
+>A link to the home page.
+
+>#### System info
+>
+>A link to the admin dashboard.
+
+>#### Objects
+>
+>>#### List
+>>
+>>A link to the objects list page.
+>
+>>#### Devices
+>>
+>>A link to the devices list page.
+>>
+>>>#### [Device Name]
+>>>
+>>>A link to the device details page.
+>
+>>#### Rooms
+>>
+>>A link to the rooms list page.
+
+>#### Automation
+>
+>>#### Schedules
+>>
+>>A link to the schedules list page.
+>
+>>#### Scripts
+>>
+>>A link to the scripts list page.
+>
+>>#### Triggers
+>>
+>>A link to the triggers list page.
+
+>#### Extensions
+>
+>>#### Repositories
+>>
+>>A link to the repositories list page.
+>
+>>#### Installed
+>>
+>>A link to the installed extensions list page.
+>>
+>>>#### [Extension Name]
+>>>
+>>>A link to the extension page.
+
+>#### Users
+>
+>A link to the users list page.
+
+>#### System
+>
+>>#### API
+>>
+>>A link to the API keys list page.
+>
+>>#### Logs
+>>
+>>A link to the logs page.
+>
+>>#### Statistics
+>>
+>>A link to the statistics page.
+>
+>>#### Settings
+>>
+>>A link to the system settings page.
+
+>#### Logout
+>
+>Logout action.
