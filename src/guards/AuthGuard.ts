@@ -2,8 +2,11 @@ import { NextFunction, Response, Request } from "express";
 import db from "../db";
 import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
-import { UserModel, UserPermissions } from "../models/UserModel";
+import { UserModel } from "../models/UserModel";
+
 import config from "../config";
+import { ClientPermissions } from "../models/ClientPermissions";
+import { BotModel } from "../models/BotModel";
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
@@ -19,7 +22,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
         return
     }
 
-    if(user.enabled === false){
+    if (user.enabled === false) {
         res.status(401).send("User is disabled").end();
         return;
     }
@@ -40,31 +43,44 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function authGuard(req: Request, res: Response, next: NextFunction) {
-    if(config.DEBUG.debug && config.DEBUG.allowAnonymous){
+    if (config.DEBUG.debug && config.DEBUG.allowAnonymous) {
         next();
         return;
     }
-    if (!req.cookies) {
-        res.status(401).end();
-        return
-    }
-
-    const sessionToken = req.cookies['token'];
-    if (!sessionToken) {
+    let apikey = req.headers['x-api-key'];
+    if (!apikey && !req.cookies) {
         res.status(401).end();
         return;
     }
+    if (req.cookies) {
+        const sessionToken = req.cookies['token'];
+        if (!sessionToken) {
+            res.status(401).send("Session token not found").end();
+            return;
+        }
 
-    const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
-    if (!userSession) {
-        res.status(401).end();
-        return;
-    }
+        const userSession = (await db.sessions.findOne({ sessionToken: sessionToken }));
+        if (!userSession) {
+            res.status(401).send("Session not found").end();
+            return;
+        }
 
-    if (userSession.expiresAt < new Date()) {
-        await db.sessions.deleteOne({ sessionToken: sessionToken });
-        res.status(401).end();
-        return;
+        if (userSession.expiresAt < new Date()) {
+            await db.sessions.deleteOne({ sessionToken: sessionToken });
+            res.status(401).send("Session expired").end();
+            return;
+        }
+    } else if (apikey) {
+        const bot = await db.bots.findOne({ apikey: apikey });
+        if (!bot) {
+            res.status(401).send("Bot not found!").end();
+            return;
+        }
+
+        if (bot.isActivated === false) {
+            res.status(401).send("Bot is disabled").end();
+            return;
+        }
     }
 
     next();
@@ -114,7 +130,7 @@ export async function refresh(req: Request, res: Response) {
     res.status(200).end()
 }
 
-export async function getUser(data: Request | string) : Promise<UserModel | null>{
+export async function getUser(data: Request | string): Promise<UserModel | null> {
     const userSession = (await db.sessions.findOne({ sessionToken: getToken() }));
     if (!userSession) {
         return null;
@@ -130,22 +146,51 @@ export async function getUser(data: Request | string) : Promise<UserModel | null
     }
 }
 
-export async function isAuthorized(req: Request): Promise<boolean> {
-    const user = await getUser(req);
-    return user !== null;
+export async function getBot(req: Request, options = {
+    checkActivated: true
+}): Promise<BotModel | null> {
+    options.checkActivated = options.checkActivated ?? true;
+    const apikey = req.headers['x-api-key'];
+    if (!apikey) {
+        return null;
+    }
+
+    const bot = await db.bots.findOne({ apikey: apikey });
+    if (!bot) {
+        return null;
+    }
+
+    if (bot.isActivated === false && options.checkActivated) {
+        return null;
+    }
+
+    return bot;
 }
 
-export async function getPermissions(req: Request | string): Promise<UserPermissions | null> {
+export async function isAuthorized(req: Request): Promise<boolean> {
+    return await getUser(req) !== null || await getBot(req) !== null;
+}
+
+export async function getPermissions(req: Request): Promise<ClientPermissions | null> {
+    const bot = await getBot(req);
+    if (bot !== null) {
+        return bot.permissions;
+    }
+
     const user = await getUser(req);
-    if(user === null){
+    if (user === null) {
         return null;
     }
     return user.permissions;
 }
 
-export async function hasPermission(req: Request, perm: (p: UserPermissions) => any): Promise<boolean> {
+export async function hasPermission(req: Request, perm: (p: ClientPermissions) => any): Promise<boolean> {
+    const bot = await getBot(req);
+    if (bot !== null) {
+        return perm(bot.permissions);
+    }
     const user = await getUser(req);
-    if(user === null){
+    if (user === null) {
         return false;
     }
     return perm(user.permissions);

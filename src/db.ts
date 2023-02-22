@@ -1,11 +1,10 @@
 import {Db, MongoClient} from 'mongodb';
 import config from './config';
+import { BotModel } from './models/BotModel';
 import { ExtensionModel } from './models/ExtensionModel';
-import { MenuItem } from './models/MenuItem';
 import { ObjectModel } from './models/ObjectModel';
 import { SceneModel } from './models/SceneModel';
 import { ScriptModel } from './models/ScriptModel';
-import { SectionModel } from './models/SectionModel';
 import { SectorModel } from './models/SectorModel';
 import { Session } from './models/Session';
 import { UserModel } from './models/UserModel';
@@ -57,6 +56,9 @@ export class Database {
     }
     public get sectors() {
         return this.db.collection<SectorModel>('sectors');
+    }
+    public get bots() {
+        return this.db.collection<BotModel>('bots');
     }
 }
 

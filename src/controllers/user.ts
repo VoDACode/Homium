@@ -1,14 +1,14 @@
 import { exec } from 'child_process';
 import express from 'express';
 import db from '../db';
-import { authGuard, getPermissions, getUser } from '../guards/AuthGuard';
-import { PermissionTemplate, UserModel, UserPermissions, UserView } from '../models/UserModel';
+import { authGuard, getBot, getPermissions, getUser, hasPermission } from '../guards/AuthGuard';
+import { ClientPermissions, PermissionTemplate } from '../models/ClientPermissions';
+import { UserModel, UserView } from '../models/UserModel';
 const router = express.Router();
 
 router.get('/list/', authGuard, async (req, res) => {
-    const user = await getUser(req);
-    if (user?.permissions.user.read !== true) {
-        res.status(401).send('Permission denied!');
+    if (await hasPermission(req, (p) => p.user.read) !== true) {
+        res.status(403).send('Permission denied!');
         return;
     }
     let users = await db.users.find({}).toArray();
@@ -16,6 +16,10 @@ router.get('/list/', authGuard, async (req, res) => {
 });
 
 router.get('/list/:username', authGuard, async (req, res) => {
+    if (await hasPermission(req, (p) => p.user.read) !== true) {
+        res.status(403).send('Permission denied!');
+        return;
+    }
     if (!req.params.username) {
         res.status(400).send('Invalid request').end();
         return;
@@ -30,12 +34,16 @@ router.get('/list/:username', authGuard, async (req, res) => {
 });
 
 router.get('/list/:username/permissions', authGuard, async (req, res) => {
+    if (await hasPermission(req, (p) => p.user.read) !== true) {
+        res.status(403).send('Permission denied!');
+        return;
+    }
     if (!req.params.username) {
         res.status(400).send('Invalid request').end();
         return;
     }
     if (req.params.username != 'self' && (await getUser(req))?.permissions.user.read !== true) {
-        res.status(401).send('Permission denied!');
+        res.status(403).send('Permission denied!');
         return;
     }
     const username = req.params.username;
@@ -49,9 +57,9 @@ router.get('/list/:username/permissions', authGuard, async (req, res) => {
 });
 
 router.post('/list/', authGuard, async (req, res) => {
-    const user = await getUser(req);
-    if (user?.permissions.user.create !== true) {
-        res.status(401).send('Permission denied!');
+    const clientPermissions = await getPermissions(req);
+    if (clientPermissions?.user.create !== true) {
+        res.status(403).send('Permission denied!');
         return;
     }
     const username: string = req.body.username;
@@ -61,7 +69,7 @@ router.post('/list/', authGuard, async (req, res) => {
     const email: string | undefined = req.body.email;
     const enabled: boolean = req.body.enabled ?? true;
     const permissionTemplate: PermissionTemplate = req.body.permissionTemplate ?? 'guest';
-    const permissions: UserPermissions = req.body.permissions ?? UserModel.getTemplatePermissions(permissionTemplate);
+    const permissions: ClientPermissions = req.body.permissions ?? UserModel.getTemplatePermissions(permissionTemplate);
 
     let newUser = new UserModel(username, password, firstname, lastname, permissions, enabled);
     newUser.email = email ?? undefined;
@@ -81,7 +89,7 @@ router.post('/list/', authGuard, async (req, res) => {
         return;
     }
 
-    if (permissions.isAdministrator && !user?.permissions.isAdministrator) {
+    if (permissions.isAdministrator && !clientPermissions?.isAdministrator) {
         res.status(401).send('Permission denied!').end();
         return;
     }
@@ -89,7 +97,7 @@ router.post('/list/', authGuard, async (req, res) => {
     // user can`t create user with higher permissions
     for (const key in permissions) {
         if (Object.prototype.hasOwnProperty.call(permissions, key) && typeof (permissions as any)[key] === 'object') {
-            if (!validatePermissions(permissions, user, p => (p as any)[key])) {
+            if (!validatePermissions(permissions, clientPermissions, p => (p as any)[key])) {
                 res.status(401).send('Permission denied!').end();
                 return;
             }
@@ -111,9 +119,9 @@ router.put('/list/:username', authGuard, async (req, res) => {
         return;
     }
     const username = req.params.username;
-    let self = await getUser(req);
-    if (self?.permissions.user.update !== true) {
-        res.status(401).send('Permission denied!');
+    let clientPermissions = await getPermissions(req);
+    if (clientPermissions?.user.update !== true) {
+        res.status(403).send('Permission denied!');
         return;
     }
     const password: string | undefined = req.body.password;
@@ -122,7 +130,7 @@ router.put('/list/:username', authGuard, async (req, res) => {
     const email: string | undefined = req.body.email;
     const enabled: boolean | undefined = req.body.enabled;
     const permissionTemplate: PermissionTemplate | undefined = req.body.permissionTemplate;
-    const permissions: UserPermissions | undefined = req.body.permissions;
+    const permissions: ClientPermissions | undefined = req.body.permissions;
 
     if (!password && !lastname && !firstname && !email && !enabled && !permissionTemplate && !permissions) {
         res.status(400).send('Invalid request').end();
@@ -141,7 +149,7 @@ router.put('/list/:username', authGuard, async (req, res) => {
         return;
     } else {
         user.password = password ?? user.password;
-        if(user.username == "root"){
+        if (user.username == "root") {
             // change root password in linux user
             exec(`(echo '${user.password}'; echo '${user.password}') | passwd homium`, (error, stdout, stderr) => {
                 if (error) {
@@ -190,7 +198,7 @@ router.put('/list/:username', authGuard, async (req, res) => {
         // user can`t create user with higher permissions
         for (const key in permissions) {
             if (Object.prototype.hasOwnProperty.call(permissions, key) && typeof (permissions as any)[key] === 'object') {
-                if (!validatePermissions(permissions, self, p => (p as any)[key])) {
+                if (!validatePermissions(permissions, clientPermissions, p => (p as any)[key])) {
                     res.status(401).send('Permission denied!').end();
                     return;
                 }
@@ -211,13 +219,13 @@ router.delete('/list/:username', authGuard, async (req, res) => {
         return;
     }
     const username = req.params.username;
-    let user = await getUser(req);
+    let user: any = await getUser(req) !== undefined ? await getUser(req) : await getBot(req);
     if (user?.permissions.user.remove !== true) {
-        res.status(401).send('Permission denied!');
+        res.status(403).send('Permission denied!');
         return;
     }
 
-    if(username === user.username) {
+    if (user.username !== undefined && username === user.username) {
         res.status(400).send('You can`t delete yourself').end();
         return;
     }
@@ -229,7 +237,7 @@ router.delete('/list/:username', authGuard, async (req, res) => {
         return;
     }
 
-    if(user.permissions.isAdministrator) {
+    if (user.permissions.isAdministrator) {
         res.status(401).send('Permission denied!').end();
         return;
     }
@@ -253,11 +261,11 @@ router.get('/templates', authGuard, async (req, res) => {
 module.exports = router;
 module.exports.ROUTER = 'users';
 
-function validatePermissions(permissions: UserPermissions, user: UserModel, getKey: (p: UserPermissions) => any): boolean {
+function validatePermissions(permissions: ClientPermissions, clientPermissions: ClientPermissions, getKey: (p: ClientPermissions) => any): boolean {
     for (const key in getKey(permissions)) {
         if (Object.prototype.hasOwnProperty.call(getKey(permissions), key)) {
             const element = getKey(permissions)[key];
-            if (typeof element !== 'boolean' || (element === true && (getKey(user.permissions) as any)[key] === false)) {
+            if (typeof element !== 'boolean' || (element === true && (getKey(clientPermissions) as any)[key] === false)) {
                 return false;
             }
         }

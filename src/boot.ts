@@ -6,7 +6,6 @@ import { IExtension } from './types/IExtension';
 import extensions from './services/extensions';
 import db from './db';
 import { UserModel } from './models/UserModel';
-import { MenuItem } from './models/MenuItem';
 import { uuid } from 'uuidv4';
 import { ExtensionModel } from './models/ExtensionModel';
 import { Logger } from './services/LogService';

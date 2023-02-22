@@ -130,8 +130,8 @@ If you want to get information about yourself, you can use the keyword `self` as
 | lastname | `string` | no | The lastname of the user |
 | email | `string` | no | The email of the user |
 | enabled | `boolean` | no | If the user is enabled |
-| permissions | [`UserPermissions`](/src/models/UserModel.ts) | no | The permissions of the user |
-| permissionTemplate | [`PermissionTemplate`](/src/models/UserModel.ts) | no | The permission template of the user |
+| permissions | [`ClientPermissions`](/src/models/ClientPermissions.ts) | no | The permissions of the user |
+| permissionTemplate | [`PermissionTemplate`](/src/models/ClientPermissions.ts) | no | The permission template of the user |
 
 ### Response
 
@@ -158,8 +158,8 @@ If you want to get information about yourself, you can use the keyword `self` as
 | lastname | `string` | no | The lastname of the user |
 | email | `string` | no | The email of the user |
 | enabled | `boolean` | no | If the user is enabled |
-| permissions | [`UserPermissions`](/src/models/UserModel.ts) | no | The permissions of the user |
-| permissionTemplate | [`PermissionTemplate`](/src/models/UserModel.ts) | no | The permission template of the user |
+| permissions | [`ClientPermissions`](/src/models/ClientPermissions.ts) | no | The permissions of the user |
+| permissionTemplate | [`PermissionTemplate`](/src/models/ClientPermissions.ts) | no | The permission template of the user |
 
 ### Response
 

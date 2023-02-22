@@ -1,6 +1,6 @@
 import express from 'express';
 import config from '../config';
-import { getUser } from '../guards/AuthGuard';
+import { isAuthorized } from '../guards/AuthGuard';
 import { getPropertyToJsonObject, ObjectModel } from '../models/ObjectModel';
 import ObjectStorage from '../services/ObjectService';
 
@@ -16,8 +16,7 @@ router.ws('/object-update/:id', async (ws, req) => {
     }
 
     if (!config.DEBUG.debug && !config.DEBUG.allowAnonymous) {
-        const user = await getUser(req);
-        if (!object.allowAnonymous && !user) {
+        if (!object.allowAnonymous && !await isAuthorized(req)) {
             ws.close();
             return;
         }
@@ -57,8 +56,7 @@ router.ws('/object-update/:id/:prop', async (ws, req) => {
     }
 
     if (!config.DEBUG.debug && !config.DEBUG.allowAnonymous) {
-        const user = await getUser(req);
-        if (!object.allowAnonymous && !user) {
+        if (!object.allowAnonymous && !await isAuthorized(req)) {
             ws.close();
             return;
         }

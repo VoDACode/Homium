@@ -1,12 +1,11 @@
 import express from 'express';
 import WebLogger from '..';
-import { authGuard, getUser } from '../../../guards/AuthGuard';
+import { authGuard, isAuthorized } from '../../../guards/AuthGuard';
 
 const router = express.Router();
 
 router.ws('/stream', async (ws, req) => {
-    let user = await getUser(req);
-    if (user == null) {
+    if (!await isAuthorized(req)) {
         ws.send(JSON.stringify({ error: "Not authorized" }));
         ws.close();
         WebLogger.instance.logger.debug('Websocket closed');
