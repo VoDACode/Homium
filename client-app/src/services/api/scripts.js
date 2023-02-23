@@ -18,4 +18,24 @@ export class ApiScripts {
     static async getScript(id) {
         return await BaseApi.getTextOrJson( await BaseApi.get(`scripts/${id}`));
     }
+
+    static async createScript(script) {
+        return await BaseApi.post("scripts", script);
+    }
+
+    static async updateScript(script) {
+        return await BaseApi.put(`scripts/${script.id}`, script);
+    }
+
+    static async updateScriptCode(code) {
+        return await BaseApi.put(`scripts/${code.id}/code`, code);
+    }
+
+    static async deleteScript(id) {
+        return await BaseApi.delete(`scripts/${id}`);
+    }
+
+    static async executeScript(id) {
+        return await BaseApi.get(`scripts/${id}/execute`);
+    }
 }

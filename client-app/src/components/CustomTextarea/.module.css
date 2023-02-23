@@ -1,0 +1,12 @@
+.main {
+    width: fit-content;
+    height: fit-content;
+}
+
+.header {
+    font-family: 'Robotic', sans-serif;
+}
+
+.cont {
+    resize: none;
+}

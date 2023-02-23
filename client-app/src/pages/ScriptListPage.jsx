@@ -83,7 +83,10 @@ const ScriptListPage = () => {
             res.push(
                 <div key={sortedScripts[i].id}>
                     <Space size="20px" />
-                    <ScriptRecord nameAttr={sortedScripts[i].name} descriptionAttr={sortedScripts[i].description}/>
+                    <ScriptRecord 
+                        nameAttr={sortedScripts[i].name} 
+                        descriptionAttr={sortedScripts[i].description}
+                        OnEditClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)} />
                 </div>
             );
         }
@@ -119,7 +122,9 @@ const ScriptListPage = () => {
                             { text: "name", val: "name" },
                             { text: "description", val: "description" },
                             { text: "actions", val: null }]}
-                        gridMarkUpCols="1fr 1fr 1fr" />
+                        gridMarkUpCols="1fr 1fr 1fr"
+                        sortInfo={sortMode}
+                        onChange={(param, direction) => setSortMode({parameter: param ?? '', dir: direction ?? ''})} />
                     {RenderScriptList()}
                 </div>
             </div>

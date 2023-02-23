@@ -7,6 +7,7 @@ import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
 import { useNavigate } from "react-router-dom";
 import { ApiUsers } from "../services/api/users";
 import Space from "../components/Space/Space";
+import CustomHeader from "../components/CustomHeader/CustomHeader";
 
 class DefaultPermissions {
     constructor(val = false) {
@@ -128,7 +129,7 @@ const UserEditPage = () => {
             let user = await ApiUsers.getUserPermissions(username);
             let _selfUser = { ...selfUser }
             let _selfPermissions = { ...selfPermissions };
-            if (user.isAdministrator === true || canChange === false || username == _selfUser.username) {
+            if (user.isAdministrator === true || canChange === false || username === _selfUser.username) {
                 for (const key in _selfPermissions) {
                     if (Object.prototype.hasOwnProperty.call(_selfPermissions, key) && typeof _selfPermissions[key] === 'object') {
                         vP(_selfPermissions, user, p => p[key], true, false);
@@ -198,6 +199,8 @@ const UserEditPage = () => {
 
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>
+            <CustomHeader text={username === 'add' ? 'New user' : 'User editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
+            <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                     <InputBox title="Username" name="username" value={userData?.username} disabled={editMode} required={true} onError={(e) => {
