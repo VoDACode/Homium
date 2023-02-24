@@ -426,6 +426,7 @@ router.get('/list', authGuard, async (req, res) => {
         if (viewProperties) {
             obj.properties = getPropertyToJsonObject(p);
         }
+        return obj;
     })).end();
 });
 
