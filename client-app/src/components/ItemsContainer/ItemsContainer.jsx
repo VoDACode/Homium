@@ -1,7 +1,7 @@
 import React from "react";
 import style from "./.module.css";
 
-const ItemsContainer = ({ title = undefined, children, className = "", horizontal = "center", vertical = "top", margin = {}, width = 'auto' }) => {
+const ItemsContainer = ({ title = undefined, children, className = "", horizontal = "center", vertical = "top", margin = {}, width = 'auto', inlineFlexMode = false }) => {
     margin = {
         top: margin.top ?? 0,
         right: margin.right ?? 0,
@@ -46,7 +46,7 @@ const ItemsContainer = ({ title = undefined, children, className = "", horizonta
             width: width
         }}>
             {(title && <span className={style.title}>{title}</span>)}
-            <div className={style.items}>
+            <div className={style.items} style={{display: inlineFlexMode ? 'inline-flex' : 'block'}}>
                 {children}
             </div>
         </div>

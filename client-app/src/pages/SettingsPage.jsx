@@ -51,11 +51,11 @@ const SettingsPage = () => {
             <Space size="10px" />
             <Switch />
             <Space size="30px" />
-            <CustomSelect space="5px" headerText="Language:" headerSize="30px" headerWeight="600" optionSize="20px" paddingRight="3.5em" optionWeight="600" options={[
+            <CustomSelect isDefaultOptionAllowed={false} space="5px" headerText="Language:" headerSize="30px" headerWeight="600" optionSize="20px" paddingRight="3.5em" optionWeight="600" options={[
                 { name: 'English', val: 'en' },
                 { name: 'Українська', val: 'uk' },
                 { name: 'Русский', val: 'ru' }
-            ]} type="classic" chosenValue={CookieManager.getCookie('language')} onValueChanged={ChangeAppLanguage} />
+            ]} type="classic" chosenValue={CookieManager.getCookie('language')} onChange={(e) => ChangeAppLanguage(e.target.value)} />
         </div>
     );
 }

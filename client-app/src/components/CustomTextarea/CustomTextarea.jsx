@@ -2,7 +2,7 @@ import React from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
-const CustomTextarea = ({ content, contentSize, width, height, headerText, headerSize, headerWeight, headerColor, isHeaderCentered }) => {
+const CustomTextarea = ({ content, contentSize, width, height, headerText, headerSize, headerWeight, headerColor, isHeaderCentered, onChange }) => {
     return (
         <div className={cl.main}>
             <p className={cl.header} style={{
@@ -14,6 +14,7 @@ const CustomTextarea = ({ content, contentSize, width, height, headerText, heade
             <Space size="5px" />
             <textarea 
                 className={cl.cont} 
+                onChange={(e) => onChange(e)}
                 defaultValue={content ?? ''}
                 style={{
                     width: width ?? '50px', 
