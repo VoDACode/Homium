@@ -23,12 +23,12 @@ export class ApiScripts {
         return await BaseApi.post("scripts", script);
     }
 
-    static async updateScript(script) {
-        return await BaseApi.put(`scripts/${script.id}`, script);
+    static async updateScript(id, script) {
+        return await BaseApi.put(`scripts/${id}`, script);
     }
 
-    static async updateScriptCode(code) {
-        return await BaseApi.put(`scripts/${code.id}/code`, code);
+    static async updateScriptCode(id, code) {
+        return await BaseApi.put(`scripts/${id}/code`, code);
     }
 
     static async deleteScript(id) {

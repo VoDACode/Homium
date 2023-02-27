@@ -8,7 +8,7 @@ const ScriptRecord = ({nameAttr, descriptionAttr, OnExecClick, OnEditClick, OnDe
                 <p className={cl.name}>{nameAttr ?? ""}</p>
             </div>
             <div className={cl.cont}>
-                <p className={cl.description} title={descriptionAttr ?? ""}>{descriptionAttr ?? ""}</p>
+                <p className={cl.description} title={descriptionAttr === "—" ? "" : descriptionAttr}>{descriptionAttr ?? "—"}</p>
             </div>
             <div className={cl.buttons}>
                 <div>

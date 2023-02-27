@@ -153,7 +153,7 @@ const UserListPage = () => {
             <ModalWindow visible={isModWinVisible}>
                 <DeletePanel 
                     header="Type 'yes' to confirm that you want to delete the user." 
-                    usernameForDel={usernameForDelete} 
+                    idForDel={usernameForDelete} 
                     onDeleteClick={DeleteUser} 
                     onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>

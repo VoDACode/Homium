@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
 const CustomSelect = ({ enabled = true, isDefaultOptionAllowed = false, space = '0px', headerText = '', headerSize = '15px', headerWeight = 'normal', options = [], optionWeight = 'normal', optionSize = '15px', chosenValue = '-', onChange, type = 'classic', paddingLeft = '1em', paddingRight = '3.5em', paddingTop = '0.4em', paddingBottom = '0.4em', width = 'fit-content' }) => {
 
     const [menuStyle, setMenuStyle] = useState('');
+
+    const selectRef = useRef();
+
+    function ChangeValue(e) {
+        onChange(e);
+        selectRef.current.value = e.target.value;
+    }
 
     function RenderOptions() {
         var res = [];
@@ -28,13 +35,15 @@ const CustomSelect = ({ enabled = true, isDefaultOptionAllowed = false, space = 
         else if (type === 'simple') {
             setMenuStyle(`${cl.menu} ${cl.menu_simple}`);
         }
-    }, [menuStyle]);
+
+        selectRef.current.value = chosenValue;
+    }, [type, chosenValue]);
 
     return (
         <div className={cl.main}>
             <p className={cl.header} style={{ fontSize: headerSize, fontWeight: headerWeight }}>{headerText}</p>
             <Space size={space} />
-            <select className={menuStyle} disabled={!enabled} defaultValue={chosenValue} onChange={(e) => onChange(e)}
+            <select className={menuStyle} disabled={!enabled} ref={selectRef} onChange={(e) => ChangeValue(e)}
                 style={{ paddingLeft: paddingLeft, paddingRight: paddingRight, paddingTop: paddingTop, paddingBottom: paddingBottom, fontSize: optionSize, fontWeight: optionWeight, width: width}}>
                 {RenderOptions()}
             </select>

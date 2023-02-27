@@ -2,13 +2,13 @@ import React, { useRef } from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
-const DeletePanel = ({ header, usernameForDel, onDeleteClick, onCancelClick }) => {
+const DeletePanel = ({ header, idForDel, onDeleteClick, onCancelClick }) => {
 
     const inputRef = useRef();
 
     function DeleteEvent() {
         if (inputRef.current.value === 'yes') {
-            onDeleteClick(usernameForDel);
+            onDeleteClick(idForDel);
         }
         else {
             alert('Invalid input');

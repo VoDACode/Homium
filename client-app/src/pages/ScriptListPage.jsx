@@ -14,11 +14,28 @@ const ScriptListPage = () => {
 
     const [isModWinVisible, setModWinVisibility] = useState(false);
     const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
+    const [idForDelete, setDeletingId] = useState(null);
     const [search, setSearch] = useState('');
     const [scripts, setScrips] = useState([]);
 
     const navigation = useNavigate();
     const navToAddScript = () => navigation('add');
+    
+    function DeleteScriptRequest(scriptId) {
+        setModWinVisibility(true);
+        setDeletingId(scriptId);
+    }
+
+    function DeleteScript(scriptId) {
+        ApiScripts.deleteScript(scriptId).then(response => {
+            if (response.status === 200) {
+                setModWinVisibility(false);
+                UpdateScripts();
+            } else {
+                alert(response.text());
+            }
+        });
+    }
 
     function SortScriptList(list, mode) {
         var arr = [...list];
@@ -86,7 +103,8 @@ const ScriptListPage = () => {
                     <ScriptRecord 
                         nameAttr={sortedScripts[i].name} 
                         descriptionAttr={sortedScripts[i].description}
-                        OnEditClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)} />
+                        OnEditClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)}
+                        OnDeleteClick={() => DeleteScriptRequest(sortedScripts[i].id)} />
                 </div>
             );
         }
@@ -103,8 +121,10 @@ const ScriptListPage = () => {
         <div>
             <ModalWindow visible={isModWinVisible}>
                 <DeletePanel 
-                        header="Type 'yes' to confirm that you want to delete the script." 
-                        onCancelClick={() => setModWinVisibility(false)} />
+                        header="Type 'yes' to confirm that you want to delete the script."
+                        idForDel={idForDelete} 
+                        onCancelClick={() => setModWinVisibility(false)}
+                        onDeleteClick={DeleteScript} />
             </ModalWindow>
             <CustomHeader text="Script list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <ItemsContainer width="96%">

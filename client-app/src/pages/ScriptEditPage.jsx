@@ -14,13 +14,19 @@ import { ApiScripts } from "../services/api/scripts";
 const ScriptEditPage = () => {
 
     const objectEventSet = [
-        {name: "init", val: "init"}, 
-        {name: "update", val: "update"}, 
-        {name: "stop", val: "stop"}, 
-        {name: "start", val: "start"}, 
-        {name: "call", val: "call"}, 
-        {name: "remove", val: "remove"}
+        { name: "init", val: "init" },
+        { name: "update", val: "update" },
+        { name: "stop", val: "stop" },
+        { name: "start", val: "start" },
+        { name: "call", val: "call" },
+        { name: "remove", val: "remove" }
     ];
+
+    const extensionEventSet = [
+        { name: "onmessage", val: "onmessage" }
+    ];
+
+    const systemEventSet = [];
 
     const [scriptData, setScriptData] = useState({
         name: "",
@@ -59,38 +65,43 @@ const ScriptEditPage = () => {
     }
 
     function OnTargetTypeChanged(type) {
-        ChangeScriptAttributeByValue('targetType', type);
-
         if (type === 'Object') {
             ApiObjects.getObjects().then((data) => {
                 var items = [];
                 for (var i = 0; i < data.length; i++) {
-                    items.push({name: data[i].name, val: data[i].id});
+                    items.push({ name: data[i].name, val: data[i].id });
                 }
                 setItemList(items);
+                setEventList(objectEventSet);
+                setScriptData(prevState => {
+                    var newData = { ...prevState };
+                    newData.targetType = type;
+                    newData.targetId = items[0].val;
+                    newData.targetEvent = objectEventSet[0].val;
+                    return newData;
+                });
             });
-
-            setEventList(objectEventSet);
         }
         else if (type === 'Extension') {
             setItemList([]);
-            setEventList([]);
+            setEventList(extensionEventSet);
         }
         else if (type === 'System') {
             setItemList([]);
-            setEventList([]);
+            setEventList(systemEventSet);
         }
     }
 
-    function SaveChanges() {
-        if (scriptData.name !== "" && scriptData.code !== "" && scriptData.targetId !== null) {
-            if (id === 'add') {
-                ApiScripts.createScript(scriptData);
-            } else {
-                ApiScripts.updateScript(scriptData);
+    async function SaveChanges() {
+        if (scriptData.name !== "" && scriptData.code !== "") {
+            var response = id === 'add' ? await ApiScripts.createScript(scriptData) : await ApiScripts.updateScript(id, scriptData);
+            if (response.ok) {
+                navigateScriptListPage();
             }
-    
-            navigateScriptListPage();
+            else {
+                let err = await response.text();
+                alert(err);
+            }
         }
         else {
             alert('Some of the field inputs are invalid!');
@@ -102,15 +113,29 @@ const ScriptEditPage = () => {
 
         if (id !== 'add') {
             ApiScripts.getScript(id).then(data => {
-                setScriptData(data);
+                OnTargetTypeChanged(data.targetType);
+                setScriptData(prevState => {
+                    var newScript = { ...prevState };
+                    newScript.allowAnonymous = data.allowAnonymous;
+                    newScript.code = data.code;
+                    newScript.name = data.name;
+                    newScript.description = data.description;
+                    newScript.enabled = data.enabled;
+                    newScript.targetEvent = data.targetEvent;
+                    newScript.targetId = data.targetId;
+                    newScript.targetType = data.targetType;
+                    return newScript;
+                });
             });
         }
-
-        OnTargetTypeChanged('Object')
+        else {
+            OnTargetTypeChanged('Object');
+        }
     }, []);
 
     return (
         <div>
+            <button onClick={() => console.log(scriptData)}>Test</button>
             <CustomHeader text={id === 'add' ? 'New script' : 'Script editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
             <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
@@ -118,20 +143,20 @@ const ScriptEditPage = () => {
                 <Space size="10px" />
             </ItemsContainer>
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }} inlineFlexMode={true}>
-                    <CustomSelect 
-                        options={eventList} 
-                        onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)} 
-                        chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
-                    <Space isHorizontal={true} size="10px" />
-                    <CustomSelect 
-                        options={itemList}
-                        onChange={(e) => ChangeScriptAttributeByValue("targetId", e.target.value)}
-                        chosenValue={scriptData.targetId} type="simple" space="1px" headerText="Target item" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
-                    <Space isHorizontal={true} size="10px" />
-                    <CustomSelect 
-                        options={[{name: "Object", val: "Object"}, {name: "Extension", val: "Extension"}, {name: "System", val: "System"}]}
-                        onChange={(e) => OnTargetTypeChanged(e.target.value)}
-                        chosenValue={scriptData.targetType} type="simple" space="1px" headerText="Target type" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
+                <CustomSelect
+                    options={eventList}
+                    onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
+                    chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
+                <Space isHorizontal={true} size="10px" />
+                <CustomSelect
+                    options={itemList}
+                    onChange={(e) => ChangeScriptAttributeByValue("targetId", e.target.value)}
+                    chosenValue={scriptData.targetId} type="simple" space="1px" headerText="Target item" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
+                <Space isHorizontal={true} size="10px" />
+                <CustomSelect
+                    options={[{ name: "Object", val: "Object" }, { name: "Extension", val: "Extension" }, { name: "System", val: "System" }]}
+                    onChange={(e) => OnTargetTypeChanged(e.target.value)}
+                    chosenValue={scriptData.targetType} type="simple" space="1px" headerText="Target type" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
             </ItemsContainer>
             <Space size="10px" />
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }}>
@@ -141,26 +166,26 @@ const ScriptEditPage = () => {
             </ItemsContainer>
             <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
-                <CustomTextarea 
+                <CustomTextarea
                     onChange={(e) => ChangeScriptAttributeByValue('description', e.target.value)}
-                    width="500px" 
-                    height="100px" 
-                    headerText="Description" 
-                    headerSize="20px" 
-                    isHeaderCentered={true} 
+                    width="500px"
+                    height="100px"
+                    headerText="Description"
+                    headerSize="20px"
+                    isHeaderCentered={true}
                     content={scriptData.description} />
             </ItemsContainer>
             <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
-                <CustomTextarea 
-                    width="700px" 
+                <CustomTextarea
+                    width="700px"
                     onChange={(e) => ChangeScriptAttributeByValue('code', e.target.value)}
-                    height="500px" 
-                    headerText="Code (JavaScript)" 
-                    headerSize="20px" 
-                    isHeaderCentered={true} 
-                    content={scriptData.code} 
-                    contentStyle="sans-sherif"/>
+                    height="500px"
+                    headerText="Code (JavaScript)"
+                    headerSize="20px"
+                    isHeaderCentered={true}
+                    content={scriptData.code}
+                    contentStyle="sans-sherif" />
                 <ItemsContainer horizontal="right" vertical="right" margin={{ top: '5px', bottom: '5px' }}>
                     <SaveOrCancelForm onSave={() => SaveChanges()} onCancel={() => navigateScriptListPage()} />
                     <Space size="25px" />
