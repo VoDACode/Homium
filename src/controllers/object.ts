@@ -409,4 +409,41 @@ router.get('/set/:id', async (req, res) => {
     res.status(200).json(objectPropertyToJson(object.properties[index])).end();
 });
 
+router.get('/list/ids', authGuard, async (req, res) => {
+    if (await hasPermission(req, p => p.object.read) !== true) {
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+    const objects = await db.objects.find().toArray();
+    res.status(200).send(objects.map(p => p.id)).end();
+});
+
+router.get('/list', authGuard, async (req, res) => {
+    if (await hasPermission(req, p => p.object.read) !== true) {
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+    const viewProperties = req.query.viewProperties == 'true';
+
+    const objects = await db.objects.find().toArray();
+    res.status(200).send(objects.map(p => {
+        let obj: any = {
+            id: p.id,
+            name: p.name,
+            parentId: p.parentId,
+            description: p.description,
+            updatedAt: p.updatedAt,
+            allowAnonymous: p.allowAnonymous,
+            children: p.children,
+            systemObject: p.systemObject
+        }
+        if (viewProperties) {
+            obj.properties = getPropertyToJsonObject(p);
+        }
+        return obj;
+    })).end();
+});
+
 module.exports = router;

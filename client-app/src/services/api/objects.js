@@ -1,12 +1,21 @@
 import { BaseApi } from './base';
 
-export class ObjectsAPI {
+export class ApiObjects {
     static async getRootObjects() {
         return await BaseApi.getTextOrJson(await BaseApi.get('object/get-root'));
     }
 
     static async getObject(id) {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}`));
+    }
+    
+    static async getObjects(viewProperties = false) {
+        const address = viewProperties ? 'controllers/object/list?viewProperties=true' : 'controllers/object/list';
+        return await BaseApi.getTextOrJson(await BaseApi.get(address));
+    }
+
+    static async getObjectsIds() {
+        return await BaseApi.getTextOrJson(await BaseApi.get('controllers/object/list/ids'));
     }
 
     static async getChildren(id) {

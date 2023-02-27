@@ -30,7 +30,7 @@ const InputBox = ({ title, name, value, onChange, onClick, onError, type = "text
             <input checked={checked ?? ""}
                 type={type}
                 name={name}
-                value={value}
+                defaultValue={value}
                 onChange={change} onInput={change} onKeyUp={change} onPaste={change} onCut={change}
                 placeholder={placeholder}
                 className={inputStile}

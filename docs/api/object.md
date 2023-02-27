@@ -81,6 +81,71 @@ Create a new object.
     http://localhost:3000/api/object/create
 ```
 
+## __list__
+
+List all objects.
+
+### Request
+
+    GET /api/object/list
+
+### URL Parameters
+
+Name   | Type | Description
+--------|------|-------------
+`viewProperties`    | `viewProperties` | The properties to be displayed.
+
+### Response body
+
+Name   | Type | Description
+--------|------|-------------
+`id`    | `string` | The id of the object.
+`name`    | `string` | The name of the object.
+`parentId`    | `string` or `NULL` | The parent id of the object.
+`updatedAt`    | `string` | The last update date of the object.
+`properties`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The properties of the object.
+`description`    | `string` or `NULL` | The description of the object.
+`allowAnonymous`   | `boolean` | Whether the object is accessible by anonymous users.
+`systemObject`   | `boolean` | Whether the object is a system object.
+
+### Response
+
+    200 OK (Object array)
+    401 Unauthorized
+    403 Forbidden
+
+### Example
+
+```bash
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/object/list
+```
+
+## __list/ids__
+
+List all objects ID`s.
+
+### Request
+
+    GET /api/object/list/ids
+
+### Response
+
+    200 OK (Object ID`s array)
+    401 Unauthorized
+    403 Forbidden
+
+### Example
+
+```bash
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/object/list/ids
+```
+
 ## __get/:id__
 
 Get an object.
