@@ -49,18 +49,34 @@ router.post('/create', authGuard, async (req, res) => {
         object[i].canHaveHistory = object[i].canHaveHistory ?? false;
         object[i].history = [];
     }
-    if (!name)
-        return res.status(400).end();
-
-    if (parentId != null && await db.objects.countDocuments({ id: parentId }) == 0) {
-        return res.status(404).end();
+    if (!name) {
+        return res.status(400).send('The name must be a string.').end();
     }
-    let id: string = "";
-    do {
-        id = uuid();
-    } while (await db.objects.countDocuments({ id: id }) > 0);
-    await ObjectService.add(new ObjectModel(name, parentId, id, description, object, allowAnonymous));
-    res.status(200).send(id).end();
+
+    let obj = new ObjectModel(name, parentId, uuid(), description, object, allowAnonymous);
+
+    if (parentId != null) {
+        let parent = await db.objects.findOne({ id: parentId });
+        if (parent == null) {
+            return res.status(400).send('The parent object does not exist.').end();
+        }
+        let props = parent.properties;
+        for (let i = 0; i < props.length; i++) {
+            let newProp = new ObjectProperty(props[i].key, props[i].value, props[i].canHaveHistory, []);
+            newProp.historyLimit = props[i].historyLimit;
+            newProp.mqttProperty = props[i].mqttProperty;
+            if(obj.properties.findIndex(p => p.key == newProp.key) == -1){
+                continue;
+            }
+            obj.properties.push(newProp);
+        }
+    }
+
+    while (await db.objects.countDocuments({ id: obj.id }) > 0) {
+        obj.id = uuid();
+    }
+    await ObjectService.add(obj);
+    res.status(200).send(obj.id).end();
 });
 
 router.delete('/remove/:id', authGuard, async (req, res) => {
