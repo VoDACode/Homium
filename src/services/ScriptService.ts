@@ -179,7 +179,8 @@ class ScriptService {
         if (script.targetType === "Object") {
             let obj = await ObjectService.get(script.targetId);
             if (!obj) {
-                throw new Error("Object not found");
+                this.logger.error(`Script ${script.id} is targeted to object ${script.targetId} but object is not loaded.`);
+                return;
             }
             ObjectService.addEventListener(obj.id, "remove", () => {
                 this.deleteScript(script.id);
@@ -189,12 +190,12 @@ class ScriptService {
             });
         } else if (script.targetType === "Extension") {
             if (config.extensions.enabled == false) {
-                this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
+                this.logger.error(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
                 return;
             }
             let ext = extensions.get(script.targetId, 'id');
             if (!ext) {
-                this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extension is not loaded.`);
+                this.logger.error(`Script ${script.id} is targeted to extension ${script.targetId} but extension is not loaded.`);
                 return;
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {

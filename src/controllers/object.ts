@@ -1,4 +1,5 @@
 import express from 'express';
+import { WithId } from 'mongodb';
 import { uuid } from 'uuidv4';
 import db from '../db';
 import { authGuard, hasPermission, isAuthorized } from '../guards/AuthGuard';
@@ -54,9 +55,9 @@ router.post('/create', authGuard, async (req, res) => {
     }
 
     let obj = new ObjectModel(name, parentId, uuid(), description, object, allowAnonymous);
-
+    let parent: WithId<ObjectModel> | null = null;
     if (parentId != null) {
-        let parent = await db.objects.findOne({ id: parentId });
+        parent = await db.objects.findOne({ id: parentId });
         if (parent == null) {
             return res.status(400).send('The parent object does not exist.').end();
         }
@@ -65,17 +66,21 @@ router.post('/create', authGuard, async (req, res) => {
             let newProp = new ObjectProperty(props[i].key, props[i].value, props[i].canHaveHistory, []);
             newProp.historyLimit = props[i].historyLimit;
             newProp.mqttProperty = props[i].mqttProperty;
-            if(obj.properties.findIndex(p => p.key == newProp.key) == -1){
+            if(obj.properties.findIndex(p => p.key == newProp.key) != -1){
                 continue;
             }
             obj.properties.push(newProp);
         }
+        parent.children.push(obj.id);
     }
 
     while (await db.objects.countDocuments({ id: obj.id }) > 0) {
         obj.id = uuid();
     }
     await ObjectService.add(obj);
+    if(parent){
+        await ObjectService.setChildren(parent.id, parent.children);
+    }
     res.status(200).send(obj.id).end();
 });
 

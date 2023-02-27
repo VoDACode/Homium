@@ -48,13 +48,17 @@ class ObjectEventService {
     public get eventsSupported(): string[] {
         return Array.from(this._eventMap.keys());
     }
+
+    public get list(): Map<string, Array<Function>> {
+        return this._eventMap;
+    }
 }
 
 class StoredObject {
     private _object: ObjectModel;
     private _events: ObjectEventService;
     private _lastUpdated: Date;
-    
+
     constructor(object: ObjectModel, events: ObjectEventService) {
         this._object = object;
         this._events = events;
@@ -207,8 +211,62 @@ class ObjectStorage {
         return false;
     }
 
+    async setChildren(parentId: string, childrenIds: string[]): Promise<boolean> {
+        let parent = await this.get(parentId);
+        if (!parent) {
+            this.logger.warn(`Parent object ${parentId} not found`);
+            return false;
+        }
+        for (let childId of childrenIds) {
+            let child = await this.get(childId);
+            if (!child) {
+                this.logger.warn(`Child object ${childId} not found`);
+                return false;
+            }
+            if (parent.children.find(c => c === childId)) {
+                continue;
+            }
+            parent.children.push(childId);
+        }
+
+        for (let childId of parent.children) {
+            if (childrenIds.find(c => c === childId)) {
+                continue;
+            }
+            parent.children.splice(parent.children.indexOf(childId), 1);
+        }
+
+        await db.objects.updateOne({ id: parentId }, { $set: { children: parent.children } });
+        return true;
+    }
+
     update(id: string, prop: string, value: any): boolean {
         return this._update(id, prop, value, true);
+    }
+
+    async reload(id: string) {
+        let object = await db.objects.findOne({ id: id });
+        if (!object) {
+            this.logger.warn(`Object ${id} not found`);
+            return;
+        }
+        // Try getting object from memory
+        const index = this.objects.findIndex((o) => o.object.id === id);
+        let events: Map<string, Array<Function>> = new Map();
+        if (index > -1) {
+            // Alert listeners
+            this.objects[index].events.dispatchEvent('reload', this.objects[index].object);
+            events = this.objects[index].events.list;
+            // Remove object from memory
+            this.objects.splice(index, 1);
+        }
+        await this.get(id);
+        let obj = this.objects.find(o => o.object.id === id);
+        events.forEach((funcs, key) => {
+            funcs.forEach(func => {
+                obj?.events.addEventListener(key, func);
+            });
+        });
     }
 
     private _update(id: string, prop: string, value: any, publishToMqtt: boolean): boolean {
@@ -222,7 +280,7 @@ class ObjectStorage {
             this.objects[index].events.dispatchEvent('propertyUpdate', this.objects[index].object, prop, value);
             if (config.mqtt.enabled && publishToMqtt) {
                 // If property is displayed, publish value to get topic
-                if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display){
+                if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display) {
                     this.logger.debug(`Publishing property ${prop} to get topic`);
                     mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
                 }
@@ -230,9 +288,9 @@ class ObjectStorage {
             // Added object to updated objects array
             this.updatedObjects.add(id);
             return true;
-        }else{
+        } else {
             // If object is not in memory, unsubscribe from set topic
-            if(config.mqtt.enabled)
+            if (config.mqtt.enabled)
                 mqtt.unsubscribe(`Homium/objects/${id}/properties/${prop}/set`);
         }
         return false;
@@ -280,9 +338,9 @@ class ObjectStorage {
         }
         this.logger.debug('Saving objects...');
         // Loop through updated objects
-        for(let id of this.updatedObjects){
+        for (let id of this.updatedObjects) {
             let object = this.objects.find((o) => o.object.id === id);
-            if(object){
+            if (object) {
                 // Update object in database
                 await db.objects.updateOne({ id: object.object.id }, {
                     $set: {
