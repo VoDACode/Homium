@@ -81,7 +81,7 @@ router.post('/create', authGuard, async (req, res) => {
     if(parent){
         await ObjectService.setChildren(parent.id, parent.children);
     }
-    res.status(200).send(obj.id).end();
+    res.status(201).send(obj.id).end();
 });
 
 router.delete('/remove/:id', authGuard, async (req, res) => {

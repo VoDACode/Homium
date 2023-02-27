@@ -3,6 +3,8 @@ import { uuid } from 'uuidv4';
 import db from '../db';
 import { authGuard, hasPermission, isAuthorized } from '../guards/AuthGuard';
 import { ScriptModel, ScriptTargetEvent, ScriptTargetType } from '../models/ScriptModel';
+import extensions from '../services/extensions';
+import ObjectService from '../services/ObjectService';
 import ScriptService from '../services/ScriptService';
 
 export const router = express.Router();
@@ -61,6 +63,14 @@ router.post('/', authGuard, async (req, res) => {
     script.allowAnonymous = allowAnonymous || false;
     script.description = description || "";
     script.targetId = tagretId || "";
+
+    if(targetType === 'Extension' && extensions.any(tagretId, 'id') === false){
+        res.status(400).send("Invalid extension id");
+        return;
+    } else if(targetType === 'Object' && await ObjectService.any(tagretId) == false){
+        res.status(400).send("Invalid object id");
+        return;
+    }
 
     await ScriptService.createScript(script);
     res.status(201).send({ id: id });

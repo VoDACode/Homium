@@ -269,6 +269,11 @@ class ObjectStorage {
         });
     }
 
+    async any(id: string): Promise<boolean> {
+        let obj = await this.get(id);
+        return obj !== undefined;
+    }
+
     private _update(id: string, prop: string, value: any, publishToMqtt: boolean): boolean {
         // Try getting object from memory
         const index = this.objects.findIndex((o) => o.object.id === id);
