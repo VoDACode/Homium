@@ -8,6 +8,9 @@
   * [__get-root__](#get-root)
   * [__get/:id/children__](#getidchildren)
   * [__get/:id/:prop/history__](#getidprophistory)
+  * [__list__](#list)
+  * [__list/ids__](#listids)
+  * [__list/:id__](#listid)
   * [__update/:id__](#updateid)
   * [__update/:id/parent__](#updateidparent)
   * [__update/:id/children__](#updateidchildren)
@@ -144,6 +147,57 @@ List all objects ID`s.
     -X GET
     -H "Content-Type: application/json"
     http://localhost:3000/api/object/list/ids
+```
+
+## __list/:id__
+
+Return the object with the given id.
+
+### Request
+
+    GET /api/object/list/:id
+
+### Parameters in URL
+
+Name   | Type | Description
+--------|------|-------------
+`id`    | `string` | The id of the object.
+
+### URL Parameters
+
+Name   | Type | Description
+--------|------|-------------
+`viewProperties`    | `viewProperties` | The properties to be displayed.
+
+### Response body
+
+Name   | Type | Description
+--------|------|-------------
+`id`    | `string` | The id of the object.
+`name`    | `string` | The name of the object.
+`parentId`    | `string` or `NULL` | The parent id of the object.
+`updatedAt`    | `string` | The last update date of the object.
+`children`     | `string[]` | The children of the object.
+`properties`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The properties of the object.
+`description`    | `string` or `NULL` | The description of the object.
+`allowAnonymous`   | `boolean` | Whether the object is accessible by anonymous users.
+`systemObject`   | `boolean` | Whether the object is a system object.
+
+### Response
+
+    200 OK (Object)
+    400 Bad Request
+    401 Unauthorized
+    403 Forbidden
+    404 Not Found
+
+### Example
+
+```bash
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/object/list/5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c
 ```
 
 ## __get/:id__

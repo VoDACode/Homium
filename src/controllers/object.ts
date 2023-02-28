@@ -451,4 +451,37 @@ router.get('/list', authGuard, async (req, res) => {
     })).end();
 });
 
+router.get('/list/:id', authGuard, async (req, res) => {
+    const id = req.params.id;
+    if (id == null || typeof id !== 'string') {
+        return res.status(400).send('The id must be a string.').end();
+    }
+
+    if (await hasPermission(req, p => p.object.read) !== true) {
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+    const viewProperties = req.query.viewProperties == 'true';
+
+    const object = await ObjectService.get(id);
+    if (object == null) {
+        return res.status(404).send('Object not found.').end();
+    }
+    let obj: any = {
+        id: object.id,
+        name: object.name,
+        parentId: object.parentId,
+        description: object.description,
+        updatedAt: object.updatedAt,
+        allowAnonymous: object.allowAnonymous,
+        children: object.children,
+        systemObject: object.systemObject
+    }
+    if (viewProperties) {
+        obj.properties = getPropertyToJsonObject(object);
+    }
+    res.status(200).send(obj).end();
+});
+
 module.exports = router;
