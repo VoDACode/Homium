@@ -12,3 +12,4 @@
 * [Scripts](scripts.md)
 * [Users](user.md)
 * [Bots](bot.md)
+* [Extensions](extension.md)

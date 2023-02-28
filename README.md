@@ -6,13 +6,6 @@
 
 > # [Frontend](docs/frontend/README.md)
 
-> # [Extensions](docs/extensions/README.md)
->
->* [Structure](docs/extensions/structure.md)
->* [Using resources and APIs](docs/extensions/using-resources-and-apis.md)
->* [Routers](docs/extensions/routers.md)
->* [How is it loaded?](docs/extensions/README.md#how-is-it-loaded)
-
 > # Project
 >
 > * [Get started](docs/project/get-start.md)
@@ -20,6 +13,8 @@
 > * [Contributing](#contributing)
 > * [Structure](docs/project/structure.md) [EMPTY]
 > * [Code style](docs/project/code-style.md) [EMPTY]
+
+> # [To other developers](docs/dev/README.md)
 
 ## Goals
 

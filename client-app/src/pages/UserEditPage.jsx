@@ -124,7 +124,7 @@ const UserEditPage = () => {
                     invert(tmpRes, p => p[key]);
                 }
             }
-            setPermissionsEnabled(tmpRes);
+            setPermissionsEnabled(selfUser.isAdministrator ? new DefaultPermissions(false) : tmpRes);
         } else {
             let user = await ApiUsers.getUserPermissions(username);
             let _selfUser = { ...selfUser }
@@ -139,7 +139,8 @@ const UserEditPage = () => {
                 for (const key in user) {
                     if (Object.prototype.hasOwnProperty.call(user, key) && typeof user[key] === 'object') {
                         vP(_selfPermissions, user, p => p[key], undefined, false);
-                        invert(user, p => p[key]);
+                        if(selfUser.isAdministrator === false)
+                            invert(user, p => p[key]);
                     }
                 }
             }

@@ -31,8 +31,7 @@ import { IExtension } from "../types";
 
 module.exports = class MyExtension implements IExtension {
     public name: string = "MyExtension";
-    public description: string = "MyExtension extension";
-    public version: string = "1.0.0";
+    public globalName: string = "my-extension";
 
     constructor() {
         console.log("MyExtension extension loaded");
@@ -45,5 +44,31 @@ module.exports = class MyExtension implements IExtension {
     public run(): void {
         console.log("MyExtension extension running");
     }
+}
+```
+
+## Requirements for "package.json"
+
+package.json must contain the following fields:
+
+Name | Type | Required | Description
+--- | --- | --- | ---
+name | `string` | yes | Name of the extension
+version | `string` | yes | Version of the extension
+description | `string` | no | Description of the extension 
+author | `string` | no | Author of the extension
+disabled | `boolean` | no | If true, the extension will not be loaded
+dependencies | `object` | no | Dependencies of the extension
+
+Example:
+
+```json
+{
+    "name": "my-extension",
+    "version": "1.0.0",
+    "description": "My extension",
+    "author": "My name",
+    "disabled": false,
+    "dependencies": {}
 }
 ```

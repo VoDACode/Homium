@@ -52,7 +52,20 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
         res.status(401).end();
         return;
     }
-    if (req.cookies) {
+    if (apikey) {
+        db.bots.findOne({ apiKey: apikey }).then(bot => {
+            if (bot == null) {
+                res.status(401).send("Bot not found!").end();
+                return;
+            }
+
+            if (bot.isActivated === false) {
+                res.status(401).send("Bot is disabled").end();
+                return;
+            }
+            next();
+        });
+    } else if (req.cookies) {
         const sessionToken = req.cookies['token'];
         if (!sessionToken) {
             res.status(401).send("Session token not found").end();
@@ -70,20 +83,8 @@ export async function authGuard(req: Request, res: Response, next: NextFunction)
             res.status(401).send("Session expired").end();
             return;
         }
-    } else if (apikey) {
-        const bot = await db.bots.findOne({ apikey: apikey });
-        if (!bot) {
-            res.status(401).send("Bot not found!").end();
-            return;
-        }
-
-        if (bot.isActivated === false) {
-            res.status(401).send("Bot is disabled").end();
-            return;
-        }
+        next();
     }
-
-    next();
 }
 
 export async function signout(req: Request, res: Response, next: NextFunction) {

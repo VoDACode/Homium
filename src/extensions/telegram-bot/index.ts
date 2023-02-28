@@ -22,7 +22,11 @@ class TelegramBotApp extends IExtension {
     constructor(id: string) {
         super(id);
         this._userService = new UserService(this);
-        this.addEventNames(["onmessage", "onnewuser", "callback_query"]);
+        this.addEvent([
+            { name: "onmessage", description: "Triggered when user send message to bot" },
+            { name: "onnewuser", description: "Triggered when user send message to bot for first time" },
+            { name: "callback_query", description: "Triggered when user click on inline keyboard button" }
+        ]);
     }
 
     public stop(): void {
