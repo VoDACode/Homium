@@ -5,8 +5,12 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get('object/get-root'));
     }
 
-    static async getObject(id) {
+    static async getLogicalObject(id) {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}`));
+    }
+
+    static async getObject(id) {
+        return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}`));
     }
     
     static async getObjects(viewProperties = false) {

@@ -15,13 +15,32 @@ const CustomSelect = ({ enabled = true, isDefaultOptionAllowed = false, space = 
 
     function RenderOptions() {
         var res = [];
+        var fixedOptions = [...options];
         var i = 1;
-        options.map((el) => {
+        var chosenElement = { name: '', val: '' };
+
+        for (let j = 0; j < fixedOptions.length; j++) {
+            if (fixedOptions[j].val === chosenValue) {
+                chosenElement.name = fixedOptions[j].name;
+                chosenElement.val = fixedOptions[j].val;
+                break;
+            }
+        }
+
+        fixedOptions = fixedOptions.filter(el => {
+            return el.val !== chosenValue;
+        });
+
+        fixedOptions.unshift(chosenElement);
+
+        fixedOptions.map((el) => {
             res.push(<option value={el.val} key={i} style={{ fontSize: optionSize, fontWeight: optionWeight }}>{el.name}</option>);
             i++;
             return true;
         });
+        
         if (isDefaultOptionAllowed) res.push(<option key={i} value=""></option>);
+
         return res;
     }
 
@@ -44,7 +63,7 @@ const CustomSelect = ({ enabled = true, isDefaultOptionAllowed = false, space = 
             <p className={cl.header} style={{ fontSize: headerSize, fontWeight: headerWeight }}>{headerText}</p>
             <Space size={space} />
             <select className={menuStyle} disabled={!enabled} ref={selectRef} onChange={(e) => ChangeValue(e)}
-                style={{ paddingLeft: paddingLeft, paddingRight: paddingRight, paddingTop: paddingTop, paddingBottom: paddingBottom, fontSize: optionSize, fontWeight: optionWeight, width: width}}>
+                style={{ paddingLeft: paddingLeft, paddingRight: paddingRight, paddingTop: paddingTop, paddingBottom: paddingBottom, fontSize: optionSize, fontWeight: optionWeight, width: width }}>
                 {RenderOptions()}
             </select>
         </div>

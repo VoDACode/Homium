@@ -20,6 +20,16 @@ const ScriptListPage = () => {
 
     const navigation = useNavigate();
     const navToAddScript = () => navigation('add');
+
+    async function ExecuteScript(id) {
+        var response = await ApiScripts.executeScript(id);
+        if (response.ok) {
+            
+        }
+        else {
+            alert('Execution failed!');
+        }
+    }
     
     function DeleteScriptRequest(scriptId) {
         setModWinVisibility(true);
@@ -103,6 +113,7 @@ const ScriptListPage = () => {
                     <ScriptRecord 
                         nameAttr={sortedScripts[i].name} 
                         descriptionAttr={sortedScripts[i].description}
+                        OnExecClick={() => ExecuteScript(sortedScripts[i].id)}
                         OnEditClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)}
                         OnDeleteClick={() => DeleteScriptRequest(sortedScripts[i].id)} />
                 </div>
