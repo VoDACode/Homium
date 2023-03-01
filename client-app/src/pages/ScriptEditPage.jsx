@@ -23,12 +23,6 @@ const ScriptEditPage = () => {
         { name: "remove", val: "remove" }
     ];
 
-    const extensionEventSet = [
-        { name: "onmessage", val: "onmessage" }
-    ];
-
-    const systemEventSet = [];
-
     const [scriptData, setScriptData] = useState({
         name: "",
         code: "",
@@ -67,6 +61,25 @@ const ScriptEditPage = () => {
         });
     }
 
+    function LoadTargetEventsById(targetId) {
+        ApiExtensions.getExtensionEvents(targetId).then(events => {
+            var evSet = [];
+            for (let i = 0; i < events.length; i++) {
+                evSet.push({ name: events[i].name, val: events[i].name });
+            }
+            setEventList(evSet);
+            setScriptData(prevState => {
+                var newData = { ...prevState };
+                newData.targetId = targetId;
+                if (evSet.length > 0)
+                    newData.targetEvent = evSet[0].val;
+                else
+                    newData.targetEvent = null;
+                return newData;
+            });
+        });
+    }
+
     function OnTargetTypeChanged(type) {
         if (type === 'Object') {
             ApiObjects.getObjects().then((data) => {
@@ -76,22 +89,74 @@ const ScriptEditPage = () => {
                 }
                 setItemList(items);
                 setEventList(objectEventSet);
-                setScriptData(prevState => {
-                    var newData = { ...prevState };
-                    newData.targetType = type;
-                    newData.targetId = items[0].val;
-                    newData.targetEvent = objectEventSet[0].val;
-                    return newData;
-                });
+                if (data.length > 0) {
+                    setScriptData(prevState => {
+                        var newData = { ...prevState };
+                        newData.targetType = type;
+                        newData.targetId = items[0].val;
+                        newData.targetEvent = objectEventSet[0].val;
+                        return newData;
+                    });
+                }
+                else {
+                    setScriptData(prevState => {
+                        var newData = { ...prevState };
+                        newData.targetType = type;
+                        newData.targetId = null;
+                        newData.targetEvent = objectEventSet[0].val;
+                        return newData;
+                    });
+                }
             });
         }
         else if (type === 'Extension') {
-            setItemList([]);
-            setEventList(extensionEventSet);
+            ApiExtensions.getExtensions().then(data => {
+                var items = [];
+                for (let i = 0; i < data.length; i++) {
+                    items.push({ name: data[i].name, val: data[i].id });
+                }
+                setItemList(items);
+                if (data.length > 0) {
+                    ApiExtensions.getExtensionEvents(data[0].id).then(events => {
+                        var evSet = [];
+                        for (let i = 0; i < events.length; i++) {
+                            evSet.push({ name: events[i].name, val: events[i].name });
+                        }
+                        setEventList(evSet);
+                        setScriptData(prevState => {
+                            var newData = { ...prevState };
+                            newData.targetType = type;
+                            newData.targetId = items[0].val;
+                            if (evSet.length > 0)
+                                newData.targetEvent = evSet[0].val;
+                            else
+                                newData.targetEvent = null;
+                            return newData;
+                        });
+                    });
+                }
+                else {
+                    setEventList([]);
+                    setScriptData(prevState => {
+                        var newData = { ...prevState };
+                        newData.targetType = type;
+                        newData.targetId = null;
+                        newData.targetEvent = null;
+                        return newData;
+                    });
+                }
+            });
         }
         else if (type === 'System') {
             setItemList([]);
-            setEventList(systemEventSet);
+            setEventList([]);
+            setScriptData(prevState => {
+                var newData = { ...prevState };
+                newData.targetType = type;
+                newData.targetId = null;
+                newData.targetEvent = null;
+                return newData;
+            });
         }
     }
 
@@ -99,7 +164,7 @@ const ScriptEditPage = () => {
         if (id !== 'add') {
             return (
                 <>
-                    <div style={{fontFamily: 'sans-serif', cursor: 'default'}}>
+                    <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>
                         <p>Target item</p>
                         <div style={{
                             display: 'flex',
@@ -114,7 +179,7 @@ const ScriptEditPage = () => {
                         </div>
                     </div>
                     <Space isHorizontal={true} size="10px" />
-                    <div style={{fontFamily: 'sans-serif', cursor: 'default'}}>
+                    <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>
                         <p>Target type</p>
                         <div style={{
                             display: 'flex',
@@ -137,7 +202,7 @@ const ScriptEditPage = () => {
                 <>
                     <CustomSelect
                         options={itemList}
-                        onChange={(e) => ChangeScriptAttributeByValue("targetId", e.target.value)}
+                        onChange={(e) => LoadTargetEventsById(e.target.value)}
                         chosenValue={scriptData.targetId}
                         type="simple" space="1px" headerText="Target item *" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
                     <Space isHorizontal={true} size="10px" />
@@ -152,7 +217,7 @@ const ScriptEditPage = () => {
     }
 
     async function SaveChanges() {
-        if (scriptData.name !== "" && scriptData.code !== "") {
+        if (scriptData.name !== "" && scriptData.code !== "" && scriptData.targetId !== null && scriptData.targetEvent !== "" && scriptData.targetEvent !== null) {
             var response = id === 'add' ? await ApiScripts.createScript(scriptData) : await ApiScripts.updateScript(id, scriptData);
             if (response.ok) {
                 navigateScriptListPage();
@@ -194,7 +259,7 @@ const ScriptEditPage = () => {
                             ApiExtensions.getExtensionEvents(ext.id).then(events => {
                                 var items = [];
                                 for (let i = 0; i < events.length; i++) {
-                                    items.push({name: events[i].name, val: events[i].name});
+                                    items.push({ name: events[i].name, val: events[i].name });
                                 }
                                 setEventList(items);
                             });
@@ -212,7 +277,7 @@ const ScriptEditPage = () => {
         else {
             OnTargetTypeChanged('Object');
         }
-    }, []);
+    }, [id]);
 
     return (
         <div>
@@ -226,7 +291,7 @@ const ScriptEditPage = () => {
                 <CustomSelect
                     options={eventList}
                     onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
-                    chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
+                    chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event *" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
                 <Space isHorizontal={true} size="10px" />
                 {RenderTargets()}
             </ItemsContainer>

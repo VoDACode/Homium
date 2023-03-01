@@ -203,7 +203,7 @@ const UserEditPage = () => {
             <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
-                    <InputBox title="Username" name="username" value={userData?.username} disabled={editMode} required={true} onError={(e) => {
+                    <InputBox title="Username *" name="username" value={userData?.username} disabled={editMode} required={true} onError={(e) => {
                         setErrors(prevState => {
                             let data = [...prevState];
                             data[0] = e;
@@ -213,7 +213,7 @@ const UserEditPage = () => {
                     <InputBox title="First Name" name="firstname" value={userData?.firstname} disabled={!canChange} onChange={inputTextChange} />
                     <InputBox title="Last Name" name="lastname" value={userData?.lastname} disabled={!canChange} onChange={inputTextChange} />
                     <InputBox title="Email" name="email" value={userData?.email} disabled={!canChange} onChange={inputTextChange} />
-                    <InputBox title="Password" type="password" name="password" disabled={!canChange} required={!editMode} placeholder="********" value={userData?.password} error={!editMode ? userData?.password.length < 8 : false} onChange={inputTextChange} onError={(e) => {
+                    <InputBox title="Password *" type="password" name="password" disabled={!canChange} required={!editMode} placeholder="********" value={userData?.password} error={!editMode ? userData?.password.length < 8 : false} onChange={inputTextChange} onError={(e) => {
                         setErrors(prevState => {
                             let data = [...prevState];
                             data[1] = e;

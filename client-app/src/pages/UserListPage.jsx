@@ -109,10 +109,10 @@ const UserListPage = () => {
 
         for (var i = 0; i < users.length; i++) {
             fixedUsers.push({
-                username: users[i].username === '' ? '—' : users[i].username,
-                firstname: users[i].firstname === '' ? '—' : users[i].firstname,
-                lastname: users[i].lastname === '' ? '—' : users[i].lastname,
-                email: users[i].email === '' ? '—' : users[i].email
+                username: users[i].username === '' || users[i].username === null ? '—' : users[i].username,
+                firstname: users[i].firstname === '' || users[i].firstname === null ? '—' : users[i].firstname,
+                lastname: users[i].lastname === '' || users[i].lastname === null ? '—' : users[i].lastname,
+                email: users[i].email === '' || users[i].email === null ? '—' : users[i].email
             });
         }
 
