@@ -46,6 +46,10 @@ export class MqttService {
     }
 
     public subscribe(topic: string, callback: (topic: string, message: string) => void) {
+        if(topic[0] !== '/') {
+            topic = '/' + topic;
+        }
+        topic = config.mqtt.topic + topic;
         this.mqttClient?.subscribe(topic);
         this.mqttClient?.on('message', (topic, message) => {
             callback(topic, message.toString());
@@ -53,6 +57,10 @@ export class MqttService {
     }
 
     public unsubscribe(topic: string) {
+        if(topic[0] !== '/') {
+            topic = '/' + topic;
+        }
+        topic = config.mqtt.topic + topic;
         this.mqttClient?.unsubscribe(topic);
     }
 }

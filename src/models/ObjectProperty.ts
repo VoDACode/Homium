@@ -62,9 +62,9 @@ export function convertAnyToCorrectType(value: any, inputVal: string): any | und
     if(typeof inputVal === 'number')
         newVal = parseFloat(value);
     else if(typeof inputVal === 'boolean')
-        newVal = value === 'true';
+        newVal = value == 'true' || value == true;
     else if(typeof inputVal === 'string')
-        newVal = value;
+        newVal = String(value);
     if(Number.isNaN(newVal))
         return undefined;
     return newVal;

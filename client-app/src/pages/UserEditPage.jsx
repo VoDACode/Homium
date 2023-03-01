@@ -113,32 +113,31 @@ const UserEditPage = () => {
         }
     }
 
-    async function disablePermissions() {
+    async function disablePermissions(selfUserPermissions, selfUser) {
         if (username === 'add') {
-            let selfUser = { ...selfPermissions };
             let tmpRes = new DefaultPermissions(true);
             tmpRes.isAdministrator = false;
-            for (const key in selfUser) {
-                if (Object.prototype.hasOwnProperty.call(selfUser, key) && typeof selfUser[key] === 'object') {
-                    vP(selfUser, tmpRes, p => p[key]);
-                    invert(tmpRes, p => p[key]);
+            for (const key in selfUserPermissions) {
+                if (Object.prototype.hasOwnProperty.call(selfUserPermissions, key) && typeof selfUserPermissions[key] === 'object') {
+                    vP(selfUserPermissions, tmpRes, p => p[key]);
+                    if(selfUserPermissions.isAdministrator === false){
+                        invert(tmpRes, p => p[key]);
+                    }
                 }
             }
-            setPermissionsEnabled(selfUser.isAdministrator ? new DefaultPermissions(false) : tmpRes);
+            setPermissionsEnabled(selfUserPermissions.isAdministrator ? new DefaultPermissions(false) : tmpRes);
         } else {
             let user = await ApiUsers.getUserPermissions(username);
-            let _selfUser = { ...selfUser }
-            let _selfPermissions = { ...selfPermissions };
-            if (user.isAdministrator === true || canChange === false || username === _selfUser.username) {
-                for (const key in _selfPermissions) {
-                    if (Object.prototype.hasOwnProperty.call(_selfPermissions, key) && typeof _selfPermissions[key] === 'object') {
-                        vP(_selfPermissions, user, p => p[key], true, false);
+            if (user.isAdministrator === true || canChange === false || username === selfUser.username) {
+                for (const key in selfUserPermissions) {
+                    if (Object.prototype.hasOwnProperty.call(selfUserPermissions, key) && typeof selfUserPermissions[key] === 'object') {
+                        vP(selfUserPermissions, user, p => p[key], true, false);
                     }
                 }
             } else if (user.isAdministrator === false && canChange === true) {
                 for (const key in user) {
                     if (Object.prototype.hasOwnProperty.call(user, key) && typeof user[key] === 'object') {
-                        vP(_selfPermissions, user, p => p[key], undefined, false);
+                        vP(selfUserPermissions, user, p => p[key], undefined, false);
                         if(selfUser.isAdministrator === false)
                             invert(user, p => p[key]);
                     }
@@ -183,19 +182,19 @@ const UserEditPage = () => {
                 setPermissions(data);
             });
         }
-        ApiUsers.getSelfPermissions().then(data => {
+        ApiUsers.getSelfPermissions().then(permissions => {
             if (username === 'add') {
-                if (!data.user.create)
+                if (!permissions.user.create)
                     navToUserList();
             } else {
-                setCanChange(data.user.update);
+                setCanChange(permissions.user.update);
             }
-            setSelfPermissions(data);
+            setSelfPermissions(permissions);
+            ApiUsers.getSelfUser().then(user => {
+                setSelfUser(user);
+                disablePermissions(permissions, user);
+            });
         });
-        ApiUsers.getSelfUser().then(data => {
-            setSelfUser(data);
-        });
-        disablePermissions();
     }, []);
 
     return (

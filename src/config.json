@@ -14,7 +14,8 @@
         "host": "195.162.65.27",
         "port": 1883,
         "user": "Homium",
-        "password": "Homium_9z8df5b+dzf"
+        "password": "Homium_9z8df5b+dzf",
+        "topic": "homium"
     },
     "log": {
         "level": "debug",

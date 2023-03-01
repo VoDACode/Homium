@@ -11,7 +11,7 @@ export const router = express.Router();
 
 router.post('/', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.create) !== true){
+    if (await hasPermission(req, p => p.script.create) !== true) {
         res.status(403).send('You do not have permission to create scripts');
         return;
     }
@@ -22,52 +22,52 @@ router.post('/', authGuard, async (req, res) => {
     const targetType = req.body.targetType as ScriptTargetType;
     const allowAnonymous = req.body.allowAnonymous;
     const description = req.body.description;
-    const tagretId = req.body.tagretId as string;
+    const targetId = req.body.targetId as string;
 
-    if(!name || typeof name !== 'string' || name.length < 1){
+    if (!name || typeof name !== 'string' || name.length < 1) {
         res.status(400).send("Invalid name");
         return;
     }
 
-    if(!code || typeof code !== 'string' || code.length < 1){
+    if (!code || typeof code !== 'string' || code.length < 1) {
         res.status(400).send("Invalid code");
         return;
     }
 
-    if(!targetEvent || typeof targetEvent !== 'string' || targetEvent.length < 1){
+    if (!targetEvent || typeof targetEvent !== 'string' || targetEvent.length < 1) {
         res.status(400).send("Invalid target event");
         return;
     }
 
-    if(!targetType || typeof targetType !== 'string' || targetType.length < 1){
+    if (!targetType || typeof targetType !== 'string' || targetType.length < 1) {
         res.status(400).send("Invalid target type");
         return;
     }
 
-    if(allowAnonymous !== undefined && typeof allowAnonymous !== 'boolean'){
+    if (allowAnonymous !== undefined && typeof allowAnonymous !== 'boolean') {
         res.status(400).send("Invalid allow anonymous");
         return;
     }
 
-    if(description !== undefined && typeof description !== 'string'){
+    if (description !== undefined && typeof description !== 'string') {
         res.status(400).send("Invalid description");
         return;
     }
 
     let id = "";
-    do{
+    do {
         id = uuid();
-    }while((await db.scripts.countDocuments({ id: id })) > 0);
+    } while ((await db.scripts.countDocuments({ id: id })) > 0);
 
     const script = new ScriptModel(id, name, code, targetEvent, targetType);
     script.allowAnonymous = allowAnonymous || false;
     script.description = description || "";
-    script.targetId = tagretId || "";
+    script.targetId = targetId || "";
 
-    if(targetType === 'Extension' && extensions.any(tagretId, 'id') === false){
+    if (targetType === 'Extension' && extensions.any(targetId, 'id') === false) {
         res.status(400).send("Invalid extension id");
         return;
-    } else if(targetType === 'Object' && await ObjectService.any(tagretId) == false){
+    } else if (targetType === 'Object' && await ObjectService.any(targetId) == false) {
         res.status(400).send("Invalid object id");
         return;
     }
@@ -78,7 +78,7 @@ router.post('/', authGuard, async (req, res) => {
 
 router.get('/', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.read) !== true){
+    if (await hasPermission(req, p => p.script.read) !== true) {
         res.status(403).send('You do not have permission to read scripts');
         return;
     }
@@ -88,26 +88,26 @@ router.get('/', authGuard, async (req, res) => {
 
 router.get('/:id', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.read) !== true){
+    if (await hasPermission(req, p => p.script.read) !== true) {
         res.status(403).send('You do not have permission to read scripts');
         return;
     }
 
-    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+    if (!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1) {
         res.status(400).send("Invalid id");
         return;
     }
-    try{
+    try {
         let script = await ScriptService.getScript(req.params.id);
         res.status(200).json(script);
-    }catch(e){
+    } catch (e) {
         res.status(404).send("Script not found");
     }
 });
 
 router.put('/:id', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.read) !== true){
+    if (await hasPermission(req, p => p.script.read) !== true) {
         res.status(403).send('You do not have permission to update scripts');
         return;
     }
@@ -117,93 +117,101 @@ router.put('/:id', authGuard, async (req, res) => {
     const targetEvent: ScriptTargetEvent | undefined = req.body.targetEvent as ScriptTargetEvent;
     const allowAnonymous: boolean | undefined = req.body.allowAnonymous;
     const description: string | undefined = req.body.description;
+    const enabled: boolean | undefined = req.body.enabled;
 
-    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+    if (!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1) {
         res.status(400).send("Invalid id");
         return;
     }
 
     let script = await ScriptService.getScript(req.params.id);
-    if(!script){
+    if (!script) {
         res.status(400).send("Invalid script");
         return;
     }
-    
-    if(name !== undefined && (typeof name !== 'string' || name.length < 1)){
+
+    if (name !== undefined && (typeof name !== 'string' || name.length < 1)) {
         res.status(400).send("Invalid name");
         return;
-    }else if(name !== undefined && name !== script.name && name.length > 0){
+    } else if (name !== undefined && name !== script.name && name.length > 0) {
         script.name = name;
     }
 
-    if(code !== undefined && (typeof code !== 'string' || code.length < 1)){
+    if (code !== undefined && (typeof code !== 'string' || code.length < 1)) {
         res.status(400).send("Invalid code");
         return;
-    }else if(code !== undefined && code !== script.code && code.length > 0){
+    } else if (code !== undefined && code !== script.code && code.length > 0) {
         script.code = code;
     }
 
-    if(targetEvent !== undefined && (typeof targetEvent !== 'string' || targetEvent.length < 1)){
+    if (targetEvent !== undefined && (typeof targetEvent !== 'string' || targetEvent.length < 1)) {
         res.status(400).send("Invalid target event");
         return;
-    }else if(targetEvent !== undefined && targetEvent !== script.targetEvent && targetEvent.length > 0){
+    } else if (targetEvent !== undefined && targetEvent !== script.targetEvent && targetEvent.length > 0) {
         script.targetEvent = targetEvent;
     }
 
-    if(allowAnonymous !== undefined && typeof allowAnonymous !== 'boolean'){
+    if (allowAnonymous !== undefined && typeof allowAnonymous !== 'boolean') {
         res.status(400).send("Invalid allow anonymous");
         return;
-    }else if(allowAnonymous !== undefined && allowAnonymous !== script.allowAnonymous){
+    } else if (allowAnonymous !== undefined && allowAnonymous !== script.allowAnonymous) {
         script.allowAnonymous = allowAnonymous;
     }
 
-    if(description !== undefined && typeof description !== 'string'){
+    if (enabled !== undefined && typeof enabled !== 'boolean') {
+        res.status(400).send("Invalid enabled");
+        return;
+    } else if (enabled !== undefined && enabled !== script.enabled) {
+        script.enabled = enabled;
+    }
+
+    if (description !== undefined && typeof description !== 'string') {
         res.status(400).send("Invalid description");
         return;
-    }else if(description !== undefined && description !== script.description){
+    } else if (description !== undefined && description !== script.description) {
         script.description = description;
     }
 
-    try{
+    try {
         await ScriptService.updateScript(script);
         res.status(200).send({ success: true });
-    }catch(e){
+    } catch (e) {
         res.status(404).send("Script not found");
     }
 });
 
 router.put("/:id/code", authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.read) !== true){
+    if (await hasPermission(req, p => p.script.read) !== true) {
         res.status(403).send('You do not have permission to update scripts');
         return;
     }
 
     const code = req.body;
-    if(!code || typeof code !== 'string' || code.length < 1){
+    if (!code || typeof code !== 'string' || code.length < 1) {
         res.status(400).send("Invalid code");
         return;
     }
-    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+    if (!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1) {
         res.status(400).send("Invalid id");
         return;
     }
-    try{
+    try {
         await ScriptService.updateScriptCode(req.params.id, code);
         res.status(200).send({ success: true });
-    }catch(e){
+    } catch (e) {
         res.status(404).send("Script not found");
     }
 });
 
 router.delete('/:id', authGuard, async (req, res) => {
 
-    if(await hasPermission(req, p => p.script.remove) !== true){
+    if (await hasPermission(req, p => p.script.remove) !== true) {
         res.status(403).send('You do not have permission to delete scripts');
         return;
     }
 
-    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+    if (!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1) {
         res.status(400).send("Invalid id");
         return;
     }
@@ -212,31 +220,31 @@ router.delete('/:id', authGuard, async (req, res) => {
 });
 
 router.get('/:id/execute', async (req, res) => {
-    if(!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1){
+    if (!req.params.id || typeof req.params.id !== 'string' || req.params.id.length < 1) {
         res.status(400).send("Invalid id");
         return;
     }
 
-    if(await ScriptService.isAllowAnonymous(req.params.id) === false){
-        if(await isAuthorized(req) === false){
+    if (await ScriptService.isAllowAnonymous(req.params.id) === false) {
+        if (await isAuthorized(req) === false) {
             res.status(401).send("Unauthorized").redirect('/auth');
             return;
-        }else if(await hasPermission(req, p => p.script.execute) !== true){
+        } else if (await hasPermission(req, p => p.script.execute) !== true) {
             res.status(403).send('You do not have permission to execute scripts');
             return;
         }
     }
 
-    if(await (await ScriptService.getScript(req.params.id)).targetEvent !== 'call'){
+    if (await (await ScriptService.getScript(req.params.id)).targetEvent !== 'call') {
         res.status(400).send("Invalid target event");
         return;
     }
 
-    try{
+    try {
         await ScriptService.executeScript(req.params.id, []);
         res.status(200).send({ success: true });
-    }catch(e){
-        res.status(404).send("Script not found");
+    } catch (e: any) {
+        res.status(404).send(e);
     }
 });
 

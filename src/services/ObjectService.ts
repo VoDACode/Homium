@@ -281,18 +281,24 @@ class ObjectStorage {
             this.logger.debug(`Updating property ${prop} of object ${id} from ${this.objects[index].object.properties.find(p => p.key === prop)!.value} to ${value}`);
             value = convertAnyToCorrectType(value, this.objects[index].object.properties.find(p => p.key === prop)!.value);
             // Alert listeners
-            this.objects[index].events.dispatchEvent('update', this.objects[index].object);
-            this.objects[index].events.dispatchEvent('propertyUpdate', this.objects[index].object, prop, value);
-            if (config.mqtt.enabled && publishToMqtt) {
-                // If property is displayed, publish value to get topic
-                if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display) {
-                    this.logger.debug(`Publishing property ${prop} to get topic`);
-                    mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
+            const propIndex = this.objects[index].object.properties.findIndex(p => p.key === prop);
+            if (propIndex > -1) {
+                this.objects[index].object.properties[propIndex].value = value;
+                this.objects[index].events.dispatchEvent('update', this.objects[index].object);
+                this.objects[index].events.dispatchEvent('propertyUpdate', this.objects[index].object, prop, value);
+                if (config.mqtt.enabled && publishToMqtt) {
+                    // If property is displayed, publish value to get topic
+                    if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display) {
+                        this.logger.debug(`Publishing property ${prop} to get topic`);
+                        mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
+                    }
                 }
+                // Added object to updated objects array
+                this.updatedObjects.add(id);
+                return true;
+            } else {
+                this.logger.warn(`Property ${prop} not found on object ${id}`);
             }
-            // Added object to updated objects array
-            this.updatedObjects.add(id);
-            return true;
         } else {
             // If object is not in memory, unsubscribe from set topic
             if (config.mqtt.enabled)

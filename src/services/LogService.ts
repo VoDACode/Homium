@@ -47,9 +47,18 @@ class LogStorage{
     }
 
     public log(level: LogLevel, message: string, serviceName: string): void {
+        if(level < this.stringLeverToLogLevel(config.log.level)){
+            return;
+        }
         this.logRecords.push(new LogRecord(level, message, serviceName));
         if(config.log.console){
-            console.log(`[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}`);
+            let textColor = "";
+            if(level >= LogLevel.ERROR){
+                textColor = "\x1b[31m";
+            } else if(level == LogLevel.WARN){
+                textColor = "\x1b[33m";
+            }
+            console.log(`\x1b[1m[${new Date().toISOString()}]\x1b[0m${this.getTextCollor(level)}\x1b[1m[${LogLevel[level]}]\x1b[0m\x1b[90m[${serviceName}]\x1b[0m${textColor}: ${message}\x1b[0m`);
         }
         this.logListeners.forEach((listener) => {
             listener(new LogRecord(level, message, serviceName));
@@ -81,6 +90,41 @@ class LogStorage{
         const index = this.logListeners.indexOf(listener);
         if(index > -1){
             this.logListeners.splice(index, 1);
+        }
+    }
+
+    private stringLeverToLogLevel(level: string): LogLevel {
+        level = level.toUpperCase();
+        switch (level) {
+            case "DEBUG":
+                return LogLevel.DEBUG;
+            case "INFO":
+                return LogLevel.INFO;
+            case "WARN":
+                return LogLevel.WARN;
+            case "ERROR":
+                return LogLevel.ERROR;
+            case "FATAL":
+                return LogLevel.FATAL;
+            default:
+                return LogLevel.INFO;
+        }
+    }
+
+    private getTextCollor(level: LogLevel): string {
+        switch (level) {
+            case LogLevel.DEBUG:
+                return "\x1b[34m";
+            case LogLevel.INFO:
+                return "\x1b[32m";
+            case LogLevel.WARN:
+                return "\x1b[33m";
+            case LogLevel.ERROR:
+                return "\x1b[31m";
+            case LogLevel.FATAL:
+                return "\x1b[31m";
+            default:
+                return "\x1b[0m";
         }
     }
 }

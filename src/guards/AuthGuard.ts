@@ -150,22 +150,26 @@ export async function getUser(data: Request | string): Promise<UserModel | null>
 export async function getBot(req: Request, options = {
     checkActivated: true
 }): Promise<BotModel | null> {
-    options.checkActivated = options.checkActivated ?? true;
-    const apikey = req.headers['x-api-key'];
-    if (!apikey) {
-        return null;
-    }
+    return await new Promise<BotModel | null>(resolve => {
+        const apikey = req.headers['x-api-key'];
+        if (!apikey) {
+            resolve(null);
+            return;
+        }
 
-    const bot = await db.bots.findOne({ apikey: apikey });
-    if (!bot) {
-        return null;
-    }
+        db.bots.findOne({ apiKey: apikey }).then(bot => {
+            if (!bot) {
+                resolve(null);
+                return;
+            }
 
-    if (bot.isActivated === false && options.checkActivated) {
-        return null;
-    }
-
-    return bot;
+            if (bot.isActivated === false && options.checkActivated) {
+                resolve(null);
+                return;
+            }
+            resolve(bot);
+        });
+    });
 }
 
 export async function isAuthorized(req: Request): Promise<boolean> {

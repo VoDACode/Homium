@@ -132,6 +132,7 @@ Scripts are a way to automate tasks in the house. They a written in the JavaScri
   "targetEvent": "string" | null,
   "description": "string" | null,
   "allowAnonymous": true | false | null,
+  "enabled": true | false | null,
 }
 ```
 
@@ -144,6 +145,7 @@ Scripts are a way to automate tasks in the house. They a written in the JavaScri
 | targetEvent | [`ScriptTargetEvent`](/src/models/ScriptModel.ts) or `null` | The event that triggers the script |
 | description | `string` or `null` | The description of the script |
 | allowAnonymous | `boolean` or `null` | Whether the script can be run by anonymous users |
+| enabled | `boolean` | Whether the script is enabled |
 
 #### Response
 

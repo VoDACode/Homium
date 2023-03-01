@@ -16,6 +16,7 @@ export interface IConfigModel {
         port: number;
         user: string;
         password: string;
+        topic: string;
     },
     extensions: {
         enabled: boolean;

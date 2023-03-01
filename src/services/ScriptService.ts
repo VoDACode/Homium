@@ -74,8 +74,13 @@ class ScriptService {
     }
 
     public async executeScript(id: string, args: ScriptArgument): Promise<any> {
+        for (let arg of Object.keys(args)) {
+            if (arg == "context") {
+                throw new Error("Argument 'context' is reserved");
+            }
+        }
         let context = {
-            _context: {
+            context: {
                 extensions: {
                     ...extensions.getContext,
                 },
@@ -96,12 +101,14 @@ class ScriptService {
             },
             ...args
         };
-
-        let script = this.scripts.find(s => s.script.id === id);
-        if (script) {
-            return VMService.instance.runScript(script.script.code, context);
+        let script = this.scripts.find(s => s.script.id === id)?.script ?? await this.loadScript(id);
+        if (script && script.enabled) {
+            return VMService.instance.runScript(script.code, context);
+        } if (script && !script.enabled) {
+            throw new Error("Script is disabled");
+        } else {
+            throw new Error("Script not found");
         }
-        return VMService.instance.runScript(await (await this.loadScript(id)).code, context);
     }
 
     public async createScript(script: ScriptModel): Promise<string> {
@@ -186,7 +193,11 @@ class ScriptService {
                 this.deleteScript(script.id);
             });
             ObjectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
-                this.executeScript(script.id, args);
+                try {
+                    this.executeScript(script.id, args);
+                } catch (e) {
+                    this.logger.error(`Error executing script ${script.id}.`);
+                }
             });
         } else if (script.targetType === "Extension") {
             if (config.extensions.enabled == false) {
@@ -199,7 +210,11 @@ class ScriptService {
                 return;
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {
-                this.executeScript(script.id, args);
+                try {
+                    this.executeScript(script.id, args);
+                } catch (e) {
+                    this.logger.error(`Error executing script ${script.id}.`);
+                }
             });
         }
     }
