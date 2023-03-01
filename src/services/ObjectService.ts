@@ -289,7 +289,6 @@ class ObjectStorage {
                 if (config.mqtt.enabled && publishToMqtt) {
                     // If property is displayed, publish value to get topic
                     if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display) {
-                        this.logger.debug(`Publishing property ${prop} to get topic`);
                         mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
                     }
                 }

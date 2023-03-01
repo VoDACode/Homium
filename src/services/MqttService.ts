@@ -38,6 +38,10 @@ export class MqttService {
     }
 
     public publish(topic: string, message: string | number | boolean) {
+        if(topic[0] !== '/') {
+            topic = '/' + topic;
+        }
+        topic = config.mqtt.topic + topic;
         this.mqttClient?.publish(topic, message.toString(), { qos: 1 }, (err) => {
             if (err) {
                 console.error(err);
