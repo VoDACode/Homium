@@ -35,6 +35,7 @@ const ScriptEditPage = () => {
     });
 
     const [chosenTargetName, setChosenTargetName] = useState(null);
+    const [currentType, setCurrentType] = useState('');
     const [itemList, setItemList] = useState([]);
     const [eventList, setEventList] = useState([]);
 
@@ -62,25 +63,37 @@ const ScriptEditPage = () => {
     }
 
     function LoadTargetEventsById(targetId) {
-        ApiExtensions.getExtensionEvents(targetId).then(events => {
-            var evSet = [];
-            for (let i = 0; i < events.length; i++) {
-                evSet.push({ name: events[i].name, val: events[i].name });
-            }
-            setEventList(evSet);
+        if (currentType === 'Object') {
+            setEventList(objectEventSet);
             setScriptData(prevState => {
                 var newData = { ...prevState };
                 newData.targetId = targetId;
-                if (evSet.length > 0)
-                    newData.targetEvent = evSet[0].val;
-                else
-                    newData.targetEvent = null;
+                newData.targetEvent = objectEventSet[0].val;
                 return newData;
             });
-        });
+        }
+        else if (currentType === 'Extension') {
+            ApiExtensions.getExtensionEvents(targetId).then(events => {
+                var evSet = [];
+                for (let i = 0; i < events.length; i++) {
+                    evSet.push({ name: events[i].name, val: events[i].name });
+                }
+                setEventList(evSet);
+                setScriptData(prevState => {
+                    var newData = { ...prevState };
+                    newData.targetId = targetId;
+                    if (evSet.length > 0)
+                        newData.targetEvent = evSet[0].val;
+                    else
+                        newData.targetEvent = null;
+                    return newData;
+                });
+            });
+        }
     }
 
     function OnTargetTypeChanged(type) {
+        setCurrentType(type);
         if (type === 'Object') {
             ApiObjects.getObjects().then((data) => {
                 var items = [];

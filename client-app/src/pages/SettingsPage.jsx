@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import CustomSelect from "../components/CustomSelect/CustomSelect";
+import CustomCheckbox from "../components/CustomCheckbox/CustomCheckbox";
 import LogOutPanel from "../components/LogOutPanel/LogOutPanel";
 import ModalWindow from "../components/ModalWindow/ModalWindow";
+import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
 import SettingsTopMenu from "../components/SettingsTopMenu/SettingsTopMenu";
 import Space from "../components/Space/Space";
 import Switch from "../components/Switch/Switch";
@@ -13,7 +15,14 @@ import { CookieManager } from "../services/CookieManager";
 
 const SettingsPage = () => {
 
+    const { t: locale, i18n } = useTranslation();
+
     const [isModWinVisible, setModWinVisibility] = useState(false);
+    const [settings, setSettings] = useState({
+        nightModeOn: CookieManager.getCookie('night_mode') === '1' ? true : false,
+        lang: i18n.language,
+        askForExecScript: CookieManager.getCookie('ask_for_exec_script') === '1' ? true : false
+    });
 
     const navigate = useNavigate();
     const homePageNavigate = () => {
@@ -28,11 +37,24 @@ const SettingsPage = () => {
         });
     }
 
-    const { t: locale, i18n } = useTranslation();
-
     function ChangeAppLanguage(lang) {
         i18n.changeLanguage(lang);
-        CookieManager.setCookie('language', lang, '/');
+        ChangeSettingsParameter('lang', lang);
+    }
+
+    function ChangeSettingsParameter(name, value) {
+        setSettings(prevState => {
+            var newState = { ...prevState };
+            newState[name] = value;
+            return newState;
+        });
+    }
+
+    function SaveChanges() {
+        console.log(settings);
+        CookieManager.setCookie('language', settings.lang);
+        CookieManager.setCookie('night_mode', settings.nightModeOn ? '1' : '0');
+        CookieManager.setCookie('ask_for_exec_script', settings.askForExecScript ? '1' : '0');
     }
 
     useEffect(() => {
@@ -42,20 +64,33 @@ const SettingsPage = () => {
     return (
         <div>
             <ModalWindow visible={isModWinVisible}>
-                <LogOutPanel onLogOutClick={authPageNavigate} onCancelClick={() => setModWinVisibility(false)}/>
+                <LogOutPanel onLogOutClick={authPageNavigate} onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>
-            <SettingsTopMenu onHomeClick={homePageNavigate} onAdminClick={adminPageNavigate} onLogOutClick={() => setModWinVisibility(true)}/>
+            <SettingsTopMenu onHomeClick={homePageNavigate} onAdminClick={adminPageNavigate} onLogOutClick={() => setModWinVisibility(true)} />
             <CustomHeader text="Settings" textSize="50px" textColor="#0036a3" isCenter={true} />
             <Space size="10px" />
-            <CustomHeader text="Night mode:" textSize="30px" />
-            <Space size="10px" />
-            <Switch />
+            <Switch text="Night mode on:" textSize="30px" space="10px" />
             <Space size="30px" />
-            <CustomSelect isDefaultOptionAllowed={false} space="5px" headerText="Language:" headerSize="30px" headerWeight="600" optionSize="20px" paddingRight="3.5em" optionWeight="600" options={[
+            <CustomSelect space="5px" headerText="Language:" headerSize="30px" optionSize="20px" paddingRight="3.5em" optionWeight="600" options={[
                 { name: 'English', val: 'en' },
                 { name: 'Українська', val: 'uk' },
                 { name: 'Русский', val: 'ru' }
-            ]} type="classic" chosenValue={CookieManager.getCookie('language')} onChange={(e) => ChangeAppLanguage(e.target.value)} />
+            ]} type="classic" chosenValue={settings.lang} onChange={(e) => ChangeAppLanguage(e.target.value)} />
+            <Space size="40px" />
+            <hr />
+            <Space size="20px" />
+            <CustomCheckbox
+                name="askForExecScript"
+                text="Ask before executing a script" 
+                textSize="24px" 
+                scale="1.4" 
+                space="20px" 
+                checked={settings.askForExecScript} 
+                onChange={ChangeSettingsParameter} />
+            <Space size="20px" />
+            <hr />
+            <Space size="10px" />
+            <SaveOrCancelForm includeCancelButton={false} onSave={SaveChanges} flexEndOn={false} />
         </div>
     );
 }

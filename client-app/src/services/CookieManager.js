@@ -1,5 +1,5 @@
 export class CookieManager {
-    static setCookie(name, value, daysUntilExpiring, path) {
+    static setCookie(name, value, daysUntilExpiring = undefined, path = '/') {
         var expires, storePath;
 
         if (daysUntilExpiring) {
@@ -23,7 +23,7 @@ export class CookieManager {
 
         if (splittedList.length > 1) {
             var idx = splittedList[1].indexOf(' ');
-            res = splittedList[1].slice(1, idx === -1 ? undefined : idx);
+            res = splittedList[1].slice(1, idx === -1 ? undefined : idx - 1);
         }
         else {
             return null;

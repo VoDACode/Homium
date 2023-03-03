@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
-const CustomCheckbox = ({ name = null, checked = false, text = "", textSize = '15px', textWeight = 'normal', textColor = 'black', scale = "1", onChange }) => {
+const CustomCheckbox = ({ name = null, checked = false, text = "", textSize = '15px', textWeight = 'normal', textColor = 'black', scale = "1", space = "10px", onChange }) => {
 
     const boxRef = useRef();
 
@@ -25,7 +25,7 @@ const CustomCheckbox = ({ name = null, checked = false, text = "", textSize = '1
                 fontWeight: textWeight, 
                 color: textColor 
             }}>{text}</span>
-            <Space isHorizontal={true} size="10px" />
+            <Space isHorizontal={true} size={space} />
             <input 
                 name={name}
                 className={cl.box} 

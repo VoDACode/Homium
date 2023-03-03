@@ -5,6 +5,10 @@
     height: 34px;
 }
 
+.header {
+    font-family: 'Robotic', sans-serif;
+}
+
 .checkbox {
     opacity: 0;
     width: 0;

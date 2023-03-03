@@ -4,7 +4,6 @@ import AdminLayout from "./components/AdminLayout/AdminLayout";
 import SystemInfoPage from "./pages/SystemInfoPage";
 import AuthorizationPage from "./pages/AuthorizationPage";
 import HomePage from "./pages/HomePage";
-import RegistrationPage from "./pages/RegistrationPage";
 import ObjectListPage from "./pages/ObjectListPage";
 import UserListPage from "./pages/UserListPage";
 import UserEditPage from "./pages/UserEditPage";
@@ -30,7 +29,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<AuthorizationPage />} />
-        <Route path="/reg" element={<RegistrationPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<SystemInfoPage />} />
