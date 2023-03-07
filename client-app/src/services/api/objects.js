@@ -1,7 +1,7 @@
 import { BaseApi } from './base';
 
 export class ApiObjects {
-    static async getRootObjects() {
+    static async getRootObjectIds() {
         return await BaseApi.getTextOrJson(await BaseApi.get('object/get-root'));
     }
 
@@ -9,12 +9,13 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}`));
     }
 
-    static async getObject(id) {
-        return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}`));
+    static async getObject(id, viewProperties = false) {
+        const viewProps = viewProperties ? '?viewProperties=true' : '?viewProperties=';
+        return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}${viewProps}`));
     }
     
     static async getObjects(viewProperties = false) {
-        const address = viewProperties ? 'controllers/object/list?viewProperties=true' : 'controllers/object/list';
+        const address = viewProperties ? 'controllers/object/list?viewProperties=true' : 'controllers/object/list?viewProperties=';
         return await BaseApi.getTextOrJson(await BaseApi.get(address));
     }
 
@@ -22,7 +23,7 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get('controllers/object/list/ids'));
     }
 
-    static async getChildren(id) {
+    static async getChildrenIds(id) {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}/children`));
     }
 

@@ -11,7 +11,7 @@ import SettingsTopMenu from "../components/SettingsTopMenu/SettingsTopMenu";
 import Space from "../components/Space/Space";
 import Switch from "../components/Switch/Switch";
 import { ApiAuth } from "../services/api/auth";
-import { CookieManager } from "../services/CookieManager";
+import Cookies from 'js-cookie';
 
 const SettingsPage = () => {
 
@@ -19,9 +19,9 @@ const SettingsPage = () => {
 
     const [isModWinVisible, setModWinVisibility] = useState(false);
     const [settings, setSettings] = useState({
-        nightModeOn: CookieManager.getCookie('night_mode') === '1' ? true : false,
+        nightModeOn: Cookies.get('night_mode') === '1' ? true : false,
         lang: i18n.language,
-        askForExecScript: CookieManager.getCookie('ask_for_exec_script') === '1' ? true : false
+        askForExecScript: Cookies.get('ask_for_exec_script') === '1' ? true : false
     });
 
     const navigate = useNavigate();
@@ -52,9 +52,9 @@ const SettingsPage = () => {
 
     function SaveChanges() {
         console.log(settings);
-        CookieManager.setCookie('language', settings.lang);
-        CookieManager.setCookie('night_mode', settings.nightModeOn ? '1' : '0');
-        CookieManager.setCookie('ask_for_exec_script', settings.askForExecScript ? '1' : '0');
+        Cookies.set('language', settings.lang, { path: '/' });
+        Cookies.set('night_mode', settings.nightModeOn ? '1' : '0', { path: '/' });
+        Cookies.set('ask_for_exec_script', settings.askForExecScript ? '1' : '0', { path: '/' });
     }
 
     useEffect(() => {
@@ -81,11 +81,11 @@ const SettingsPage = () => {
             <Space size="20px" />
             <CustomCheckbox
                 name="askForExecScript"
-                text="Ask before executing a script" 
-                textSize="24px" 
-                scale="1.4" 
-                space="20px" 
-                checked={settings.askForExecScript} 
+                text="Ask before executing a script"
+                textSize="24px"
+                scale="1.4"
+                space="20px"
+                checked={settings.askForExecScript}
                 onChange={ChangeSettingsParameter} />
             <Space size="20px" />
             <hr />

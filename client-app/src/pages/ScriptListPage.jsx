@@ -10,11 +10,11 @@ import Space from "../components/Space/Space";
 import TableHeader from "../components/TableHeader/TableHeader";
 import YesNoPanel from "../components/YesNoPanel/YesNoPanel";
 import { ApiScripts } from "../services/api/scripts";
-import { CookieManager } from "../services/CookieManager";
+import Cookies from "js-cookie";
 
 const ScriptListPage = () => {
 
-    const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(CookieManager.getCookie('ask_for_exec_script') === '1' ? true : false);
+    const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(Cookies.get('ask_for_exec_script') === '1' ? true : false);
     const [isDelWinVisible, setDelWinVisibility] = useState(false);
     const [isExecWinVisible, setExecWinVisibility] = useState(false);
     const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
@@ -153,18 +153,18 @@ const ScriptListPage = () => {
                     onDeleteClick={DeleteScript} />
             </ModalWindow>
             <ModalWindow visible={isExecWinVisible}>
-                <YesNoPanel 
+                <YesNoPanel
                     checkboxName="ask_for_exec_script"
                     checkboxValue={askBeforeExecPermission}
                     checkboxText="Always ask"
-                    includeCheckbox={true} 
+                    includeCheckbox={true}
                     header="Do you want to run the script?"
                     noPressed={() => setExecWinVisibility(false)}
                     yesPressed={() => ExecuteScript(idForExec)}
                     onCheckboxCheck={(name, value) => {
-                            setAskBeforeExecPermission(value);
-                            CookieManager.setCookie(name, value === true ? '1' : '0'); 
-                        }} />
+                        setAskBeforeExecPermission(value);
+                        Cookies.set(name, value === true ? '1' : '0', { path: '/' });
+                    }} />
             </ModalWindow>
             <CustomHeader text="Script list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <ItemsContainer width="96%">
