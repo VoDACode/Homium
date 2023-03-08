@@ -17,7 +17,7 @@ const UserListPage = () => {
     const [usernameForDelete, setDeletingUsername] = useState(null);
     const [search, setSearch] = useState('');
     const [selfPermission, setSelfPermission] = useState({});
-    const [sortMode, setSortMode] = useState({parameter: '', dir: ''});
+    const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
 
     const navigation = useNavigate();
     const navToAddUser = () => navigation('add');
@@ -28,47 +28,47 @@ const UserListPage = () => {
         switch (mode.parameter) {
             case 'username':
                 arr.sort((a, b) => {
-                    if ( a.username.toLowerCase() < b.username.toLowerCase() ){
+                    if (a.username.toLowerCase() < b.username.toLowerCase()) {
                         return mode.dir === 'asc' ? -1 : 1;
-                      }
-                      if ( a.username.toLowerCase() > b.username.toLowerCase() ){
+                    }
+                    if (a.username.toLowerCase() > b.username.toLowerCase()) {
                         return mode.dir === 'asc' ? 1 : -1;
-                      }
-                      return 0;
-                  });
+                    }
+                    return 0;
+                });
                 break;
             case 'firstname':
                 arr.sort((a, b) => {
-                    if ( a.firstname.toLowerCase() < b.firstname.toLowerCase() ){
+                    if (a.firstname.toLowerCase() < b.firstname.toLowerCase()) {
                         return mode.dir === 'asc' ? -1 : 1;
-                      }
-                      if ( a.firstname.toLowerCase() > b.firstname.toLowerCase() ){
+                    }
+                    if (a.firstname.toLowerCase() > b.firstname.toLowerCase()) {
                         return mode.dir === 'asc' ? 1 : -1;
-                      }
-                      return 0;
-                  });
+                    }
+                    return 0;
+                });
                 break;
             case 'lastname':
                 arr.sort((a, b) => {
-                    if ( a.lastname.toLowerCase() < b.lastname.toLowerCase() ){
+                    if (a.lastname.toLowerCase() < b.lastname.toLowerCase()) {
                         return mode.dir === 'asc' ? -1 : 1;
-                      }
-                      if ( a.lastname.toLowerCase() > b.lastname.toLowerCase() ){
+                    }
+                    if (a.lastname.toLowerCase() > b.lastname.toLowerCase()) {
                         return mode.dir === 'asc' ? 1 : -1;
-                      }
-                      return 0;
-                  });
+                    }
+                    return 0;
+                });
                 break;
             case 'email':
                 arr.sort((a, b) => {
-                    if ( a.email.toLowerCase() < b.email.toLowerCase() ){
+                    if (a.email.toLowerCase() < b.email.toLowerCase()) {
                         return mode.dir === 'asc' ? -1 : 1;
-                      }
-                      if ( a.email.toLowerCase() > b.email.toLowerCase() ){
+                    }
+                    if (a.email.toLowerCase() > b.email.toLowerCase()) {
                         return mode.dir === 'asc' ? 1 : -1;
-                      }
-                      return 0;
-                  });
+                    }
+                    return 0;
+                });
                 break;
             default:
                 break;
@@ -76,7 +76,7 @@ const UserListPage = () => {
 
         return arr;
     }
-    
+
     function DeleteUserRequest(username) {
         setModWinVisibility(true);
         setDeletingUsername(username);
@@ -151,35 +151,35 @@ const UserListPage = () => {
     return (
         <div>
             <ModalWindow visible={isModWinVisible}>
-                <DeletePanel 
-                    header="Type 'yes' to confirm that you want to delete the user." 
-                    idForDel={usernameForDelete} 
-                    onDeleteClick={DeleteUser} 
+                <DeletePanel
+                    header="Type 'yes' to confirm that you want to delete the user."
+                    idForDel={usernameForDelete}
+                    onDeleteClick={DeleteUser}
                     onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>
             <CustomHeader text="User list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <ItemsContainer width="96%">
                 <InputBox width="100%" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
-                {(selfPermission?.user?.create ? 
-                    <div style={{display: 'flex'}}>
+                {(selfPermission?.user?.create ?
+                    <div style={{ display: 'flex' }}>
                         <Space isHorizontal={true} size="12px" />
-                        <InputBox type="button" value="Add User" onClick={() => navToAddUser()} /> 
+                        <InputBox type="button" value="Add User" onClick={() => navToAddUser()} />
                     </div>
                     : "")}
             </ItemsContainer>
             <Space size="30px" />
-            <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                <div style={{width: '96%'}}>
-                    <TableHeader 
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ width: '96%' }}>
+                    <TableHeader
                         components={[
-                            {text: 'username', val: 'username'}, 
-                            {text: 'first name', val: 'firstname'}, 
-                            {text: 'last name', val: 'lastname'}, 
-                            {text: 'email', val: 'email'}, 
-                            {text: 'actions', val: null}]} 
+                            { text: 'username', val: 'username' },
+                            { text: 'first name', val: 'firstname' },
+                            { text: 'last name', val: 'lastname' },
+                            { text: 'email', val: 'email' },
+                            { text: 'actions', val: null }]}
                         gridMarkUpCols='1fr 1fr 1fr 1fr 1fr'
                         sortInfo={sortMode}
-                        onChange={(param, direction) => setSortMode({parameter: param ?? '', dir: direction ?? ''})} />
+                        onChange={(param, direction) => setSortMode({ parameter: param ?? '', dir: direction ?? '' })} />
                     {RenderUserList()}
                 </div>
             </div>

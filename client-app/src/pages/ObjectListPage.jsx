@@ -1,11 +1,32 @@
 import React, { useEffect, useState } from "react";
 import CustomHeader from "../components/CustomHeader/CustomHeader";
 import ObjectSection from "../components/ObjectSection/ObjectSection";
+import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
+import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
 import { ApiObjects } from "../services/api/objects";
+import Space from "../components/Space/Space";
 
 const ObjectListPage = () => {
 
+    const [sortByAsc, setSortMode] = useState(true);
+    const [searchValue, setSearchValue] = useState('');
     const [objectList, setObjectList] = useState([]);
+
+    function SortObjectList(list, asc = true) {
+        var instance = [...list];
+
+        instance.sort((a, b) => {
+            if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                return asc ? -1 : 1;
+            }
+            if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                return asc ? 1 : -1;
+            }
+            return 0;
+        });
+
+        return instance;
+    }
 
     function UpdateObjects() {
         ApiObjects.getRootObjectIds().then(async ids => {
@@ -19,14 +40,18 @@ const ObjectListPage = () => {
 
     function RenderObjects() {
         var rendered = [];
-        for (let i = 0; i < objectList.length; i++) {
+        const fixedObjects = SortObjectList(objectList, sortByAsc);
+        for (let i = 0; i < fixedObjects.length; i++) {
+
+            if (!fixedObjects[i].name.toLowerCase().includes(searchValue.toLowerCase())) continue;
+
             rendered.push(
-                <ObjectSection 
-                    id={objectList[i].id} 
-                    key={objectList[i].id} 
-                    name={objectList[i].name} 
-                    forcedChildCount={objectList[i].children.length}
-                    forcedPropCount={Object.keys(objectList[i].properties).length} />);
+                <ObjectSection
+                    id={fixedObjects[i].id}
+                    key={fixedObjects[i].id}
+                    name={fixedObjects[i].name}
+                    forcedChildCount={fixedObjects[i].children.length}
+                    forcedPropCount={Object.keys(fixedObjects[i].properties).length} />);
         }
         return rendered;
     }
@@ -39,6 +64,12 @@ const ObjectListPage = () => {
     return (
         <div>
             <CustomHeader text="Object list" textColor="#0036a3" textSize="45px" isCenter={true} />
+            <Space size="10px" />
+            <ItemsContainer width="94%" inlineFlexMode={true}>
+                <CustomHeader onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
+                <Space isHorizontal={true} size="20px" />
+                <CustomTextarea placeholder="Search" contentSize="28px" height="35px" width="500px" onChange={e => setSearchValue(e.target.value)} />
+            </ItemsContainer>
             <ul className="object_list">
                 {RenderObjects()}
                 <li

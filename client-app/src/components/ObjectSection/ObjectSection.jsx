@@ -64,10 +64,10 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
 
     return (
         <li className={cl.main}>
-            <span className={cl.header} onClick={() => setObjectState(!isObjectOpened)}>{isObjectOpened ? '-' : '+'} {name}</span>
+            <span className={cl.header} onClick={() => setObjectState(!isObjectOpened)}>{isObjectOpened ? '▾' : '▸'} {name}</span>
             <ul style={{ display: isObjectOpened ? 'block' : 'none' }}>
                 <li className={cl.properties}>
-                    <span className={cl.header} onClick={() => UpdateProperties()}>{isPropsOpened ? '-' : '+'} Properties</span>
+                    <span className={cl.header} onClick={() => UpdateProperties()}>{isPropsOpened ? '▾' : '▸'} Properties</span>
                     <span className={cl.count}> ({forcedPropCount && propertyList.length === 0 ? forcedPropCount : propertyList.length})</span>
                     <ul style={{ display: isPropsOpened ? 'block' : 'none' }}>
                         {RenderProperties()}
@@ -75,7 +75,7 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
                     </ul>
                 </li>
                 <li className={cl.children}>
-                    <span className={cl.header} onClick={() => UpdateChildren()}>{isChildrenOpened ? '-' : '+'} Children</span>
+                    <span className={cl.header} onClick={() => UpdateChildren()}>{isChildrenOpened ? '▾' : '▸'} Children</span>
                     <span className={cl.count}> ({forcedChildCount && childList.length === 0 ? forcedChildCount : childList.length})</span>
                     <ul style={{ display: isChildrenOpened ? 'block' : 'none' }}>
                         {RenderChildren()}
