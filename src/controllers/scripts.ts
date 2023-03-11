@@ -23,6 +23,7 @@ router.post('/', authGuard, async (req, res) => {
     const allowAnonymous = req.body.allowAnonymous;
     const description = req.body.description;
     const targetId = req.body.targetId as string;
+    const enabled = req.body.enabled;
 
     if (!name || typeof name !== 'string' || name.length < 1) {
         res.status(400).send("Invalid name");
@@ -54,6 +55,11 @@ router.post('/', authGuard, async (req, res) => {
         return;
     }
 
+    if (enabled !== undefined && typeof enabled !== 'boolean') {
+        res.status(400).send("Invalid enabled");
+        return;
+    }
+
     let id = "";
     do {
         id = uuid();
@@ -63,6 +69,7 @@ router.post('/', authGuard, async (req, res) => {
     script.allowAnonymous = allowAnonymous || false;
     script.description = description || "";
     script.targetId = targetId || "";
+    script.enabled = enabled || false;
 
     if (targetType === 'Extension' && extensions.any(targetId, 'id') === false) {
         res.status(400).send("Invalid extension id");
@@ -224,19 +231,28 @@ router.get('/:id/execute', async (req, res) => {
         res.status(400).send("Invalid id");
         return;
     }
-
-    if (await ScriptService.isAllowAnonymous(req.params.id) === false) {
-        if (await isAuthorized(req) === false) {
-            res.status(401).send("Unauthorized").redirect('/auth');
-            return;
-        } else if (await hasPermission(req, p => p.script.execute) !== true) {
-            res.status(403).send('You do not have permission to execute scripts');
-            return;
+    try {
+        if (await ScriptService.isAllowAnonymous(req.params.id) === false) {
+            if (await isAuthorized(req) === false) {
+                res.status(401).send("Unauthorized").redirect('/auth');
+                return;
+            } else if (await hasPermission(req, p => p.script.execute) !== true) {
+                res.status(403).send('You do not have permission to execute scripts');
+                return;
+            }
         }
-    }
 
+    } catch (e) {
+        res.status(404).send("Script not found");
+        return;
+    }
     if (await (await ScriptService.getScript(req.params.id)).targetEvent !== 'call') {
         res.status(400).send("Invalid target event");
+        return;
+    }
+
+    if (await (await ScriptService.getScript(req.params.id)).enabled === false) {
+        res.status(400).send("Script is disabled");
         return;
     }
 
