@@ -190,9 +190,15 @@ class ScriptService {
                 return;
             }
             ObjectService.addEventListener(obj.id, "remove", () => {
+                if(script.enabled == false){
+                    return;
+                }
                 this.deleteScript(script.id);
             });
             ObjectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
+                if(script.enabled == false){
+                    return;
+                }
                 try {
                     this.executeScript(script.id, args);
                 } catch (e) {
@@ -210,6 +216,9 @@ class ScriptService {
                 return;
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {
+                if(script.enabled == false){
+                    return;
+                }
                 try {
                     this.executeScript(script.id, args);
                 } catch (e) {

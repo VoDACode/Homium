@@ -9,9 +9,5 @@ router.get('/status', authGuard, (req, res) => {
     res.status(200).end();
 });
 
-router.get('/', authGuard, (req, res) => {
-    res.send('auth');
-});
-
 module.exports = router;
 module.exports.ROUTER = 'auth';

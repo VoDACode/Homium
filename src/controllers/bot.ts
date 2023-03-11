@@ -8,6 +8,7 @@ import { ClientPermissions } from '../models/ClientPermissions';
 import { UserModel } from '../models/UserModel';
 
 const router = express.Router();
+const API_KEY_LENGTH = 128;
 
 router.get('/list', authGuard, async (req, res) => {
     const userPermissions = await getPermissions(req);
@@ -72,9 +73,9 @@ router.post('/create', authGuard, async (req, res) => {
     } while (await db.bots.countDocuments({ id: id }) > 0);
 
     do {
-        apiKey = crypto.randomBytes(Math.ceil(32 / 2))
+        apiKey = crypto.randomBytes(Math.ceil(API_KEY_LENGTH / 2))
             .toString('hex')
-            .slice(0, 32);
+            .slice(0, API_KEY_LENGTH);
     } while (await db.bots.countDocuments({ apiKey: apiKey }) > 0);
 
     permissions.isAdministrator = false;
@@ -122,9 +123,9 @@ router.put('/regenerate/:id', authGuard, async (req, res) => {
     }
 
     do {
-        bot.apiKey = crypto.randomBytes(Math.ceil(32 / 2))
+        bot.apiKey = crypto.randomBytes(Math.ceil(API_KEY_LENGTH / 2))
             .toString('hex')
-            .slice(0, 32);
+            .slice(0, API_KEY_LENGTH);
     } while (await db.bots.countDocuments({ apiKey: bot.apiKey }) > 0);
 
     await db.bots.updateOne({ id: req.params.id }, { $set: { apiKey: bot.apiKey } });

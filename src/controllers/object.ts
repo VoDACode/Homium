@@ -484,4 +484,57 @@ router.get('/list/:id', authGuard, async (req, res) => {
     res.status(200).send(obj).end();
 });
 
+router.get('/search', authGuard, async (req, res) => {
+    if (await hasPermission(req, p => p.object.read) !== true) {
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+
+    let query = req.query.query;
+
+    if (query == null || typeof query !== 'string') {
+        return res.status(400).send('The query must be a string.').end();
+    }
+
+    let objects = await db.objects.find({ name: {$regex: query, $options: 'i'} }).toArray();
+
+    let results = await Promise.all(objects.map(async (p) => {
+        let path = await getPath(p);
+        return {
+            id: p.id,
+            name: p.name,
+            path: path,
+            parentId: p.parentId,
+            description: p.description,
+            updatedAt: p.updatedAt,
+            allowAnonymous: p.allowAnonymous,
+            children: p.children,
+            systemObject: p.systemObject,
+            properties: getPropertyToJsonObject(p)
+        }
+    }));
+
+    res.status(200).send(results).end();
+
+    async function getPath(obj: ObjectModel): Promise<any>{
+        if (obj.parentId == null) {
+            return [{
+                id: obj.id,
+                name: obj.name,
+            }]
+        }
+        let parent = await db.objects.findOne({ id: obj.parentId });
+        if (parent == null) {
+            return [{
+                id: obj.id,
+                name: obj.name,
+            }]
+        }
+        return [...await getPath(parent), {
+            id: obj.id,
+            name: obj.name,
+        }]
+    }
+});
+
 module.exports = router;
