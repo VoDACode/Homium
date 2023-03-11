@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { ApiObjects } from '../../services/api/objects';
+import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
+import Space from '../Space/Space';
 import cl from './.module.css';
 
 const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0 }) => {
 
+    const [loadingProcess, setLoadingProcess] = useState({ childList: false, propertyList: false });
     const [childList, setChildList] = useState([]);
     const [propertyList, setPropertyList] = useState([]);
     const [isObjectOpened, setObjectState] = useState(false);
@@ -17,10 +20,15 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
             ApiObjects.getLogicalObject(id).then(async propObj => {
                 var props = [];
                 for (const [key, value] of Object.entries(propObj)) {
-                    props.push({key: key, value: value});
+                    props.push({ key: key, value: value });
                 }
                 setPropertyList(props);
                 setPropsLoading(true);
+                setLoadingProcess(prev => {
+                    var newState = { ...prev };
+                    newState.propertyList = true;
+                    return newState;
+                });
             });
         }
         setPropsState(!isPropsOpened);
@@ -35,12 +43,25 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
                 }
                 setChildList(children);
                 setChildrenLoading(true);
+                setLoadingProcess(prev => {
+                    var newState = { ...prev };
+                    newState.childList = true;
+                    return newState;
+                });
             });
         }
         setChildrenState(!isChildrenOpened)
     }
 
     function RenderProperties() {
+        if (!loadingProcess.propertyList)
+            return (
+                <div>
+                    <Space size="10px" />
+                    <LoadingAnimation size="50px" loadingCurveWidth="11px" />
+                </div>
+            );
+
         var rendered = [];
         for (let i = 0; i < propertyList.length; i++) {
             rendered.push(<li className={cl.el} key={propertyList[i].key}>{propertyList[i].key}: {propertyList[i].value.toString()}</li>);
@@ -49,12 +70,20 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
     }
 
     function RenderChildren() {
+        if (!loadingProcess.childList)
+            return (
+                <div>
+                    <Space size="10px" />
+                    <LoadingAnimation size="50px" loadingCurveWidth="11px" />
+                </div>
+            );
+
         var rendered = [];
         for (let i = 0; i < childList.length; i++) {
             rendered.push(
-                <ObjectSection 
-                    id={childList[i].id} 
-                    key={childList[i].id} 
+                <ObjectSection
+                    id={childList[i].id}
+                    key={childList[i].id}
                     name={childList[i].name}
                     forcedChildCount={childList[i].children.length}
                     forcedPropCount={Object.keys(childList[i].properties).length} />);

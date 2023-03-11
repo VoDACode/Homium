@@ -11,9 +11,11 @@ import TableHeader from "../components/TableHeader/TableHeader";
 import YesNoPanel from "../components/YesNoPanel/YesNoPanel";
 import { ApiScripts } from "../services/api/scripts";
 import Cookies from "js-cookie";
+import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
 
 const ScriptListPage = () => {
 
+    const [isListLoaded, setIsListLoaded] = useState(false);
     const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(Cookies.get('ask_for_exec_script') === '1' ? true : false);
     const [isDelWinVisible, setDelWinVisibility] = useState(false);
     const [isExecWinVisible, setExecWinVisibility] = useState(false);
@@ -99,11 +101,20 @@ const ScriptListPage = () => {
         ApiScripts.getScriptsId().then(data => {
             ApiScripts.getScripts(data).then(data => {
                 setScrips(data);
+                setIsListLoaded(true);
             });
         });
     }
 
     function RenderScriptList() {
+        if (!isListLoaded)
+            return (
+                <div>
+                    <Space size="20px" />
+                    <LoadingAnimation size="70px" loadingCurveWidth="11px" isCenter={true} />
+                </div>
+            );
+
         var res = [];
         var fixedScripts = [];
 

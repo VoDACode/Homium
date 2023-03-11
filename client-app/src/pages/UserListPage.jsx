@@ -9,9 +9,11 @@ import TableHeader from "../components/TableHeader/TableHeader";
 import Space from "../components/Space/Space";
 import ModalWindow from "../components/ModalWindow/ModalWindow";
 import DeletePanel from "../components/DeletePanel/DeletePanel";
+import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
 
 const UserListPage = () => {
 
+    const [isListLoaded, setIsListLoaded] = useState(false);
     const [users, setUsers] = useState([]);
     const [isModWinVisible, setModWinVisibility] = useState(false);
     const [usernameForDelete, setDeletingUsername] = useState(null);
@@ -96,6 +98,7 @@ const UserListPage = () => {
     function UpdateUsers() {
         ApiUsers.getUsers().then(data => {
             setUsers(data);
+            setIsListLoaded(true);
         });
 
         ApiUsers.getSelfPermissions().then(data => {
@@ -104,6 +107,14 @@ const UserListPage = () => {
     }
 
     function RenderUserList() {
+        if (!isListLoaded)
+            return (
+                <div>
+                    <Space size="20px" />
+                    <LoadingAnimation size="70px" loadingCurveWidth="11px" isCenter={true} />
+                </div>
+            );
+
         var res = [];
         var fixedUsers = [];
 

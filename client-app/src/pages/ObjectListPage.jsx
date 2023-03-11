@@ -5,9 +5,11 @@ import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
 import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
 import { ApiObjects } from "../services/api/objects";
 import Space from "../components/Space/Space";
+import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
 
 const ObjectListPage = () => {
 
+    const [isListLoaded, setIsListLoaded] = useState(false);
     const [sortByAsc, setSortMode] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [objectList, setObjectList] = useState([]);
@@ -35,10 +37,19 @@ const ObjectListPage = () => {
                 objects.push(await ApiObjects.getObject(ids[i], true));
             }
             setObjectList(objects);
+            setIsListLoaded(true);
         });
     }
 
     function RenderObjects() {
+        if (!isListLoaded)
+            return (
+                <div>
+                    <Space size="20px" />
+                    <LoadingAnimation size="50px" loadingCurveWidth="11px" />
+                </div>
+            );
+
         var rendered = [];
         const fixedObjects = SortObjectList(objectList, sortByAsc);
         for (let i = 0; i < fixedObjects.length; i++) {
