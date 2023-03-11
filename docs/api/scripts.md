@@ -31,6 +31,7 @@ Scripts are a way to automate tasks in the house. They a written in the JavaScri
   "targetId": "string" | null,
   "description": "string" | null,
   "allowAnonymous": true | false | null,
+  "enabled": true | false | null,
 }
 ```
 
@@ -45,6 +46,7 @@ Scripts are a way to automate tasks in the house. They a written in the JavaScri
 | targetId | `string` or `null` | The id of the target |
 | description | `string` or `null` | The description of the script |
 | allowAnonymous | `boolean` or `null` | Whether the script can be run by anonymous users |
+| enabled | `boolean` or `null` | Whether the script is enabled |
 
 #### Response
 

@@ -17,6 +17,7 @@
   * [__update/:id/object__](#updateidobject)
   * [__set/:id__](#setid)
   * [__remove/:id__](#removeid)
+  * [__search__](#search)
 * [Stream](stream.md)
   * [__object-update/:id__](stream.md#object-updateid)
   * [__object-update/:id/:prop__](stream.md#object-updateidprop)
@@ -550,4 +551,33 @@ Name   | Type | Description
     -X DELETE
     -H "Content-Type: application/json"
     http://localhost:3000/api/object/remove/5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c
+```
+
+## __search__
+
+Search objects.
+
+### Request
+
+    GET /api/object/search
+
+### Parameters in URL
+
+Name   | Type | Description
+--------|------|-------------
+`query`    | `string` | The query to search for.
+
+### Response
+
+    200 OK
+    400 Bad Request
+    401 Unauthorized
+
+### Example
+
+```bash
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/object/search?query=LED
 ```
