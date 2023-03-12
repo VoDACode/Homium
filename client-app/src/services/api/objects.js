@@ -27,6 +27,10 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}/children`));
     }
 
+    static async getObjectsBySearch(substring) {
+        return await BaseApi.getTextOrJson(await BaseApi.get(`object/search?query=${substring}`));
+    }
+
     static async getPropHistory(id, prop) {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}/${prop}/history`));
     }

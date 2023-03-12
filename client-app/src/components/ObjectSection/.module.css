@@ -41,6 +41,19 @@ li {
     color: rgb(147, 147, 147);
 }
 
+.path_cont {
+    font-size: 18px;
+    color: rgb(125, 125, 125);
+}
+
+.arrow {
+    padding-inline: 8px;
+}
+
+.path:hover {
+    color: blue;
+}
+
 .header:hover {
     background-color: rgb(255, 215, 162);
     border-radius: 1vh;

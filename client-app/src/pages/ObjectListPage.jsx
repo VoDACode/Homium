@@ -31,14 +31,22 @@ const ObjectListPage = () => {
     }
 
     function UpdateObjects() {
-        ApiObjects.getRootObjectIds().then(async ids => {
-            var objects = [];
-            for (let i = 0; i < ids.length; i++) {
-                objects.push(await ApiObjects.getObject(ids[i], true));
-            }
-            setObjectList(objects);
-            setIsListLoaded(true);
-        });
+        if (searchValue === '') {
+            ApiObjects.getRootObjectIds().then(async ids => {
+                var objects = [];
+                for (let i = 0; i < ids.length; i++) {
+                    objects.push(await ApiObjects.getObject(ids[i], true));
+                }
+                setObjectList(objects);
+                if (!isListLoaded) setIsListLoaded(true);
+            });
+        }
+        else {
+            ApiObjects.getObjectsBySearch(searchValue).then(objects => {
+                setObjectList(objects);
+                if (!isListLoaded) setIsListLoaded(true);
+            });
+        }
     }
 
     function RenderObjects() {
@@ -54,15 +62,14 @@ const ObjectListPage = () => {
         const fixedObjects = SortObjectList(objectList, sortByAsc);
         for (let i = 0; i < fixedObjects.length; i++) {
 
-            if (!fixedObjects[i].name.toLowerCase().includes(searchValue.toLowerCase())) continue;
-
             rendered.push(
                 <ObjectSection
                     id={fixedObjects[i].id}
                     key={fixedObjects[i].id}
                     name={fixedObjects[i].name}
                     forcedChildCount={fixedObjects[i].children.length}
-                    forcedPropCount={Object.keys(fixedObjects[i].properties).length} />);
+                    forcedPropCount={Object.keys(fixedObjects[i].properties).length}
+                    path={fixedObjects[i].path} />);
         }
         return rendered;
     }
@@ -70,7 +77,7 @@ const ObjectListPage = () => {
     useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         UpdateObjects();
-    }, []);
+    }, [searchValue]);
 
     return (
         <div>
