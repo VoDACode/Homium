@@ -13,7 +13,7 @@ router.post('/create', authGuard, async (req, res) => {
     const name: string = req.body.name;
     const parentId: string | null = req.body.parentId ?? null;
     const description: string | null = req.body.description;
-    const object = req.body.object as ObjectProperty[];
+    const properties = req.body.properties as ObjectProperty[];
     const allowAnonymous: boolean = req.body.allowAnonymous ?? false;
 
     if (await hasPermission(req, p => p.object.create) !== true) {
@@ -21,40 +21,40 @@ router.post('/create', authGuard, async (req, res) => {
         return;
     }
 
-    if (object == null || !Array.isArray(object))
+    if (properties == null || !Array.isArray(properties))
         return res.status(400).send('The object must be an array.').end();
 
-    for (let i = 0; i < object.length; i++) {
-        if (object[i].key == undefined || typeof object[i].key != 'string' || object[i].value == undefined)
+    for (let i = 0; i < properties.length; i++) {
+        if (properties[i].key == undefined || typeof properties[i].key != 'string' || properties[i].value == undefined)
             return res.status(400).send('The object must be an array of objects with the properties "key" and "value".').end();
-        else if (object[i].canHaveHistory != null && typeof object[i].canHaveHistory !== 'boolean')
+        else if (properties[i].canHaveHistory != null && typeof properties[i].canHaveHistory !== 'boolean')
             return res.status(400).send('The property "canHaveHistory" must be a boolean.').end();
-        else if (object[i].historyLimit != null && typeof object[i].historyLimit !== 'number')
+        else if (properties[i].historyLimit != null && typeof properties[i].historyLimit !== 'number')
             return res.status(400).send('The property "historyLimit" must be a number.').end();
-        else if (object[i].historyLimit != null && object[i].historyLimit < 0)
+        else if (properties[i].historyLimit != null && properties[i].historyLimit < 0)
             return res.status(400).send('The property "historyLimit" must be a positive number.').end();
 
-        if (object[i].mqttProperty != null && typeof object[i].mqttProperty !== 'object')
+        if (properties[i].mqttProperty != null && typeof properties[i].mqttProperty !== 'object')
             return res.status(400).send('The property "mqttProperty" must be an object.').end();
-        else if (object[i].mqttProperty != null && typeof object[i].mqttProperty.display !== 'boolean')
+        else if (properties[i].mqttProperty != null && typeof properties[i].mqttProperty.display !== 'boolean')
             return res.status(400).send('The property "mqttProperty.display" must be a boolean.').end();
-        else if (object[i].mqttProperty != null && typeof object[i].mqttProperty.subscribe !== 'boolean')
+        else if (properties[i].mqttProperty != null && typeof properties[i].mqttProperty.subscribe !== 'boolean')
             return res.status(400).send('The property "mqttProperty.subscribe" must be a boolean.').end();
 
-        if (object[i].mqttProperty.display != null)
-            object[i].mqttProperty.display = object[i].mqttProperty.display ?? false;
-        if (object[i].mqttProperty.subscribe != null)
-            object[i].mqttProperty.subscribe = object[i].mqttProperty.subscribe ?? false;
+        if (properties[i].mqttProperty.display != null)
+            properties[i].mqttProperty.display = properties[i].mqttProperty.display ?? false;
+        if (properties[i].mqttProperty.subscribe != null)
+            properties[i].mqttProperty.subscribe = properties[i].mqttProperty.subscribe ?? false;
 
-        object[i].historyLimit = object[i].historyLimit ?? 0;
-        object[i].canHaveHistory = object[i].canHaveHistory ?? false;
-        object[i].history = [];
+        properties[i].historyLimit = properties[i].historyLimit ?? 0;
+        properties[i].canHaveHistory = properties[i].canHaveHistory ?? false;
+        properties[i].history = [];
     }
     if (!name) {
         return res.status(400).send('The name must be a string.').end();
     }
 
-    let obj = new ObjectModel(name, parentId, uuid(), description, object, allowAnonymous);
+    let obj = new ObjectModel(name, parentId, uuid(), description, properties, allowAnonymous);
     let parent: WithId<ObjectModel> | null = null;
     if (parentId != null) {
         parent = await db.objects.findOne({ id: parentId });
@@ -161,16 +161,17 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 });
 
 router.put('/update/:id', authGuard, async (req, res) => {
-
     if (await hasPermission(req, p => p.object.update) !== true) {
         res.status(403).send('Permission denied!').end();
         return;
     }
 
-    const id = req.params.id;
-    const name = req.body.name;
-    const allowAnonymous = req.body.allowAnonymous;
-    const description = req.body.description;
+    const id = req.params.id as string;
+    const name = req.body.name as string;
+    const allowAnonymous = req.body.allowAnonymous as boolean;
+    const description = req.body.description as string;
+    const parentId = req.query.parentId as string;
+    const children = req.query.children as string[];
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
@@ -181,83 +182,44 @@ router.put('/update/:id', authGuard, async (req, res) => {
     if (object.systemObject) {
         return res.status(403).send('This object is a system object and cannot be modified.').end();
     }
-    if (typeof allowAnonymous === 'boolean') {
+    if (allowAnonymous != undefined && typeof allowAnonymous === 'boolean') {
         object.allowAnonymous = allowAnonymous;
     }
-    if (typeof name === 'string') {
+    if (name != undefined && typeof name === 'string') {
         if (name.length > 1) {
             object.name = name;
         } else {
             return res.status(400).send('The name must be at least 2 characters long.').end();
         }
     }
-    if (typeof description === 'string') {
+    if (description != undefined && typeof description === 'string') {
         object.description = description;
     }
+    if (parentId != undefined && typeof parentId === 'string') {
+        if(parentId == id) {
+            return res.status(400).send('The parent id cannot be the same as the object id.').end();
+        }
+        if (await db.objects.countDocuments({ id: parentId }) == 0) {
+            return res.status(404).send('Parent object not found.').end();
+        }
+        object.parentId = parentId;
+    }
+    if (children != undefined && Array.isArray(children)) {
+        if(children.includes(id)) {
+            return res.status(400).send('The children cannot contain the object id.').end();
+        }
+        for (let i = 0; i < children.length; i++) {
+            if (typeof children[i] !== 'string') {
+                return res.status(400).send('The children must be an array of strings.').end();
+            }
+            if (await db.objects.countDocuments({ id: children[i] }) == 0) {
+                return res.status(404).send('Child object not found.').end();
+            }
+        }
+        object.children = children;
+    }
     await db.objects.updateOne({ id: id }, { $set: object });
-    res.status(200).send('Object updated.').end();
-});
-
-router.put('/update/:id/parent', authGuard, async (req, res) => {
-
-    if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(403).send('Permission denied!').end();
-        return;
-    }
-
-    const id = req.params.id;
-    const parentId = req.query.parentId;
-    if (id == null || typeof id !== 'string') {
-        return res.status(400).send('The id must be a string.').end();
-    }
-    if (parentId == null || typeof parentId !== 'string') {
-        return res.status(400).send('The parentId must be a string.').end();
-    }
-    let object = await db.objects.findOne({ id: id });
-    if (object == null) {
-        return res.status(404).send('Object not found.').end();
-    }
-    if (object.systemObject) {
-        return res.status(403).send('This object is a system object and cannot be modified.').end();
-    }
-    if (await db.objects.countDocuments({ id: parentId }) == 0) {
-        return res.status(404).send('Parent object not found.').end();
-    }
-    await db.objects.updateOne({ id: id }, { $set: { parentId: parentId } });
-    res.status(200).send('Object updated.').end();
-});
-
-router.put('/update/:id/children', authGuard, async (req, res) => {
-
-    if (await hasPermission(req, p => p.object.update) !== true) {
-        res.status(403).send('Permission denied!').end();
-        return;
-    }
-
-    const id = req.params.id;
-    const children = req.query.children as string[];
-    if (id == null || typeof id !== 'string') {
-        return res.status(400).send('The id must be a string.').end();
-    }
-    if (children == null || !Array.isArray(children)) {
-        return res.status(400).send('The children must be an array.').end();
-    }
-    let object = await db.objects.findOne({ id: id });
-    if (object == null) {
-        return res.status(404).send('Object not found.').end();
-    }
-    if (object.systemObject) {
-        return res.status(403).send('This object is a system object and cannot be modified.').end();
-    }
-    for (let i = 0; i < children.length; i++) {
-        if (typeof children[i] !== 'string') {
-            return res.status(400).send('The children must be an array of strings.').end();
-        }
-        if (await db.objects.countDocuments({ id: children[i] }) == 0) {
-            return res.status(404).send('Child object not found.').end();
-        }
-    }
-    await db.objects.updateOne({ id: id }, { $set: { children: children } });
+    await ObjectService.reload(id);
     res.status(200).send('Object updated.').end();
 });
 
@@ -431,6 +393,7 @@ router.get('/list', authGuard, async (req, res) => {
     }
 
     const viewProperties = req.query.viewProperties == 'true';
+    const viewType = req.query.viewType;
 
     const objects = await db.objects.find().toArray();
     res.status(200).send(objects.map(p => {
@@ -445,7 +408,19 @@ router.get('/list', authGuard, async (req, res) => {
             systemObject: p.systemObject
         }
         if (viewProperties) {
-            obj.properties = getPropertyToJsonObject(p);
+            if(viewType == 'array') {
+                obj.properties = p.properties.map(o => {
+                    return {
+                        key: o.key,
+                        value: o.value,
+                        canHaveHistory: o.canHaveHistory,
+                        historyLimit: o.historyLimit,
+                        mqttProperty: o.mqttProperty
+                    }
+                });
+            } else {
+                obj.properties = getPropertyToJsonObject(p);
+            }
         }
         return obj;
     })).end();
@@ -463,6 +438,7 @@ router.get('/list/:id', authGuard, async (req, res) => {
     }
 
     const viewProperties = req.query.viewProperties == 'true';
+    const viewType = req.query.viewType;
 
     const object = await ObjectService.get(id);
     if (object == null) {
@@ -479,7 +455,19 @@ router.get('/list/:id', authGuard, async (req, res) => {
         systemObject: object.systemObject
     }
     if (viewProperties) {
-        obj.properties = getPropertyToJsonObject(object);
+        if(viewType == 'array'){
+            obj.properties = object.properties.map(p => {
+                return {
+                    key: p.key,
+                    value: p.value,
+                    canHaveHistory: p.canHaveHistory,
+                    historyLimit: p.historyLimit,
+                    mqttProperty: p.mqttProperty
+                }
+            });
+        }else{
+            obj.properties = getPropertyToJsonObject(object);
+        }
     }
     res.status(200).send(obj).end();
 });

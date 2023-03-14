@@ -12,8 +12,6 @@
   * [__list/ids__](#listids)
   * [__list/:id__](#listid)
   * [__update/:id__](#updateid)
-  * [__update/:id/parent__](#updateidparent)
-  * [__update/:id/children__](#updateidchildren)
   * [__update/:id/object__](#updateidobject)
   * [__set/:id__](#setid)
   * [__remove/:id__](#removeid)
@@ -37,7 +35,7 @@ Create a new object.
    Name   | Type | Description
 ----------|------|-------------
 `name`    | `string` | The name of the object.
-`object`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The type of the object.
+`properties`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The properties of the object.
 `description`    | `string` or `NULL` | The description of the object.
 `parentId`    | `string` or `NULL` | The parent id of the object.
 `allowAnonymous`   | `boolean` | Whether the object is accessible by anonymous users.
@@ -58,7 +56,7 @@ Create a new object.
     -d '{
         "name": "LED",
         "description": "This is LED",
-        "object": [
+        "properties": [
             {
                 "key": "status",
                 "value": 0,
@@ -97,7 +95,8 @@ List all objects.
 
 Name   | Type | Description
 --------|------|-------------
-`viewProperties`    | `viewProperties` | The properties to be displayed.
+`viewProperties`    | `boolean` | The properties to be displayed.
+`viewType`    | `array` or something string | The type of the view.
 
 ### Response body
 
@@ -107,7 +106,8 @@ Name   | Type | Description
 `name`    | `string` | The name of the object.
 `parentId`    | `string` or `NULL` | The parent id of the object.
 `updatedAt`    | `string` | The last update date of the object.
-`properties`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The properties of the object.
+`properties`    | string[]` | The children of the object.
+`properties`    | if `viewType` == `array` then [`ObjectProperty`](/src/models/ObjectProperty.ts)[] else `{[key:string]: value}` | The properties of the object.
 `description`    | `string` or `NULL` | The description of the object.
 `allowAnonymous`   | `boolean` | Whether the object is accessible by anonymous users.
 `systemObject`   | `boolean` | Whether the object is a system object.
@@ -168,7 +168,8 @@ Name   | Type | Description
 
 Name   | Type | Description
 --------|------|-------------
-`viewProperties`    | `viewProperties` | The properties to be displayed.
+`viewProperties`    | `boolean` | The properties to be displayed.
+`viewType`    | `array` or something string | The type of the view.
 
 ### Response body
 
@@ -179,7 +180,7 @@ Name   | Type | Description
 `parentId`    | `string` or `NULL` | The parent id of the object.
 `updatedAt`    | `string` | The last update date of the object.
 `children`     | `string[]` | The children of the object.
-`properties`    | [`ObjectProperty`](/src/models/ObjectProperty.ts)[] | The properties of the object.
+`properties`    | if `viewType` == `array` then [`ObjectProperty`](/src/models/ObjectProperty.ts)[] else `{[key:string]: value}` | The properties of the object.
 `description`    | `string` or `NULL` | The description of the object.
 `allowAnonymous`   | `boolean` | Whether the object is accessible by anonymous users.
 `systemObject`   | `boolean` | Whether the object is a system object.
@@ -347,6 +348,8 @@ Name   | Type | Description
 `name`    | `string` or `NULL` | The name of the object.
 `description`    | `string` or `NULL` | The description of the object.
 `allowAnonymous`   | `boolean` or `NULL` | Whether the object is accessible by anonymous users.
+`parentId`    | `string` or `NULL` | The parent id of the object.
+`children`     | `string[]` or `NULL` | The children of the object.
 
 ### Response
 
@@ -364,88 +367,13 @@ Name   | Type | Description
     -d '{
             "name": "LED",
             "description": "This is LED",
-            "allowAnonymous": true
+            "allowAnonymous": true,
+            "parentId": "45345345-1b5a-4b1f-9c1c-1b5a4b1f9c1c",
+            "children": ["453453453-1b5a-4b1f-9c1c-1b5a4b1f9c1c"]
         }'
     http://localhost:3000/api/object/update/5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c
 ```
 
-## __update/:id/parent__
-
-Update the parent of an object.
-
-### Request
-
-    PUT /api/object/update/:id/parent
-
-### Parameters in URL
-
-Name   | Type | Description
---------|------|-------------
-`id`    | `string` | The id of the object.
-
-### Parameters in body
-
-Name   | Type | Description
---------|------|-------------
-`parentId`    | `string` | The parent id of the object.
-
-### Response
-
-    200 OK
-    400 Bad Request
-    401 Unauthorized
-    404 Not Found
-
-### Example
-
-```bash
-    curl -i 
-    -X PUT
-    -H "Content-Type: application/json"
-    -d '{
-            "parentId": "5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c"
-        }'
-    http://localhost:3000/api/object/update/5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c/parent
-```
-
-## __update/:id/children__
-
-Update the children of an object.
-
-### Request
-
-    PUT /api/object/update/:id/children
-
-### Parameters in URL
-
-Name   | Type | Description
---------|------|-------------
-`id`    | `string` | The id of the object.
-
-### Parameters in body
-
-Name   | Type | Description
---------|------|-------------
-`children`    | `string[]` | The children id of the object.
-
-### Response
-
-    200 OK
-    400 Bad Request
-    401 Unauthorized
-    404 Not Found
-
-### Example
-
-```bash
-    curl -i 
-    -X PUT
-    -H "Content-Type: application/json"
-    -d '{
-            "children": ["378056781-1b5a-4b1f-9c1c-1b5a4b1f9c1c"]
-        }'
-    http://localhost:3000/api/object/update/5f9f1b9b-1b5a-4b1f-9c1c-1b5a4b1f9c1c/children
-```
 
 ## __update/:id/object__
 
