@@ -186,3 +186,56 @@ For exapmle:
     http://localhost:3000/api/object/get/[object_id]
 
 This request will return the object with the specified id.
+
+### GET `/api/bot/oath2/token`
+
+Get the token for the bot.
+
+#### Request
+
+#### URL Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| ip | `string` | The IP address of the bot |
+| event | `string` | The event name. It`s custom for each bot |
+
+#### Response
+
+    200 OK (and token in body)
+    400 Bad Request (and error message in body)
+    401 Unauthorized
+
+#### Example
+
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/bot/oath2/token?ip=10.0.1.2&event=EnableOTA
+
+### GET `/api/bot/oath2/verify`
+
+Verify the token for the bot. This method is used to verify the token in the bot client.
+
+#### Request
+
+#### URL Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| code | `string` | The token for the bot |
+| event | `string` | The event name |
+
+#### Response
+
+    200 OK (and token in body)
+    400 Bad Request (and error message in body)
+    401 Unauthorized
+    404 Not Found
+
+#### Example
+
+    curl -i 
+    -X GET
+    -H "Content-Type: application/json"
+    http://localhost:3000/api/bot/oath2/verify?code=Z7GhouOfR3iSoIC&event=EnableOTA

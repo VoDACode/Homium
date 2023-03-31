@@ -20,7 +20,7 @@ export class MqttService {
         this.mqttClient = mqtt.connect(`mqtt://${config.mqtt.host}:${config.mqtt.port}`, {
             username: config.mqtt.user,
             password: config.mqtt.password,
-            clientId: "Homium",
+            clientId: "Homium_" + Math.random().toString(16).substr(2, 8),
             clean: true
         });
         this.logger.info('Connecting to MQTT broker...');

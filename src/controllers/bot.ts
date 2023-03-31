@@ -3,12 +3,17 @@ import { uuid } from 'uuidv4';
 import db from '../db';
 import { authGuard, getPermissions, getUser } from '../guards/AuthGuard';
 import { BotModel, BotViewModel } from '../models/BotModel';
-import crypto from 'crypto';
+import crypto, { Hash } from 'crypto';
 import { ClientPermissions } from '../models/ClientPermissions';
 import { UserModel } from '../models/UserModel';
+import { fetch } from 'cross-fetch';
+
 
 const router = express.Router();
 const API_KEY_LENGTH = 128;
+const OATH2_KEY_LENGTH = 256;
+
+let oauth2Keys: Map<string, { createdAt: Date, callback: (code: string, error: string | null) => void, ip: string, event: string }> = new Map();
 
 router.get('/list', authGuard, async (req, res) => {
     const userPermissions = await getPermissions(req);
@@ -210,6 +215,90 @@ router.delete('/delete', authGuard, async (req, res) => {
     await db.bots.deleteOne({ id: id });
 
     res.send(bot.id).status(200);
+});
+
+/*
+    client -> server
+    server -> bot
+    bot -> server
+    server -> bot & client
+*/
+router.get('/oath2/token', authGuard, async (req, res) => {
+    let botIp: string = req.query.ip as string;
+    let event = req.query.event as string;
+    let key = crypto.randomBytes(Math.ceil(OATH2_KEY_LENGTH / 2))
+        .toString('hex')
+        .slice(0, OATH2_KEY_LENGTH);
+    fetch(`http://${botIp}/api/oath2?event=${event}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain'
+        },
+        body: key,
+    }).then(async (response) => {
+        if (response.ok) {
+            const callback = (code: string, error: string | null) => {
+                if (error) {
+                    res.send({
+                        message: error,
+                        success: false
+                    }).status(400);
+                } else {
+                    res.send({
+                        code: code,
+                        success: true
+                    }).status(200);
+                }
+                oauth2Keys.delete(key);
+            };
+            oauth2Keys.set(key, {
+                ip: botIp,
+                createdAt: new Date(),
+                callback: callback,
+                event: event
+            });
+            setTimeout(() => {
+                if (oauth2Keys.has(key)) {
+                    callback("", "Timeout");
+                }
+            }, 15000);
+        } else {
+            res.send({
+                message: await response.json(),
+                success: false
+            }).status(400);
+        }
+    });
+});
+
+router.get('/oath2/verify', authGuard, async (req, res) => {
+    let key: string = req.query.code as string;
+    let event = req.query.event as string;
+
+    if(!key || !event) {
+        res.send({
+            message: "Missing required fields",
+            success: false
+        }).status(400);
+        return;
+    }
+
+    let oauth2Key = oauth2Keys.get(key);
+    if (oauth2Key !== undefined && oauth2Key.event === event) {
+        let code = crypto.randomBytes(Math.ceil(OATH2_KEY_LENGTH / 2))
+        .toString('hex')
+        .slice(0, OATH2_KEY_LENGTH);
+        oauth2Key.callback(code, null);
+        res.send({
+            code: code,
+            success: true
+        }).status(200);
+    } else {
+        res.send({
+            message: "Key not found",
+            success: false
+        }).status(404);
+    }
 });
 
 function validatePermissions(permissions: ClientPermissions, user: UserModel | BotModel, getKey: (p: ClientPermissions) => any): boolean {
