@@ -5,7 +5,7 @@ import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import Space from '../Space/Space';
 import cl from './.module.css';
 
-const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0, path = [], onAddPropertyClick, onAddChildClick }) => {
+const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0, path = [], sortByAsc = true, onAddPropertyClick, onAddChildClick }) => {
 
     const navigate = useNavigate();
     const navToAddObject = (parentId = '') => {
@@ -21,6 +21,38 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
     const [isPropsLoaded, setPropsLoading] = useState(false);
     const [isChildrenOpened, setChildrenState] = useState(false);
     const [isChildrenLoaded, setChildrenLoading] = useState(false);
+
+    function SortChildren(list, asc = true) {
+        var instance = [...list];
+
+        instance.sort((a, b) => {
+            if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                return asc ? -1 : 1;
+            }
+            if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                return asc ? 1 : -1;
+            }
+            return 0;
+        });
+
+        return instance;
+    }
+
+    function SortProperties(list, asc = true) {
+        var instance = [...list];
+
+        instance.sort((a, b) => {
+            if (a.key.toLowerCase() < b.key.toLowerCase()) {
+                return asc ? -1 : 1;
+            }
+            if (a.key.toLowerCase() > b.key.toLowerCase()) {
+                return asc ? 1 : -1;
+            }
+            return 0;
+        });
+
+        return instance;
+    }
 
     function UpdateProperties() {
         if (!isPropsLoaded) {
@@ -70,8 +102,10 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
             );
 
         var rendered = [];
-        for (let i = 0; i < propertyList.length; i++) {
-            rendered.push(<li className={cl.el} key={propertyList[i].key}>{propertyList[i].key}: {propertyList[i].value.toString()}</li>);
+        const sortedProps = SortProperties(propertyList, sortByAsc);
+
+        for (let i = 0; i < sortedProps.length; i++) {
+            rendered.push(<li className={cl.el} key={sortedProps[i].key}>{sortedProps[i].key}: {sortedProps[i].value.toString()}</li>);
         }
         return rendered;
     }
@@ -86,15 +120,17 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
             );
 
         var rendered = [];
-        for (let i = 0; i < childList.length; i++) {
+        const sortedChildren = SortChildren(childList, sortByAsc);
+
+        for (let i = 0; i < sortedChildren.length; i++) {
             rendered.push(
                 <ObjectSection
-                    id={childList[i].id}
-                    key={childList[i].id}
-                    name={childList[i].name}
-                    forcedChildCount={childList[i].children.length}
-                    forcedPropCount={Object.keys(childList[i].properties).length}
-                    onAddChildClick={() => navToAddObject(childList[i].id)} />);
+                    id={sortedChildren[i].id}
+                    key={sortedChildren[i].id}
+                    name={sortedChildren[i].name}
+                    forcedChildCount={sortedChildren[i].children.length}
+                    forcedPropCount={Object.keys(sortedChildren[i].properties).length}
+                    onAddChildClick={() => navToAddObject(sortedChildren[i].id)} />);
         }
         return rendered;
     }
@@ -125,7 +161,7 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
                     <span className={cl.count}> ({forcedPropCount && propertyList.length === 0 ? forcedPropCount : propertyList.length})</span>
                     <ul style={{ display: isPropsOpened ? 'block' : 'none' }}>
                         {RenderProperties()}
-                        <li className={cl.adder}><span>Add new property</span></li>
+                        <li className={cl.adder}><span onClick={onAddPropertyClick}>Add new property</span></li>
                     </ul>
                 </li>
                 <li className={cl.children}>

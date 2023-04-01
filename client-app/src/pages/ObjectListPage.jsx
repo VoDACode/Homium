@@ -82,6 +82,7 @@ const ObjectListPage = () => {
                     forcedChildCount={fixedObjects[i].children.length}
                     forcedPropCount={Object.keys(fixedObjects[i].properties).length}
                     path={fixedObjects[i].path}
+                    sortByAsc={sortByAsc}
                     onAddChildClick={() => navToAddObject(fixedObjects[i].id)} />);
         }
         return rendered;
