@@ -6,13 +6,25 @@ import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
 import { ApiObjects } from "../services/api/objects";
 import Space from "../components/Space/Space";
 import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
+import { useNavigate } from "react-router-dom";
 
 const ObjectListPage = () => {
+
+    const navigate = useNavigate();
+    const navToAddObject = (parentId = '') => {
+        var link = parentId !== '' ? `parent=${parentId}` : '';
+        navigate(`/admin/objects/add?${link}`);
+    }
 
     const [isListLoaded, setIsListLoaded] = useState(false);
     const [sortByAsc, setSortMode] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [objectList, setObjectList] = useState([]);
+
+    function ChangeSearchValue(value) {
+        setSearchValue(value);
+        setIsListLoaded(false);
+    }
 
     function SortObjectList(list, asc = true) {
         var instance = [...list];
@@ -69,7 +81,8 @@ const ObjectListPage = () => {
                     name={fixedObjects[i].name}
                     forcedChildCount={fixedObjects[i].children.length}
                     forcedPropCount={Object.keys(fixedObjects[i].properties).length}
-                    path={fixedObjects[i].path} />);
+                    path={fixedObjects[i].path}
+                    onAddChildClick={() => navToAddObject(fixedObjects[i].id)} />);
         }
         return rendered;
     }
@@ -86,7 +99,7 @@ const ObjectListPage = () => {
             <ItemsContainer width="94%" inlineFlexMode={true}>
                 <CustomHeader onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
                 <Space isHorizontal={true} size="20px" />
-                <CustomTextarea placeholder="Search" contentSize="28px" height="35px" width="500px" onChange={e => setSearchValue(e.target.value)} />
+                <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={e => ChangeSearchValue(e.target.value)} />
             </ItemsContainer>
             <ul className="object_list">
                 {RenderObjects()}
@@ -98,7 +111,8 @@ const ObjectListPage = () => {
                         textDecoration: 'underline solid rgb(255, 64, 0)'
                     }}
                     onMouseEnter={e => { e.target.style.backgroundColor = 'cyan' }}
-                    onMouseLeave={e => { e.target.style.backgroundColor = '' }}>Add new object</li>
+                    onMouseLeave={e => { e.target.style.backgroundColor = '' }}
+                    onClick={() => navToAddObject()}>Add new object</li>
             </ul>
         </div>
     );

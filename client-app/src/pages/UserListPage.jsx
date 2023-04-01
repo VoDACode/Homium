@@ -85,9 +85,12 @@ const UserListPage = () => {
     }
 
     function DeleteUser(username) {
+        
+        setModWinVisibility(false);
+        setIsListLoaded(false);
+
         ApiUsers.deleteUser(username).then(response => {
             if (response.status === 200) {
-                setModWinVisibility(false);
                 UpdateUsers();
             } else {
                 alert(response.text());
@@ -170,11 +173,11 @@ const UserListPage = () => {
             </ModalWindow>
             <CustomHeader text="User list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <ItemsContainer width="96%">
-                <InputBox width="100%" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
+                <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 {(selfPermission?.user?.create ?
                     <div style={{ display: 'flex' }}>
-                        <Space isHorizontal={true} size="12px" />
-                        <InputBox type="button" value="Add User" onClick={() => navToAddUser()} />
+                        <Space isHorizontal={true} size="120px" />
+                        <InputBox width="100px" type="button" value="Add User" onClick={() => navToAddUser()} />
                     </div>
                     : "")}
             </ItemsContainer>

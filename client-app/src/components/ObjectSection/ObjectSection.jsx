@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ApiObjects } from '../../services/api/objects';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import Space from '../Space/Space';
 import cl from './.module.css';
 
-const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0, path = [] }) => {
+const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0, path = [], onAddPropertyClick, onAddChildClick }) => {
+
+    const navigate = useNavigate();
+    const navToAddObject = (parentId = '') => {
+        var link = parentId !== '' ? `parent=${parentId}` : '';
+        navigate(`/admin/objects/add?${link}`);
+    }
 
     const [loadingProcess, setLoadingProcess] = useState({ childList: false, propertyList: false });
     const [childList, setChildList] = useState([]);
@@ -86,7 +93,8 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
                     key={childList[i].id}
                     name={childList[i].name}
                     forcedChildCount={childList[i].children.length}
-                    forcedPropCount={Object.keys(childList[i].properties).length} />);
+                    forcedPropCount={Object.keys(childList[i].properties).length}
+                    onAddChildClick={() => navToAddObject(childList[i].id)} />);
         }
         return rendered;
     }
@@ -125,7 +133,7 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
                     <span className={cl.count}> ({forcedChildCount && childList.length === 0 ? forcedChildCount : childList.length})</span>
                     <ul style={{ display: isChildrenOpened ? 'block' : 'none' }}>
                         {RenderChildren()}
-                        <li className={cl.adder}><span>Add new child</span></li>
+                        <li className={cl.adder}><span onClick={onAddChildClick}>Add new child</span></li>
                     </ul>
                 </li>
             </ul>

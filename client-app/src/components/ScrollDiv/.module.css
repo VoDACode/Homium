@@ -1,0 +1,36 @@
+.header {
+    font-family: 'Robotic', sans-serif;
+}
+
+.main {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+}
+
+.object {
+    width: 100%;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+.object::-webkit-scrollbar {
+    width: 10px;
+    margin-left: 20px;
+}
+
+/* Track */
+.object::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+/* Handle */
+.object::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+.object::-webkit-scrollbar-thumb:hover {
+    background: #003b8e;
+}

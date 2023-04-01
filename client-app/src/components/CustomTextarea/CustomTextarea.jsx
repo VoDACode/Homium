@@ -2,7 +2,17 @@ import React from "react";
 import Space from "../Space/Space";
 import cl from './.module.css';
 
-const CustomTextarea = ({ placeholder = '', content = '', contentSize = '18px', width = '50px', height = '50px', headerText = '', headerSize = '10px', headerWeight = 'normal', headerColor = 'black', isHeaderCentered = false, onChange }) => {
+const CustomTextarea = ({ placeholder = '', font = '', content = '', contentSize = '18px', width = '50px', height = '50px', headerText = '', headerSize = '10px', headerWeight = 'normal', headerColor = 'black', isHeaderCentered = false, onChange }) => {
+
+    function SetFont() {
+        switch (font) {
+            case 'robotic':
+                return cl.robotic_font;
+            default:
+                return '';
+        }
+    }
+
     return (
         <div className={cl.main}>
             <p className={cl.header} style={{
@@ -13,7 +23,7 @@ const CustomTextarea = ({ placeholder = '', content = '', contentSize = '18px', 
             }}>{headerText}</p>
             <Space size="5px" />
             <textarea 
-                className={cl.cont} 
+                className={`${cl.cont} ${SetFont()}`} 
                 onChange={(e) => onChange(e)}
                 defaultValue={content}
                 placeholder={placeholder}

@@ -1,0 +1,16 @@
+.b {
+    font-family: 'Robotic', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    border-radius: 5px;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

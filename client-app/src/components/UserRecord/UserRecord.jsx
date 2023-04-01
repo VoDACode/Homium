@@ -1,23 +1,23 @@
 import React from "react";
 import cl from './.module.css';
 
-const UserRecord = ({ username, firstname, lastname, email, OnDeleteClick, OnEditClick, canEdit, canDelete }) => {
+const UserRecord = ({ username = "", firstname = "", lastname = "", email = "", OnDeleteClick, OnEditClick, canEdit, canDelete }) => {
 
     const user = { username, firstname, lastname, email };
 
     return (
         <div className={cl.box}>
             <div className={cl.content_un}>
-                <p className={cl.username}>{user.username ?? ""}</p>
+                <p className={cl.username}>{user.username}</p>
             </div>
             <div className={cl.content_fn}>
-                <p className={cl.first_name}>{user.firstname ?? ""}</p>
+                <p className={cl.first_name}>{user.firstname}</p>
             </div>
             <div className={cl.content_ln}>
-                <p className={cl.last_name}>{user.lastname ?? ""}</p>
+                <p className={cl.last_name}>{user.lastname}</p>
             </div>
             <div className={cl.content_e}>
-                <p className={cl.email}>{user.email ?? ""}</p>
+                <p className={cl.email}>{user.email}</p>
             </div>
             <div className={cl.buttons}>
                 <div>

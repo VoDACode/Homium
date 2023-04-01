@@ -318,6 +318,7 @@ const ScriptEditPage = () => {
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <CustomTextarea
                     onChange={(e) => ChangeScriptAttributeByValue('description', e.target.value)}
+                    font="robotic"
                     width="500px"
                     height="100px"
                     headerText="Description"
