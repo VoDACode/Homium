@@ -8,7 +8,6 @@ const ScrollDiv = ({ headContent, children, backgroundColor = 'white', width = '
             <p className={cl.header} style={{
                 textAlign: isHeaderCentered ? 'center' : 'left',
                 fontSize: headerSize,
-                textAlign: 'center',
                 fontWeight: headerWeight,
                 color: headerColor
             }}>{headerText}</p>

@@ -1,12 +1,10 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './localizer';
+import './services/localizer';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <Suspense fallback={<div>Loading...</div>}>
-    <App/>
+    <App />
   </Suspense>
 );
