@@ -11,12 +11,12 @@ export class ObjectModel{
     public systemObject: boolean;
     public updatedAt: number = Date.now();
     
-    constructor(name: string, parentId: string | null, id: string, description: string | null, object: ObjectProperty[], allowAnonymous: boolean = false, systemObject: boolean = false, updatedAt: number = Date.now()){
+    constructor(name: string, parentId: string | null, id: string, description: string | null, properties: ObjectProperty[], allowAnonymous: boolean = false, systemObject: boolean = false, updatedAt: number = Date.now()){
         this.name = name;
         this.parentId = parentId;
         this.id = id;
         this.description = description;
-        this.properties = object;
+        this.properties = properties;
         this.allowAnonymous = allowAnonymous;
         this.systemObject = systemObject;
         this.updatedAt = updatedAt;

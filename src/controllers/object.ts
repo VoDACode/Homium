@@ -66,7 +66,7 @@ router.post('/create', authGuard, async (req, res) => {
             let newProp = new ObjectProperty(props[i].key, props[i].value, props[i].canHaveHistory, []);
             newProp.historyLimit = props[i].historyLimit;
             newProp.mqttProperty = props[i].mqttProperty;
-            if(obj.properties.findIndex(p => p.key == newProp.key) != -1){
+            if (obj.properties.findIndex(p => p.key == newProp.key) != -1) {
                 continue;
             }
             obj.properties.push(newProp);
@@ -78,7 +78,7 @@ router.post('/create', authGuard, async (req, res) => {
         obj.id = uuid();
     }
     await ObjectService.add(obj);
-    if(parent){
+    if (parent) {
         await ObjectService.setChildren(parent.id, parent.children);
     }
     res.status(201).send(obj.id).end();
@@ -130,20 +130,8 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
         return res.status(400).send('The id must be a string.').end();
     }
 
-    if (obj == null || !Array.isArray(obj))
+    if (obj == null || !Array.isArray(obj)) {
         return res.status(400).send('The object must be an array.').end();
-
-    for (let i = 0; i < obj.length; i++) {
-        if (!obj[i].key || !obj[i].value)
-            return res.status(400).send('The object must be an array of objects with the properties "name" and "value".').end();
-        else if (obj[i].canHaveHistory != null && typeof obj[i].canHaveHistory !== 'boolean')
-            return res.status(400).send('The property "canHaveHistory" must be a boolean.').end();
-        else if (obj[i].historyLimit != null && typeof obj[i].historyLimit !== 'number')
-            return res.status(400).send('The property "historyLimit" must be a number.').end();
-        else if (obj[i].historyLimit != null && obj[i].historyLimit < 0)
-            return res.status(400).send('The property "historyLimit" must be a positive number.').end();
-
-        obj[i].canHaveHistory = obj[i].canHaveHistory ?? false;
     }
 
     let object = await db.objects.findOne({ id: id });
@@ -156,7 +144,40 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
     if (object.systemObject) {
         return res.status(403).send('This object is a system object and cannot be modified.').end();
     }
-    await db.objects.updateOne({ id: id }, { $set: { object: obj } });
+
+    for (let i = 0; i < obj.length; i++) {
+        if (!obj[i].key || !obj[i].value)
+            return res.status(400).send('The object must be an array of objects with the properties "key" and "value".').end();
+        else if (obj[i].canHaveHistory != null && typeof obj[i].canHaveHistory !== 'boolean')
+            return res.status(400).send('The property "canHaveHistory" must be a boolean.').end();
+        else if (obj[i].historyLimit != null && typeof obj[i].historyLimit !== 'number')
+            return res.status(400).send('The property "historyLimit" must be a number.').end();
+        else if (obj[i].historyLimit != null && obj[i].historyLimit < 0)
+            return res.status(400).send('The property "historyLimit" must be a positive number.').end();
+
+        obj[i].canHaveHistory = obj[i].canHaveHistory ?? false;
+
+        if(object.properties.findIndex(p => p.key == obj[i].key) > -1) {
+            obj[i].value = object.properties.find(p => p.key == obj[i].key)?.value ?? obj[i].value;
+            if (obj[i].canHaveHistory) {
+                obj[i].historyLimit = obj[i].historyLimit ?? 0;
+                if (obj[i].historyLimit > 0) {
+                    obj[i].history = object.properties.find(p => p.key == obj[i].key)?.history.slice(-obj[i].historyLimit) ?? [];
+                }
+            }
+        }
+        obj[i].history = obj[i].history ?? [];
+        obj[i].historyLimit = obj[i].historyLimit ?? 0;
+    }
+
+    object.properties = obj;
+    await ObjectService.update(id, object);
+
+    // update properties for all children
+    /*
+        1 -> 2 -> 3
+    */
+
     res.status(200).send('Object updated.').end();
 });
 
@@ -196,7 +217,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
         object.description = description;
     }
     if (parentId != undefined && typeof parentId === 'string') {
-        if(parentId == id) {
+        if (parentId == id) {
             return res.status(400).send('The parent id cannot be the same as the object id.').end();
         }
         if (await db.objects.countDocuments({ id: parentId }) == 0) {
@@ -205,7 +226,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
         object.parentId = parentId;
     }
     if (children != undefined && Array.isArray(children)) {
-        if(children.includes(id)) {
+        if (children.includes(id)) {
             return res.status(400).send('The children cannot contain the object id.').end();
         }
         for (let i = 0; i < children.length; i++) {
@@ -218,8 +239,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
         }
         object.children = children;
     }
-    await db.objects.updateOne({ id: id }, { $set: object });
-    await ObjectService.reload(id);
+    await ObjectService.update(id, object);
     res.status(200).send('Object updated.').end();
 });
 
@@ -371,7 +391,7 @@ router.get('/set/:id', async (req, res) => {
 
     pushObjectPropertyHistory(object, key, value);
 
-    ObjectService.update(id, key, value);
+    ObjectService.updateObject(id, key, value);
 
     res.status(200).json(objectPropertyToJson(object.properties[index])).end();
 });
@@ -408,7 +428,7 @@ router.get('/list', authGuard, async (req, res) => {
             systemObject: p.systemObject
         }
         if (viewProperties) {
-            if(viewType == 'array') {
+            if (viewType == 'array') {
                 obj.properties = p.properties.map(o => {
                     return {
                         key: o.key,
@@ -455,7 +475,7 @@ router.get('/list/:id', authGuard, async (req, res) => {
         systemObject: object.systemObject
     }
     if (viewProperties) {
-        if(viewType == 'array'){
+        if (viewType == 'array') {
             obj.properties = object.properties.map(p => {
                 return {
                     key: p.key,
@@ -465,7 +485,7 @@ router.get('/list/:id', authGuard, async (req, res) => {
                     mqttProperty: p.mqttProperty
                 }
             });
-        }else{
+        } else {
             obj.properties = getPropertyToJsonObject(object);
         }
     }
@@ -484,7 +504,7 @@ router.get('/search', authGuard, async (req, res) => {
         return res.status(400).send('The query must be a string.').end();
     }
 
-    let objects = await db.objects.find({ name: {$regex: query, $options: 'i'} }).toArray();
+    let objects = await db.objects.find({ name: { $regex: query, $options: 'i' } }).toArray();
 
     let results = await Promise.all(objects.map(async (p) => {
         let path = await getPath(p);
@@ -504,7 +524,7 @@ router.get('/search', authGuard, async (req, res) => {
 
     res.status(200).send(results).end();
 
-    async function getPath(obj: ObjectModel): Promise<any>{
+    async function getPath(obj: ObjectModel): Promise<any> {
         if (obj.parentId == null) {
             return [{
                 id: obj.id,

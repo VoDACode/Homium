@@ -76,6 +76,13 @@ class StoredObject {
     get lastUpdated(): Date {
         return this._lastUpdated;
     }
+
+    updateObject(object: ObjectModel): void {
+        let id = this._object.id;
+        this._object = object;
+        this._object.id = id;
+        this._lastUpdated = new Date();
+    }
 }
 
 class ObjectStorage {
@@ -147,7 +154,7 @@ class ObjectStorage {
                     this.logger.debug(`Subscribing to set topic (Homium/objects/${object.id}/properties/${prop.key}/set)`)
                     mqtt.subscribe(`Homium/objects/${object.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                         // Call update function
-                        this.update(object!.id, prop.key, message);
+                        this.updateObject(object!.id, prop.key, message);
                     });
                 }
             }
@@ -180,7 +187,7 @@ class ObjectStorage {
                         this.logger.debug(`Subscribing to set topic (Homium/objects/${objFromDb.id}/properties/${prop.key}/set)`)
                         mqtt.subscribe(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                             // Call update function
-                            this._update(objFromDb!.id, prop.key, message, false);
+                            this._updateObject(objFromDb!.id, prop.key, message, false);
                         });
                     }
                 }
@@ -240,8 +247,32 @@ class ObjectStorage {
         return true;
     }
 
-    update(id: string, prop: string, value: any): boolean {
-        return this._update(id, prop, value, true);
+    // update object structure
+    async update(id: string, object: ObjectModel): Promise<boolean> {
+        let obj = await this.get(id);
+        if (!obj) {
+            this.logger.warn(`Object ${id} not found`);
+            return false;
+        }
+        object.id = id;
+        object.updatedAt = Date.now();
+        await db.objects.updateOne({ id: id }, {
+            $set: { ...object }
+        });
+        const index = this.objects.findIndex((o) => o.object.id === id);
+        if (index > -1) {
+            this.logger.debug(`Object ${id} found in memory, updating`);
+            // Alert listeners
+            this.objects[index].events.dispatchEvent('update', this.objects[index].object);
+            // Update object in memory
+            this.objects[index].updateObject(object);
+        }
+        return true;
+    }
+
+    // update object property
+    updateObject(id: string, prop: string, value: any): boolean {
+        return this._updateObject(id, prop, value, true);
     }
 
     async reload(id: string) {
@@ -274,7 +305,7 @@ class ObjectStorage {
         return obj !== undefined;
     }
 
-    private _update(id: string, prop: string, value: any, publishToMqtt: boolean): boolean {
+    private _updateObject(id: string, prop: string, value: any, publishToMqtt: boolean): boolean {
         // Try getting object from memory
         const index = this.objects.findIndex((o) => o.object.id === id);
         if (index > -1) {
