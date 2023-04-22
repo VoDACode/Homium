@@ -54,6 +54,10 @@ const ScriptListPage = () => {
     }
 
     function DeleteScript(scriptId) {
+
+        setIsListLoaded(false);
+        if (isDelWinVisible) setDelWinVisibility(false);
+
         ApiScripts.deleteScript(scriptId).then(response => {
             if (response.status === 200) {
                 if (isDelWinVisible) setDelWinVisibility(false);
@@ -179,10 +183,10 @@ const ScriptListPage = () => {
             </ModalWindow>
             <CustomHeader text="Script list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <ItemsContainer width="96%">
-                <InputBox width="100%" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
+                <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 <div style={{ display: 'flex' }}>
-                    <Space isHorizontal={true} size="12px" />
-                    <InputBox type="button" value="Add Script" onClick={() => navToAddScript()} />
+                    <Space isHorizontal={true} size="110px" />
+                    <InputBox width="120px" type="button" value="Add Script" onClick={() => navToAddScript()} />
                 </div>
             </ItemsContainer>
             <Space size="30px" />

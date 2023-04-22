@@ -10,3 +10,7 @@
 .cont {
     resize: none;
 }
+
+.robotic_font {
+    font-family: 'Robotic', sans-serif;
+}

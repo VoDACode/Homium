@@ -53,7 +53,7 @@ const UserEditPage = () => {
         navigate('/admin/users');
     };
     
-    let { username } = useParams();
+    const { username } = useParams();
 
     const [canChange, setCanChange] = useState(true);
     const [editMode, setEditMode] = useState(false);
@@ -203,24 +203,24 @@ const UserEditPage = () => {
             <Space size="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
-                    <InputBox title="Username *" name="username" value={userData?.username} disabled={editMode} required={true} onError={(e) => {
+                    <InputBox title="Username *" name="username" value={userData?.username} width="300px" disabled={editMode} required={true} onError={(e) => {
                         setErrors(prevState => {
                             let data = [...prevState];
                             data[0] = e;
                             return data;
                         });
                     }} onChange={inputTextChange} />
-                    <InputBox title="First Name" name="firstname" value={userData?.firstname} disabled={!canChange} onChange={inputTextChange} />
-                    <InputBox title="Last Name" name="lastname" value={userData?.lastname} disabled={!canChange} onChange={inputTextChange} />
-                    <InputBox title="Email" name="email" value={userData?.email} disabled={!canChange} onChange={inputTextChange} />
-                    <InputBox title="Password *" type="password" name="password" disabled={!canChange} required={!editMode} placeholder="********" value={userData?.password} error={!editMode ? userData?.password.length < 8 : false} onChange={inputTextChange} onError={(e) => {
+                    <InputBox title="First Name" name="firstname" value={userData?.firstname} width="300px" disabled={!canChange} onChange={inputTextChange} />
+                    <InputBox title="Last Name" name="lastname" value={userData?.lastname} width="300px" disabled={!canChange} onChange={inputTextChange} />
+                    <InputBox title="Email" name="email" value={userData?.email} width="300px" disabled={!canChange} onChange={inputTextChange} />
+                    <InputBox title="Password *" type="password" name="password" width="300px" disabled={!canChange} required={!editMode} placeholder="********" value={userData?.password} error={!editMode ? userData?.password.length < 8 : false} onChange={inputTextChange} onError={(e) => {
                         setErrors(prevState => {
                             let data = [...prevState];
                             data[1] = e;
                             return data;
                         });
                     }} />
-                    <InputBox title="Enabled" checked={userData?.enabled} disabled={permissions.isAdministrator || canChange === false || selfUser?.username === username} onClick={() => setUserData(prevState => {
+                    <InputBox title="Enabled" width="50px" isHeaderLeft={true} checked={userData?.enabled} disabled={permissions.isAdministrator || canChange === false || selfUser?.username === username} onClick={() => setUserData(prevState => {
                         let data = { ...prevState };
                         data.enabled = !data.enabled;
                         return data;
@@ -228,35 +228,35 @@ const UserEditPage = () => {
                 </ItemsContainer>
                 <Accordion title={<h2>Permissions</h2>}>
                     <Accordion title={<h3>Users</h3>}>
-                        <InputBox title="Can View" checked={permissions?.user.read} disabled={permissionsEnabled?.user.read} onClick={() => switchPermission("user.read")} type="checkbox" />
-                        <InputBox title="Can Edit" checked={permissions?.user.update} disabled={permissionsEnabled?.user.update} onClick={() => switchPermission("user.update")} type="checkbox" />
-                        <InputBox title="Can Delete" checked={permissions?.user.remove} disabled={permissionsEnabled?.user.remove} onClick={() => switchPermission("user.remove")} type="checkbox" />
-                        <InputBox title="Can Create" checked={permissions?.user.create} disabled={permissionsEnabled?.user.create} onClick={() => switchPermission("user.create")} type="checkbox" />
+                        <InputBox title="Can View" checked={permissions?.user.read} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.user.read} onClick={() => switchPermission("user.read")} type="checkbox" />
+                        <InputBox title="Can Edit" checked={permissions?.user.update} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.user.update} onClick={() => switchPermission("user.update")} type="checkbox" />
+                        <InputBox title="Can Delete" checked={permissions?.user.remove} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.user.remove} onClick={() => switchPermission("user.remove")} type="checkbox" />
+                        <InputBox title="Can Create" checked={permissions?.user.create} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.user.create} onClick={() => switchPermission("user.create")} type="checkbox" />
                     </Accordion>
                     <Accordion title={<h3>Scripts</h3>}>
-                        <InputBox title="Can View" checked={permissions?.script.read} disabled={permissionsEnabled?.script.read} onClick={() => switchPermission("script.read")} type="checkbox" />
-                        <InputBox title="Can Create" checked={permissions?.script.create} disabled={permissionsEnabled?.script.create} onClick={() => switchPermission("script.create")} type="checkbox" />
-                        <InputBox title="Can Execute" checked={permissions?.script.execute} disabled={permissionsEnabled?.script.execute} onClick={() => switchPermission("script.execute")} type="checkbox" />
-                        <InputBox title="Can Remove" checked={permissions?.script.remove} disabled={permissionsEnabled?.script.remove} onClick={() => switchPermission("script.remove")} type="checkbox" />
+                        <InputBox title="Can View" checked={permissions?.script.read} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.script.read} onClick={() => switchPermission("script.read")} type="checkbox" />
+                        <InputBox title="Can Create" checked={permissions?.script.create} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.script.create} onClick={() => switchPermission("script.create")} type="checkbox" />
+                        <InputBox title="Can Execute" checked={permissions?.script.execute} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.script.execute} onClick={() => switchPermission("script.execute")} type="checkbox" />
+                        <InputBox title="Can Remove" checked={permissions?.script.remove} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.script.remove} onClick={() => switchPermission("script.remove")} type="checkbox" />
                     </Accordion>
                     <Accordion title={<h3>Objects</h3>}>
-                        <InputBox title="Can View" checked={permissions?.object.read} disabled={permissionsEnabled?.object.read} onClick={() => switchPermission("object.read")} type="checkbox" />
-                        <InputBox title="Can Create" checked={permissions?.object.create} disabled={permissionsEnabled?.object.create} onClick={() => switchPermission("object.create")} type="checkbox" />
-                        <InputBox title="Can Edit" checked={permissions?.object.update} disabled={permissionsEnabled?.object.update} onClick={() => switchPermission("object.update")} type="checkbox" />
-                        <InputBox title="Can Remove" checked={permissions?.object.remove} disabled={permissionsEnabled?.object.remove} onClick={() => switchPermission("object.remove")} type="checkbox" />
-                        <InputBox title="Can Use" checked={permissions?.object.canUse} disabled={permissionsEnabled?.object.canUse} onClick={() => switchPermission("object.canUse")} type="checkbox" />
+                        <InputBox title="Can View" checked={permissions?.object.read} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.object.read} onClick={() => switchPermission("object.read")} type="checkbox" />
+                        <InputBox title="Can Create" checked={permissions?.object.create} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.object.create} onClick={() => switchPermission("object.create")} type="checkbox" />
+                        <InputBox title="Can Edit" checked={permissions?.object.update} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.object.update} onClick={() => switchPermission("object.update")} type="checkbox" />
+                        <InputBox title="Can Remove" checked={permissions?.object.remove} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.object.remove} onClick={() => switchPermission("object.remove")} type="checkbox" />
+                        <InputBox title="Can Use" checked={permissions?.object.canUse} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.object.canUse} onClick={() => switchPermission("object.canUse")} type="checkbox" />
                     </Accordion>
                     <Accordion title={<h3>Scene</h3>}>
-                        <InputBox title="Can Create" checked={permissions?.scene.create} disabled={permissionsEnabled?.scene.create} onClick={() => switchPermission("scene.create")} type="checkbox" />
-                        <InputBox title="Can Edit" checked={permissions?.scene.update} disabled={permissionsEnabled?.scene.update} onClick={() => switchPermission("scene.update")} type="checkbox" />
-                        <InputBox title="Can Remove" checked={permissions?.scene.remove} disabled={permissionsEnabled?.scene.remove} onClick={() => switchPermission("scene.remove")} type="checkbox" />
+                        <InputBox title="Can Create" checked={permissions?.scene.create} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.scene.create} onClick={() => switchPermission("scene.create")} type="checkbox" />
+                        <InputBox title="Can Edit" checked={permissions?.scene.update} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.scene.update} onClick={() => switchPermission("scene.update")} type="checkbox" />
+                        <InputBox title="Can Remove" checked={permissions?.scene.remove} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.scene.remove} onClick={() => switchPermission("scene.remove")} type="checkbox" />
                     </Accordion>
                     <Accordion title={<h3>Devices</h3>}>
-                        <InputBox title="Can View" checked={permissions?.devices.read} disabled={permissionsEnabled?.devices.read} onClick={() => switchPermission("devices.read")} type="checkbox" />
-                        <InputBox title="Can Create" checked={permissions?.devices.create} disabled={permissionsEnabled?.devices.create} onClick={() => switchPermission("devices.create")} type="checkbox" />
-                        <InputBox title="Can Edit" checked={permissions?.devices.update} disabled={permissionsEnabled?.devices.update} onClick={() => switchPermission("devices.update")} type="checkbox" />
-                        <InputBox title="Can Remove" checked={permissions?.devices.remove} disabled={permissionsEnabled?.devices.remove} onClick={() => switchPermission("devices.remove")} type="checkbox" />
-                        <InputBox title="Can Use" checked={permissions?.devices.canUse} disabled={permissionsEnabled?.devices.canUse} onClick={() => switchPermission("devices.canUse")} type="checkbox" />
+                        <InputBox title="Can View" checked={permissions?.devices.read} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.devices.read} onClick={() => switchPermission("devices.read")} type="checkbox" />
+                        <InputBox title="Can Create" checked={permissions?.devices.create} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.devices.create} onClick={() => switchPermission("devices.create")} type="checkbox" />
+                        <InputBox title="Can Edit" checked={permissions?.devices.update} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.devices.update} onClick={() => switchPermission("devices.update")} type="checkbox" />
+                        <InputBox title="Can Remove" checked={permissions?.devices.remove} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.devices.remove} onClick={() => switchPermission("devices.remove")} type="checkbox" />
+                        <InputBox title="Can Use" checked={permissions?.devices.canUse} width="50px" isHeaderLeft={true} disabled={permissionsEnabled?.devices.canUse} onClick={() => switchPermission("devices.canUse")} type="checkbox" />
                     </Accordion>
                 </Accordion>
                 <SaveOrCancelForm onSave={async () => await save()} disabledSave={errors.includes(true)} onCancel={() => navToUserList()} />

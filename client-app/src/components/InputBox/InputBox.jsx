@@ -1,9 +1,14 @@
 import React from "react";
 import style from "./.module.css";
 
-const InputBox = ({ title, name, value, onChange, onClick, onError, type = "text", placeholder = "", className = "", checked = undefined, disabled = false, required = false, error = false }) => {
+const InputBox = ({ title = '', name, value, onChange, onClick, onError, type = "text", placeholder = "", width = '100px', className = "", isHeaderLeft = false, checked = undefined, disabled = false, required = false, error = false }) => {
+
     const [_error, setError] = React.useState(false);
+
     const inputRef = React.useRef(null);
+
+    let inputStile = `${style.input} ${className}${!error ? (_error ? ` ${style.error}` : "") : ` ${style.error}`}`;
+
     function change() {
         if (onChange) {
             onChange(inputRef.current);
@@ -20,14 +25,18 @@ const InputBox = ({ title, name, value, onChange, onClick, onError, type = "text
             setError(false);
         }
     }
-    let inputStile = `${style.input} ${className}${!error ? (_error ? ` ${style.error}` : "") : ` ${style.error}`}`;
+
     return (
         <div onClick={(e) => {
-            if(disabled !== true && onClick)
+            if (disabled !== true && onClick)
                 onClick(e);
         }} className={style.box}>
             <span className={style.title}>{title}</span>
+            <br style={{ display: isHeaderLeft || title === '' ? 'none' : 'block' }} />
             <input checked={checked ?? ""}
+                style={{
+                    width: width
+                }}
                 type={type}
                 name={name}
                 defaultValue={value}

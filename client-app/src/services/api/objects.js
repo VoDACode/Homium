@@ -9,14 +9,16 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/get/${id}`));
     }
 
-    static async getObject(id, viewProperties = false) {
-        const viewProps = viewProperties ? '?viewProperties=true' : '?viewProperties=';
-        return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}${viewProps}`));
+    static async getObject(id, viewProperties = false, viewType = '') {
+        const viewObjectProps = viewProperties ? '?viewProperties=true' : '?viewProperties=';
+        var viewObjectType = viewType !== '' ? `?viewType=${viewType}` : '';
+        return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}${viewObjectProps}${viewObjectType}`));
     }
-    
-    static async getObjects(viewProperties = false) {
+
+    static async getObjects(viewProperties = false, viewType = '') {
         const address = viewProperties ? 'controllers/object/list?viewProperties=true' : 'controllers/object/list?viewProperties=';
-        return await BaseApi.getTextOrJson(await BaseApi.get(address));
+        var viewObjectType = viewType !== '' ? `?viewType=${viewType}` : '';
+        return await BaseApi.getTextOrJson(await BaseApi.get(address + viewObjectType));
     }
 
     static async getObjectsIds() {
@@ -45,7 +47,7 @@ export class ApiObjects {
             parentId: parentId,
             description: description,
             allowAnonymous: allowAnonymous,
-            object: properties
+            properties: properties
         });
     }
 
@@ -53,26 +55,12 @@ export class ApiObjects {
         return await BaseApi.delete(`object/remove/${id}`);
     }
 
-    static async updateObject(id, name, description, allowAnonymous) {
-        return await BaseApi.post(`object/update/${id}`, {
+    static async updateObject(id, name, description, allowAnonymous, parentId, children) {
+        return await BaseApi.put(`object/update/${id}`, {
             name: name,
             description: description,
-            allowAnonymous: allowAnonymous
-        });
-    }
-
-    static async updateObjectProperties(id, properties) {
-        return await BaseApi.post(`object/update/${id}/object`, properties);
-    }
-
-    static async updateObjectParent(id, parentId) {
-        return await BaseApi.post(`object/update/${id}/parent`, {
-            parentId: parentId
-        });
-    }
-
-    static async updateObjectChildren(id, children) {
-        return await BaseApi.post(`object/update/${id}/children`, {
+            allowAnonymous: allowAnonymous,
+            parentId: parentId,
             children: children
         });
     }

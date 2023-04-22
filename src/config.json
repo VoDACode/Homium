@@ -22,7 +22,7 @@
         "console": true
     },
     "extensions": {
-        "enabled": true
+        "enabled": false
     },
     "DEBUG": {
         "debug": true,

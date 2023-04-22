@@ -1,8 +1,8 @@
 .main {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 3.1vw;
+    height: 1.75vw;
 }
 
 .header {
@@ -31,10 +31,10 @@
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
+    height: 1.355vw;
+    width: 1.355vw;
+    left: 0.212vw;
+    bottom: 0.212vw;
     background-color: white;
     -webkit-transition: .4s;
     transition: .4s;
@@ -50,7 +50,7 @@
 }
 
 .checkbox:checked + .slider:before {
-    -webkit-transform: translateX(26px);
-    -ms-transform: translateX(26px);
-    transform: translateX(26px);
+    -webkit-transform: translateX(1.22vw);
+    -ms-transform: translateX(1.22vw);
+    transform: translateX(1.22vw);
 }

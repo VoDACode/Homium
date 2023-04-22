@@ -1,7 +1,7 @@
 import React from "react";
 import cl from './.module.css';
 
-const TableHeader = ({ components = [], gridMarkUpCols = null, sortInfo = { parameter: '', dir: '' }, onChange }) => {
+const TableHeader = ({ components = [], gridMarkUpCols = null, sortInfo = { parameter: '', dir: '' }, backColor = '#e4e4e4', textColor = 'rgb(57, 75, 108)', textSize = '1.5vw', onChange }) => {
 
     function InsertSortChar(type, el) {
         if (sortInfo.parameter === el.val) {
@@ -24,6 +24,7 @@ const TableHeader = ({ components = [], gridMarkUpCols = null, sortInfo = { para
                 <div className={cl.cont} key={i}>
                     <p
                         className={cl.attribute}
+                        style={{ cursor: el.val === null ? 'default' : 'pointer' }}
                         onClick={() => { 
                             if (el.val) {
                                 if (sortInfo.parameter === el.val && sortInfo.dir !== '') {
@@ -42,7 +43,7 @@ const TableHeader = ({ components = [], gridMarkUpCols = null, sortInfo = { para
     }
 
     return (
-        <div className={cl.main} style={{ gridTemplateColumns: gridMarkUpCols }}>
+        <div className={cl.main} style={{ gridTemplateColumns: gridMarkUpCols, backgroundColor: backColor, color: textColor, fontSize: textSize }}>
             {RenderComponents()}
         </div>
     );

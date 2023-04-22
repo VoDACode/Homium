@@ -1,6 +1,5 @@
 .box {
     position: relative;
-    width: fit-content;
     margin-top: 5px;
     margin-bottom: 5px;
     font-family: 'Robotic', sans-serif;
@@ -9,10 +8,6 @@
 .title {
     display: inline-block;
     vertical-align: middle;
-}
-
-.title {
-    min-width: 100px;
 }
 
 .error {

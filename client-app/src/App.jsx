@@ -11,6 +11,7 @@ import { ApiAuth } from "./services/api/auth";
 import SettingsPage from "./pages/SettingsPage";
 import ScriptListPage from "./pages/ScriptListPage";
 import ScriptEditPage from "./pages/ScriptEditPage";
+import ObjectEditPage from "./pages/ObjectEditPage";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<SystemInfoPage />} />
           <Route path="objects" element={<ObjectListPage />} />
+          <Route path="objects/:id" element={<ObjectEditPage />} />
           <Route path="scripts" element={<ScriptListPage />} />
           <Route path="scripts/:id" element={<ScriptEditPage />} />
           <Route path="users" element={<UserListPage />} />
