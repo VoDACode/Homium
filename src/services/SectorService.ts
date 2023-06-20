@@ -187,7 +187,7 @@ class SectorService {
         if (!obj) {
             throw new Error(`Property ${propertyName} not found`);
         }
-        if(!ObjectService.update(obj.objectId, obj.objectProperty, propertyValue)){
+        if(!ObjectService.updateObject(obj.objectId, obj.objectProperty, propertyValue)){
             throw new Error(`Property ${propertyName} not found`);
         }
     }
