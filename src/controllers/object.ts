@@ -191,8 +191,8 @@ router.put('/update/:id', authGuard, async (req, res) => {
     const name = req.body.name as string;
     const allowAnonymous = req.body.allowAnonymous as boolean;
     const description = req.body.description as string;
-    const parentId = req.query.parentId as string;
-    const children = req.query.children as string[];
+    const parentId = req.body.parentId as string;
+    const children = req.body.children as string[];
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }

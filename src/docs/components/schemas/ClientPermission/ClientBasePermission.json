@@ -1,0 +1,20 @@
+{
+    "ClientBasePermission":{
+        "type":"object",
+        "properties":{
+            "update": {
+                "type": "boolean"
+            },
+            "remove": {
+                "type": "boolean"
+            },
+            "create": {
+                "type": "boolean"
+            },
+            "read": {
+                "type": "boolean"
+            }
+        },
+        "required": ["update", "remove", "create", "read"]
+    }
+}

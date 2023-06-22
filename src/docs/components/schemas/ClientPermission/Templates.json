@@ -1,0 +1,22 @@
+{
+    "Templates":{
+        "type":"object",
+        "properties":{
+            "admin": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            },
+            "guest": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            },
+            "controlPanel": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            },
+            "userDevice": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            },
+            "defaultUser": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            }
+        }
+    }
+}

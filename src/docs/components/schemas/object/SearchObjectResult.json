@@ -1,0 +1,53 @@
+{
+    "SearchObjectResult":{
+        "type":"object",
+        "properties":{
+            "id":{
+                "type":"string"
+            },
+            "name":{
+                "type":"string"
+            },
+            "description":{
+                "type":"string"
+            },
+            "path":{
+                "type":"string"
+            },
+            "parentId":{
+                "type":"string"
+            },
+            "updatedAt":{
+                "type":"string"
+            },
+            "allowAnonymous":{
+                "type":"boolean"
+            },
+            "children":{
+                "type":"array",
+                "items":{
+                    "type": "string"
+                }
+            },
+            "systemObject":{
+                "type":"boolean"
+            },
+            "properties":{
+                "type":"array",
+                "items":{
+                    "type":"object",
+                    "properties":{
+                        "PROPERTY_NAME1": {
+                            "type": "any",
+                            "example": "PROPERTY_VALUE1"
+                        },
+                        "PROPERTY_NAME2": {
+                            "type": "any",
+                            "example": "PROPERTY_VALUE2"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -9,6 +9,7 @@ import * as boot from './boot';
 import {Logger} from './services/LogService';
 import ScriptService from './services/ScriptService';
 import { platform } from 'os';
+import swagger from './utils/swagger';
 
 if(platform() != "linux"){
     console.error("This application is only supported on linux");
@@ -50,6 +51,9 @@ async function start(){
     await ScriptService.init();
     
     app.use("/", require('./router'));
+
+    swagger(app);
+
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
     });

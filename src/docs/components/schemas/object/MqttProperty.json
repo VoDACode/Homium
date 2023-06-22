@@ -1,0 +1,15 @@
+{
+    "MqttProperty":{
+        "type": "object",
+        "properties": {
+            "display": {
+                "type": "boolean",
+                "default": false
+            },
+            "subscribe": {
+                "type": "boolean",
+                "default": false
+            }
+        }
+    }
+}

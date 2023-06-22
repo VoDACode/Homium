@@ -1,0 +1,25 @@
+{
+    "ClientPermissionExecute":{
+        "type":"object",
+        "properties":{
+            "remove":{
+                "type":"boolean"
+            },
+            "read":{
+                "type":"boolean"
+            },
+            "create":{
+                "type":"boolean"
+            },
+            "execute":{
+                "type":"boolean"
+            }
+        },
+        "required":[
+            "remove",
+            "read",
+            "create",
+            "execute"
+        ]
+    }
+}

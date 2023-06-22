@@ -1,0 +1,40 @@
+{
+    "ListObjects":{
+        "type":"object",
+        "properties":{
+            "id":{
+                "type":"string"
+            },
+            "name":{
+                "type":"string"
+            },
+            "parentId":{
+                "type":"string"
+            },
+            "description":{
+                "type":"string"
+            },
+            "updatedAt":{
+                "type":"string"
+            },
+            "allowAnonymous":{
+                "type":"boolean"
+            },
+            "children":{
+                "type":"array",
+                "items":{
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "uniqueItems": true,
+                "example": [
+                    "5f5e2a3a-5b0a-4c1a-9c1a-5a5a5a5a5a5a",
+                    "5f5e2a3a-5b0a-4c1a-9c1a-1a1a1a1a1a1a"
+                ]
+            },
+            "systemObject":{
+                "type":"boolean"
+            }
+        }
+    }
+}

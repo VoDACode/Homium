@@ -1,0 +1,30 @@
+{
+    "ClientPermissions": {
+        "type": "object",
+        "properties": {
+            "user": {
+                "$ref": "#/components/schemas/ClientPermission/ClientBasePermission"
+            },
+            "script": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissionExecute"
+            },
+            "object": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissionObject"
+            },
+            "scene": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissionScene"
+            },
+            "devices": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissionDevice"
+            },
+            "extensions": {
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissionExtension"
+            },
+            "isAdministrator": {
+                "type": "boolean",
+                "description": "Is user administrator",
+                "example": false
+            }
+        }
+    }
+}

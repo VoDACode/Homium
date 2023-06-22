@@ -1,0 +1,18 @@
+{
+    "ObjectPropertyHistory":{
+        "type":"object",
+        "properties":{
+            "value":{
+                "type":"any"
+            },
+            "date":{
+                "type":"string",
+                "format":"date-time"
+            }
+        },
+        "required":[
+            "value",
+            "date"
+        ]
+    }
+}

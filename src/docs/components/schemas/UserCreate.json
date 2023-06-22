@@ -1,0 +1,55 @@
+{
+    "UserCreate":{
+        "type":"object",
+        "properties":{
+            "username":{
+                "type":"string",
+                "minLength":1,
+                "maxLength":20
+            },
+            "password":{
+                "type":"string",
+                "minLength":1,
+                "maxLength":512,
+                "format":"password"
+            },
+            "email":{
+                "type":"string",
+                "minLength":1,
+                "maxLength":50,
+                "format":"email"
+            },
+            "lastname": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50
+            },
+            "firstname": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50
+            },
+            "enabled": {
+                "type": "boolean",
+                "default": true
+            },
+            "permissions": {
+                "type" : "object",
+                "$ref": "#/components/schemas/ClientPermission/ClientPermissions"
+            },
+            "permissionTemplate":{
+                "type": "string",
+                "enum": ["admin", "guest", "defaultUser", "controlPanel", "userDevice"]
+            }
+        },
+        "required":[
+            "username",
+            "password",
+            "email",
+            "lastname",
+            "firstname",
+            "enabled",
+            "permissions"
+        ]
+    }
+}

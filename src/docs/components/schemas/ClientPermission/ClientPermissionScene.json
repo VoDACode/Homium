@@ -1,0 +1,17 @@
+{
+    "ClientPermissionScene":{
+        "type":"object",
+        "properties":{
+            "remove":{
+                "type":"boolean"
+            },
+            "update": {
+                "type":"boolean"
+            },
+            "create": {
+                "type":"boolean"
+            }
+        },
+        "required":["remove","update","create"]
+    }
+}

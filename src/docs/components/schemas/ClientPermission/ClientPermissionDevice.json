@@ -1,0 +1,12 @@
+{
+    "ClientPermissionDevice":{
+        "$ref": "#/components/schemas/ClientPermission/ClientBasePermission",
+        "type":"object",
+        "properties":{
+            "canUse":{
+                "type":"boolean"
+            }
+        },
+        "required":["canUse"]
+    }
+}

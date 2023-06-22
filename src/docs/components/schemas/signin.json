@@ -1,0 +1,25 @@
+{
+    "signin": {
+        "type": "object",
+        "properties": {
+            "username": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 20
+            },
+            "password": {
+                "type": "string",
+                "minLength": 6,
+                "maxLength": 512
+            }
+        },
+        "required": [
+            "username",
+            "password"
+        ],
+        "example": {
+            "username": "admin",
+            "password": "admin"
+        }
+    }
+}

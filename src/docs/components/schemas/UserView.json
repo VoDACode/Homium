@@ -1,0 +1,30 @@
+{
+    "UserView":{
+        "type":"object",
+        "properties":{
+            "lastname":{
+                "type":"string",
+                "maxLength":255,
+                "minLength":1
+            },
+            "firstname":{
+                "type":"string",
+                "maxLength":255,
+                "minLength":1
+            },
+            "username":{
+                "type":"string",
+                "minLength": 3,
+                "maxLength": 20
+            },
+            "email":{
+                "type":"string",
+                "format":"email"
+            },
+            "enabled":{
+                "type":"boolean"
+            }
+        },
+        "required":["lastname","firstname","username","email","enabled"]
+    }
+}

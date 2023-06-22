@@ -1,0 +1,37 @@
+{
+    "UpdateObject":{
+        "type":"object",
+        "properties":{
+            "name":{
+                "type":"string",
+                "minLength":1
+            },
+            "parentId":{
+                "type":"string",
+                "format":"uuid",
+                "minLength":1
+            },
+            "description":{
+                "type":"string",
+                "minLength":1
+            },
+            "allowAnonymous":{
+                "type":"boolean"
+            },
+            "properties":{
+                "type":"array",
+                "items":{
+                    "$ref": "#/components/schemas/Object/ObjectProperty"
+                }
+            },
+            "children": {
+                "type": "array",
+                "description": "Children IDs",
+                "items": {
+                    "type": "string"
+                },
+                "example": ["d290f1ee-6c54-4b01-90e6-d701748f0851"]
+            }
+        }
+    }
+}

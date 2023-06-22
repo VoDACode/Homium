@@ -1,0 +1,45 @@
+{
+    "ObjectProperty":{
+        "type":"object",
+        "properties":{
+            "key":{
+                "type":"string",
+                "minLength":1
+            },
+            "value":{
+                "type":"any"
+            },
+            "canHaveHistory":{
+                "type":"boolean",
+                "default":false
+            },
+            "history":{
+                "type":"array",
+                "items":{
+                    "type":"object",
+                    "properties":{
+                        "value":{
+                            "type":"any"
+                        },
+                        "timestamp":{
+                            "type":"number"
+                        }
+                    }
+                },
+                "default":[]
+            },
+            "historyLimit": {
+                "type": "number",
+                "default": 0,
+                "minimum": 0
+            },
+            "mqttProperty": {
+                "$ref": "#/components/schemas/Object/MqttProperty"
+            }
+        },
+        "required":[
+            "key",
+            "value"
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "ClientPermissionExtension":{
+        "type": "object",
+        "properties": {
+            "remove":{
+                "type": "boolean"
+            },
+            "read":{
+                "type": "boolean"
+            },
+            "download":{
+                "type": "boolean"
+            },
+            "canConfigure":{
+                "type": "boolean"
+            },
+            "canUse":{
+                "type": "boolean"
+            }
+        },
+        "required": [
+            "remove",
+            "read",
+            "download",
+            "canConfigure",
+            "canUse"
+        ]
+    }
+}
