@@ -5,7 +5,7 @@ const payload = {
             "description": "Local server"
         },
         {
-            "url": "https://api.homium.vodacode.space",
+            "url": "http://api.homium.vodacode.space",
             "description": "Production server"
         }
     ]
