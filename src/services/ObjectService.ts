@@ -2,7 +2,7 @@ import { ObjectModel } from "../models/ObjectModel";
 import { ObjectEventType } from "../types/ObjectEventType";
 import db from "../db";
 import mqtt from "./MqttService";
-import { convertAnyToCorrectType } from "../models/ObjectProperty";
+import { ObjectProperty, convertAnyToCorrectType } from "../models/ObjectProperty";
 import config from "../config";
 import { Logger } from "./LogService";
 import ScriptService from "./ScriptService";
@@ -208,6 +208,14 @@ class ObjectStorage {
 
             // Remove object from database
             await db.objects.deleteOne({ id: id });
+
+            // Remove children from parent object
+            let objects = await db.objects.find({ children: id }).toArray();
+            for (let obj of objects) {
+                obj.children = obj.children.filter((c: string) => c !== id);
+                await db.objects.updateOne({ id: obj.id }, { $set: { children: obj.children } });
+            }
+
             if (config.mqtt.enabled) {
                 // Unsubscribe from all set topics
                 mqtt.unsubscribe(`Homium/objects/${id}/#`);

@@ -5,7 +5,7 @@ const payload = {
                 "/api/object"
             ],
             "summary": "Update object property",
-            "description": "Update object property",
+            "description": "Update object property. If removeCascade is true, the removal will be applied to all children.",
             "operationId": "updateObjectProperty",
             "security": [
                 {
@@ -21,13 +21,27 @@ const payload = {
                     "schema": {
                         "type": "string"
                     }
+                },
+                {
+                    "name": "removeCascade",
+                    "in": "query",
+                    "description": "Remove cascade",
+                    "required": false,
+                    "schema": {
+                        "type": "boolean",
+                        "default": false
+                    }
                 }
             ],
             "requestBody": {
+                "description": "Object property. Accepts a list of parameters to be added or removed from object.",
                 "content": {
                     "application/json": {
                         "schema": {
-                            "$ref": "#/components/schemas/Object/ObjectProperty"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/components/schemas/Object/ObjectProperty"
+                            }
                         }
                     }
                 },

@@ -1,5 +1,5 @@
 const payload = {
-    "/auth/refresh": {
+    "/api/auth/refresh": {
         "post": {
             "tags": [
                 "/auth"

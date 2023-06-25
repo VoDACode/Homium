@@ -1,5 +1,5 @@
 const payload = {
-    "/auth/signout": {
+    "/api/auth/signout": {
         "post": {
             "tags": [
                 "/auth"

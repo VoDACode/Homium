@@ -1,5 +1,5 @@
 const payload = {
-    "/auth/status": {
+    "/api/auth/status": {
         "get": {
             "tags": [
                 "/auth"

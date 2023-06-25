@@ -111,7 +111,7 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
         return db.objects.find({ parentId: id }).forEach((object: any) => {
             remove(object.id);
         }).then(async () => {
-            await db.objects.deleteOne({ id: id });
+            await ObjectService.remove(id);
         });
     }
 });
@@ -125,6 +125,7 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 
     const id = req.params.id;
     const obj = req.body as ObjectProperty[];
+    const removeCascade = req.query.removeCascade == 'true' ?? false;
 
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
@@ -145,8 +146,19 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
         return res.status(403).send('This object is a system object and cannot be modified.').end();
     }
 
+    var parent = object.parentId == null ? null : await ObjectService.get(object.parentId);
+
+    if(parent != null){
+        for(let i = 0; i < parent.properties.length; i++){
+            let prop = parent.properties[i];
+            if(obj.findIndex(p => p.key == prop.key) == -1){
+                obj.push(prop);
+            }
+        }
+    }
+
     for (let i = 0; i < obj.length; i++) {
-        if (!obj[i].key || !obj[i].value)
+        if (obj[i].key == undefined || obj[i].key == null || obj[i].value == undefined || obj[i].value == null)
             return res.status(400).send('The object must be an array of objects with the properties "key" and "value".').end();
         else if (obj[i].canHaveHistory != null && typeof obj[i].canHaveHistory !== 'boolean')
             return res.status(400).send('The property "canHaveHistory" must be a boolean.').end();
@@ -157,7 +169,7 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 
         obj[i].canHaveHistory = obj[i].canHaveHistory ?? false;
 
-        if(object.properties.findIndex(p => p.key == obj[i].key) > -1) {
+        if (object.properties.findIndex(p => p.key == obj[i].key) > -1) {
             obj[i].value = object.properties.find(p => p.key == obj[i].key)?.value ?? obj[i].value;
             if (obj[i].canHaveHistory) {
                 obj[i].historyLimit = obj[i].historyLimit ?? 0;
@@ -170,13 +182,50 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
         obj[i].historyLimit = obj[i].historyLimit ?? 0;
     }
 
+    var oldProperties = object.properties;
     object.properties = obj;
-    await ObjectService.update(id, object);
+    await updateChildren(id, obj, oldProperties);
 
-    // update properties for all children
-    /*
-        1 -> 2 -> 3
-    */
+    async function updateChildren(id: string, properties: ObjectProperty[], oldProperties: ObjectProperty[]) {
+        var oldParent = await ObjectService.get(id);
+        if (oldParent == null) {
+            return;
+        }
+        db.objects.find({ parentId: id }).forEach((child: ObjectModel) => {
+            if (oldParent == null) {
+                return;
+            }
+            // remember old properties
+            var childProperties = child.properties;
+
+            // added new properties
+            for (let i = 0; i < properties.length; i++) {
+                if (child.properties.findIndex(p => p.key == properties[i].key) == -1) {
+                    child.properties.push(properties[i]);
+                }
+            }
+
+            // if removeCascade is true, remove properties from child that are not in parent
+            if (removeCascade == true) {
+                for (let i = 0; i < oldProperties.length; i++) {
+                    if (properties.findIndex(p => p.key == oldProperties[i].key) == -1) {
+                        const index = child.properties.findIndex(p => p.key == oldProperties[i].key);
+                        if (index > -1) {
+                            child.properties.splice(index, 1);
+                        }
+                    }
+                }
+            }
+
+            ObjectService.update(child.id, child).then(() => {
+                if (child.children != null && child.children.length > 0) {
+                    updateChildren(child.id, child.properties, childProperties);
+                }
+            });
+        });
+        oldParent.properties = properties;
+        await ObjectService.update(id, oldParent);
+    }
 
     res.status(200).send('Object updated.').end();
 });
@@ -270,7 +319,7 @@ router.get('/get/:id/children', async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
-    const object = await db.objects.findOne({ id: id });
+    const object = await ObjectService.get(id);
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
