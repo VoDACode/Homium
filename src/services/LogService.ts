@@ -47,11 +47,13 @@ class LogStorage{
     }
 
     public log(level: LogLevel, message: string, serviceName: string): void {
-        if(level < this.stringLeverToLogLevel(config.log.level)){
+        let logLevel = config ? config.log.level : "DEBUG";
+        let logInConsole = config ? config.log.console : true;
+        if(level < this.stringLeverToLogLevel(logLevel)){
             return;
         }
         this.logRecords.push(new LogRecord(level, message, serviceName));
-        if(config.log.console){
+        if(logInConsole){
             let textColor = "";
             if(level >= LogLevel.ERROR){
                 textColor = "\x1b[31m";
