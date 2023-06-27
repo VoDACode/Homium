@@ -325,6 +325,12 @@ class ObjectStorage {
         return obj !== undefined;
     }
 
+    clearCache(): void {
+        this.logger.debug('Clearing object cache');
+        this.logger.debug(`Objects in cache: ${this.objects.length}`);
+        this.objects = [];
+    }
+
     private _updateObject(id: string, prop: string, value: any, publishToMqtt: boolean): boolean {
         // Try getting object from memory
         const index = this.objects.findIndex((o) => o.object.id === id);

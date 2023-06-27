@@ -116,6 +116,15 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
     }
 });
 
+router.delete('/clear-cache', authGuard, async (req, res) => {
+    if(await hasPermission(req, p => p.isAdministrator) !== true) {
+        res.status(403).send('Permission denied!').end();
+        return;
+    }
+    ObjectService.clearCache();
+    res.status(200).send('Cache cleared.').end();
+});
+
 router.put('/update/:id/object', authGuard, async (req, res) => {
 
     if (await hasPermission(req, p => p.object.update) !== true) {

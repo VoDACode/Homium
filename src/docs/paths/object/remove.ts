@@ -41,6 +41,32 @@ const payload = {
                 }
             }
         }
+    },
+    "/api/object/clear-cache": {
+        "delete": {
+            "tags": [
+                "/api/object"
+            ],
+            "summary": "Clear object cache",
+            "description": "Clear object cache",
+            "operationId": "clearObjectCache",
+            "security": [
+                {
+                    "bearerAuth": []
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Object cache cleared"
+                },
+                "401": {
+                    "description": "Unauthorized"
+                },
+                "403": {
+                    "description": "Permission denied!"
+                }
+            }
+        }
     }
 }
 
