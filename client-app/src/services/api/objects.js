@@ -11,7 +11,7 @@ export class ApiObjects {
 
     static async getObject(id, viewProperties = false, viewType = '') {
         const viewObjectProps = viewProperties ? '?viewProperties=true' : '?viewProperties=';
-        var viewObjectType = viewType !== '' ? `?viewType=${viewType}` : '';
+        var viewObjectType = `&viewType=${viewType}`;
         return await BaseApi.getTextOrJson(await BaseApi.get(`object/list/${id}${viewObjectProps}${viewObjectType}`));
     }
 
@@ -21,7 +21,7 @@ export class ApiObjects {
         return await BaseApi.getTextOrJson(await BaseApi.get(address + viewObjectType));
     }
 
-    static async getObjectsIds() {
+    static async getObjectIds() {
         return await BaseApi.getTextOrJson(await BaseApi.get('controllers/object/list/ids'));
     }
 
@@ -51,11 +51,7 @@ export class ApiObjects {
         });
     }
 
-    static async removeObject(id) {
-        return await BaseApi.delete(`object/remove/${id}`);
-    }
-
-    static async updateObject(id, name, description, allowAnonymous, parentId, children) {
+    static async updateObject(id, name, description, allowAnonymous, parentId, children = undefined) {
         return await BaseApi.put(`object/update/${id}`, {
             name: name,
             description: description,
@@ -63,5 +59,13 @@ export class ApiObjects {
             parentId: parentId,
             children: children
         });
+    }
+
+    static async updateLogicalObject(id, properties) {
+        return await BaseApi.put(`object/update/${id}/object`, properties);
+    }
+
+    static async removeObject(id) {
+        return await BaseApi.delete(`object/remove/${id}`);
     }
 }

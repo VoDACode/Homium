@@ -4,12 +4,10 @@
 
 .main {
     position: relative;
-    width: fit-content;
     height: fit-content;
 }
 
 .object {
-    width: 100%;
     overflow: hidden;
     overflow-y: scroll;
 }

@@ -3,6 +3,8 @@ import CustomHeader from "../components/CustomHeader/CustomHeader";
 import ObjectSection from "../components/ObjectSection/ObjectSection";
 import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
 import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
+import ModalWindow from "../components/ModalWindow/ModalWindow";
+import DeletePanel from "../components/DeletePanel/DeletePanel";
 import { ApiObjects } from "../services/api/objects";
 import Space from "../components/Space/Space";
 import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
@@ -11,15 +13,18 @@ import { useNavigate } from "react-router-dom";
 const ObjectListPage = () => {
 
     const navigate = useNavigate();
-    const navToAddObject = (parentId = '') => {
-        var link = parentId !== '' ? `parent=${parentId}` : '';
-        navigate(`/admin/objects/add?${link}`);
+    const navToEditObject = (id, parentId, addProp = '') => {
+        var parent = `?parent=${parentId ?? ''}`;
+        var newProp = `&prop=${addProp}`;
+        navigate(`/admin/objects/${id}${parent}${newProp}`);
     }
 
+    const [isDelWinVisible, setDelWinVisibility] = useState(false);
     const [isListLoaded, setIsListLoaded] = useState(false);
     const [sortByAsc, setSortMode] = useState(true);
     const [searchValue, setSearchValue] = useState('');
     const [objectList, setObjectList] = useState([]);
+    const [idForDelete, setDeletingId] = useState(null);
 
     function ChangeSearchValue(value) {
         setSearchValue(value);
@@ -50,30 +55,49 @@ const ObjectListPage = () => {
                     objects.push(await ApiObjects.getObject(ids[i], true));
                 }
                 setObjectList(objects);
-                if (!isListLoaded) setIsListLoaded(true);
+                setIsListLoaded(true);
             });
         }
         else {
             ApiObjects.getObjectsBySearch(searchValue).then(objects => {
                 setObjectList(objects);
-                if (!isListLoaded) setIsListLoaded(true);
+                setIsListLoaded(true);
             });
         }
     }
 
+    function DeleteObjectRequest(objectId) {
+        setDelWinVisibility(true);
+        setDeletingId(objectId);
+    }
+
+    function DeleteObject(objectId) {
+        setIsListLoaded(false);
+        if (isDelWinVisible) setDelWinVisibility(false);
+
+        ApiObjects.removeObject(objectId).then(response => {
+            if (response.status === 200) {
+                if (isDelWinVisible) setDelWinVisibility(false);
+                UpdateObjects();
+            } else {
+                alert(response.text());
+            }
+        });
+    }
+
     function RenderObjects() {
-        if (!isListLoaded)
+        if (!isListLoaded) {
             return (
                 <div>
                     <Space size="20px" />
                     <LoadingAnimation size="50px" loadingCurveWidth="11px" />
                 </div>
             );
+        }
 
         var rendered = [];
         const fixedObjects = SortObjectList(objectList, sortByAsc);
         for (let i = 0; i < fixedObjects.length; i++) {
-
             rendered.push(
                 <ObjectSection
                     id={fixedObjects[i].id}
@@ -82,9 +106,28 @@ const ObjectListPage = () => {
                     forcedChildCount={fixedObjects[i].children.length}
                     forcedPropCount={Object.keys(fixedObjects[i].properties).length}
                     path={fixedObjects[i].path}
+                    modalWindowControl={DeleteObjectRequest}
                     sortByAsc={sortByAsc}
-                    onAddChildClick={() => navToAddObject(fixedObjects[i].id)} />);
+                    onAddChildClick={() => navToEditObject('add', fixedObjects[i].id)}
+                    onAddPropertyClick={() => navToEditObject(fixedObjects[i].id, fixedObjects[i].id.parentId, 'add')}
+                    onEditClick={() => navToEditObject(fixedObjects[i].id)}
+                    onRemoveClick={() => DeleteObjectRequest(fixedObjects[i].id)} />);
         }
+
+        rendered.push(<li
+            key={"adder"}
+            style={{
+                color: 'rgb(234, 132, 0)',
+                padding: '0.5vh',
+                borderRadius: '1vh',
+                textDecoration: 'underline solid rgb(255, 64, 0)',
+                width: 'fit-content'
+            }}
+            onMouseEnter={e => { e.target.style.backgroundColor = 'cyan' }}
+            onMouseLeave={e => { e.target.style.backgroundColor = '' }}
+            onClick={() => navToEditObject('add', '')}>
+            Add new object</li>);
+
         return rendered;
     }
 
@@ -95,26 +138,25 @@ const ObjectListPage = () => {
 
     return (
         <div>
+            <ModalWindow visible={isDelWinVisible}>
+                <DeletePanel
+                    header="Type 'yes' to confirm that you want to delete the object."
+                    idForDel={idForDelete}
+                    onCancelClick={() => setDelWinVisibility(false)}
+                    onDeleteClick={DeleteObject} />
+            </ModalWindow>
             <CustomHeader text="Object list" textColor="#0036a3" textSize="45px" isCenter={true} />
             <Space size="10px" />
-            <ItemsContainer width="94%" inlineFlexMode={true}>
-                <CustomHeader onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
+            <ItemsContainer width="97%" inlineFlexMode={true}>
+                <CustomHeader wrap={false} onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
                 <Space isHorizontal={true} size="20px" />
                 <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={e => ChangeSearchValue(e.target.value)} />
             </ItemsContainer>
-            <ul className="object_list">
+            <ul className="object_list" style={{ paddingLeft: '1vw' }}>
+                <hr style={{ position: 'absolute', left: '0', right: '0' }} />
                 {RenderObjects()}
-                <li
-                    style={{
-                        color: 'rgb(234, 132, 0)',
-                        padding: '0.5vh',
-                        borderRadius: '1vh',
-                        textDecoration: 'underline solid rgb(255, 64, 0)'
-                    }}
-                    onMouseEnter={e => { e.target.style.backgroundColor = 'cyan' }}
-                    onMouseLeave={e => { e.target.style.backgroundColor = '' }}
-                    onClick={() => navToAddObject()}>Add new object</li>
             </ul>
+            <Space size='50px' />
         </div>
     );
 }

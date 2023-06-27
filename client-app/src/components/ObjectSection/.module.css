@@ -2,6 +2,12 @@
     color: rgb(0, 0, 213);
 }
 
+.header {
+    cursor: pointer;
+    white-space: nowrap;
+    height: fit-content;
+}
+
 .properties {
     color: rgb(95, 26, 158);
 }
@@ -13,27 +19,60 @@
 ul {
     user-select: none;
     list-style: none;
-    padding-left: 2.5vw;
+    padding-left: 40px;
     margin-top: 1vh;
     margin-bottom: 1vh;
-    font-family:'Roboto', sans-serif;;
+    font-family:'Roboto', sans-serif;
     font-size: 35px;
     font-weight: bold;
-    width: fit-content;
 }
 
 li {
+    padding-block: 0.5vh;
+}
+
+.header_block {
+    display: flex;
+}
+
+.option_block {
+    width: 100%;
+}
+
+.option {
     cursor: pointer;
-    width: fit-content;
-    padding: 0.5vh;
+    width: 40px;
+    height: 40px;
+    opacity: 0.5;
+    float: right;
+}
+
+.edit {
+    content: url(./img/edit_object_inactive.png);
+}
+
+.remove {
+    margin-left: 20px;
+    margin-right: 1vw;
+    content: url(./img/remove_object_inactive.png);
+}
+
+.separator {
+    position: absolute;
+    left: 0;
+    right: 0;
 }
 
 .adder {
+    cursor: pointer;
     color: rgb(234, 132, 0);
-    text-decoration: underline solid rgb(255, 64, 0); 
+    text-decoration: underline solid rgb(255, 64, 0);
+    width: fit-content;
 }
 
-.el {
+.prop {
+    cursor: pointer;
+    width: fit-content;
     color: rgb(10, 117, 67);
 }
 
@@ -59,7 +98,17 @@ li {
     border-radius: 1vh;
 }
 
-.el:hover {
+.edit:hover {
+    opacity: 1;
+    content: url(./img/edit_object_active.png);
+}
+
+.remove:hover {
+    opacity: 1;
+    content: url(./img/remove_object_active.png);
+}
+
+.prop:hover {
     background-color: coral;
     border-radius: 1vh;
 }

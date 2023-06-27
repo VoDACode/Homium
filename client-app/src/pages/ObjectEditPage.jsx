@@ -120,71 +120,79 @@ const ObjectEditPage = () => {
 
     function LoadObjectInfo() {
         if (id !== 'add') {
-            ApiObjects.getObject(id, false, 'array').then(obj => {
+            ApiObjects.getObject(id, true, 'array').then(obj => {
                 setObjectData(prevState => {
                     var newObj = { ...prevState };
                     newObj.name = obj.name;
                     newObj.description = obj.description;
                     newObj.allowAnonymous = obj.allowAnonymous;
                     newObj.properties = obj.properties;
+                    newObj.parentId = obj.parentId;
                     return newObj;
                 });
+            });
+        }
 
-                if (obj.parentId !== null) {
-                    ApiObjects.getObject(obj.parentId).then(p => {
-                        setParentName(p.name);
-                    });
-                }
-                else {
-                    setParentName('< No parent >');
-                }
+        if (searchParams.get('parent') !== '') {
+            ApiObjects.getObject(searchParams.get('parent')).then(obj => {
+                ChangeObjectAttributeByValue('parentId', obj.id);
+                setParentName(obj.name);
             });
         }
         else {
-            if (searchParams.has('parent')) {
-                ApiObjects.getObject(searchParams.get('parent')).then(obj => {
-                    ChangeObjectAttributeByValue('parentId', obj.id);
-                    setParentName(obj.name);
-                });
-            }
-            else {
-                setParentName('< No parent >');
-            }
+            setParentName('< No parent >');
+        }
+
+        if (searchParams.get('prop') === 'add') {
+            document.getElementById('prop-list').scrollIntoView({behavior: "smooth"});
+            setEditingProp('');
         }
     }
 
     async function SaveChanges() {
-        console.log(objectData);
-        if (id !== 'add') {
+        if (objectData.name !== "") {
+            var response1, response2;
 
-        }
-        else {
-            if (objectData.name !== "") {
-                var response = await ApiObjects.createObject(
+            if (id !== 'add') {
+                response1 = await ApiObjects.updateObject(
+                    id,
+                    objectData.name,
+                    objectData.description,
+                    objectData.allowAnonymous,
+                    objectData.parentId
+                );
+
+                response2 = await ApiObjects.updateLogicalObject(
+                    id,
+                    objectData.properties
+                );
+            }
+            else {
+                response1 = response2 = await ApiObjects.createObject(
                     objectData.name,
                     objectData.parentId,
                     objectData.description,
                     objectData.allowAnonymous,
                     objectData.properties
                 );
+            }
 
-                if (response.ok) {
-                    navigateObjectListPage();
-                }
-                else {
-                    let err = await response.text();
-                    alert(err);
-                }
+            if (response1.ok && response2.ok) {
+                navigateObjectListPage();
             }
             else {
-                alert("The name field is empty!");
+                let err = await response.text();
+                alert(err);
             }
+        }
+        else {
+            alert("The name field is empty!");
         }
     }
 
     function RenderProperties() {
         var rendered = [];
-        const sortedProps = SortPropertyList(objectData.properties, sortPropsByAsc);;
+        const sortedProps = SortPropertyList(objectData.properties, sortPropsByAsc);
 
         if (editingProp === '') {
             rendered.push(<div key={''}>
@@ -255,7 +263,7 @@ const ObjectEditPage = () => {
                 <Space size="10px" />
                 <CustomCheckbox scale="1.4" text="Allow anonymous" name="allowAnonymous" textSize="16px" checked={objectData.allowAnonymous} onChange={ChangeObjectAttributeByValue} />
             </ItemsContainer>
-            <Space size="10px" />
+            <Space size="20px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <CustomTextarea
                     onChange={(e) => ChangeObjectAttributeByValue('description', e.target.value)}
@@ -268,16 +276,16 @@ const ObjectEditPage = () => {
             </ItemsContainer>
             <Space size="20px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
-                <ScrollDiv headerText="Properties" height="500px" headerSize="20px" backgroundColor="whitesmoke" borderSize="1px" borderRadius='5px' width="90vw" padding="10px"
+                <ScrollDiv idName={"prop-list"} isHeaderCentered={true} headerText="Properties" height="500px" headerSize="20px" backgroundColor="whitesmoke" borderSize="1px" borderRadius='5px' width="90vw" padding="10px"
                     headContent={
-                        <ItemsContainer width="99.1%" horizontal="center" vertical="center" margin={{ top: '5px', left: '8px' }}>
-                            <ItemsContainer inlineFlexMode={true} horizontal="left" vertical="left" margin={{ top: '5px', bottom: '5px' }}>
+                        <div style={{marginTop: '5px', marginLeft: '10px', marginRight: '15px'}}>
+                            <div style={{display: 'flex', marginBlock: '10px', width: '100%'}}>
                                 <CustomButton text="Add" width="150px" height="40px" backColor="lightgreen" fontSize="20px" onClick={() => editingProp === undefined ? setEditingProp('') : alert('You are editing a prop at the moment.')} />
                                 <Space isHorizontal={true} size="10px" />
-                                <CustomHeader onClick={() => setSortPropsByAsc(prev => { return !prev; })} text={`A ${sortPropsByAsc ? '⇧' : '⇩'}`} textColor="black" textSize="26px" border="2px solid black" borderRadius="10px" padding="1px" autoWidth={false} />
+                                <CustomHeader wrap={false} onClick={() => setSortPropsByAsc(prev => { return !prev; })} text={`A ${sortPropsByAsc ? '⇧' : '⇩'}`} textColor="black" textSize="26px" border="2px solid black" borderRadius="10px" padding="1px" autoWidth={false} />
                                 <Space isHorizontal={true} size="10px" />
-                                <CustomTextarea font="robotic" placeholder="Search" contentSize="24px" height="30px" width="500px" onChange={e => setPropSearch(e.target.value)} />
-                            </ItemsContainer>
+                                <CustomTextarea font="robotic" placeholder="Search" contentSize="24px" height="30px" width="100%" onChange={e => setPropSearch(e.target.value)} />
+                            </div>
                             <TableHeader backColor="#b5b5b5" textColor="black" textSize="1vw" components={[
                                 { text: 'name', val: null },
                                 { text: 'value', val: null },
@@ -287,7 +295,7 @@ const ObjectEditPage = () => {
                                 { text: 'MQTT subscribe', val: null },
                                 { text: 'actions', val: null }
                             ]} gridMarkUpCols="1fr 1fr 1fr 1fr 1fr 1fr 1fr" />
-                        </ItemsContainer>
+                        </div>
                     }>
                     {RenderProperties()}
                 </ScrollDiv>
