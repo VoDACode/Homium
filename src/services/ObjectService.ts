@@ -212,6 +212,10 @@ class ObjectStorage {
             // Remove children from parent object
             let objects = await db.objects.find({ children: id }).toArray();
             for (let obj of objects) {
+                const indexInRAMStorage = this.objects.findIndex((o) => o.object.id === obj.id);
+                if (indexInRAMStorage > -1) {
+                    this.objects[indexInRAMStorage].object.children = this.objects[indexInRAMStorage].object.children.filter((c: string) => c !== id);
+                }
                 obj.children = obj.children.filter((c: string) => c !== id);
                 await db.objects.updateOne({ id: obj.id }, { $set: { children: obj.children } });
             }
@@ -232,11 +236,17 @@ class ObjectStorage {
             this.logger.warn(`Parent object ${parentId} not found`);
             return false;
         }
+        // Add children to parent object
         for (let childId of childrenIds) {
             let child = await this.get(childId);
             if (!child) {
                 this.logger.warn(`Child object ${childId} not found`);
-                return false;
+                this.logger.warn(`Skipping child object ${childId}`);
+                const index = parent.children.indexOf(childId);
+                if (index > -1) {
+                    parent.children.splice(index, 1);
+                }
+                continue;
             }
             if (parent.children.find(c => c === childId)) {
                 continue;
@@ -244,6 +254,7 @@ class ObjectStorage {
             parent.children.push(childId);
         }
 
+        // Remove children from parent object
         for (let childId of parent.children) {
             if (childrenIds.find(c => c === childId)) {
                 continue;
@@ -251,6 +262,7 @@ class ObjectStorage {
             parent.children.splice(parent.children.indexOf(childId), 1);
         }
 
+        // Update parent object in database
         await db.objects.updateOne({ id: parentId }, { $set: { children: parent.children } });
         return true;
     }
