@@ -2,6 +2,10 @@
     color: rgb(0, 0, 213);
 }
 
+.obj_body {
+    padding-block: 5px;
+}
+
 .header {
     cursor: pointer;
     white-space: nowrap;
@@ -21,14 +25,9 @@ ul {
     list-style: none;
     padding-left: 40px;
     margin-top: 1vh;
-    margin-bottom: 1vh;
     font-family:'Roboto', sans-serif;
-    font-size: 35px;
+    font-size: 32px;
     font-weight: bold;
-}
-
-li {
-    padding-block: 0.5vh;
 }
 
 .header_block {
@@ -41,8 +40,8 @@ li {
 
 .option {
     cursor: pointer;
-    width: 40px;
-    height: 40px;
+    width: 35px;
+    height: 35px;
     opacity: 0.5;
     float: right;
 }
@@ -52,7 +51,7 @@ li {
 }
 
 .remove {
-    margin-left: 20px;
+    margin-left: 15px;
     margin-right: 1vw;
     content: url(./img/remove_object_inactive.png);
 }
@@ -66,8 +65,10 @@ li {
 .adder {
     cursor: pointer;
     color: rgb(234, 132, 0);
-    text-decoration: underline solid rgb(255, 64, 0);
     width: fit-content;
+    border: 5px dotted rgb(255, 38, 0);
+    border-radius: 10px;
+    margin-top: 3px;
 }
 
 .prop {
@@ -115,5 +116,4 @@ li {
 
 .adder:hover {
     background-color: cyan;
-    border-radius: 1vh;
 }

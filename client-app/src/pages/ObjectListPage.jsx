@@ -117,12 +117,14 @@ const ObjectListPage = () => {
         rendered.push(<li
             key={"adder"}
             style={{
+                cursor: 'pointer',
                 color: 'rgb(234, 132, 0)',
-                padding: '0.5vh',
-                borderRadius: '1vh',
-                textDecoration: 'underline solid rgb(255, 64, 0)',
-                width: 'fit-content'
-            }}
+                width: 'fit-content',
+                border: '5px dotted rgb(255, 38, 0)',
+                borderRadius: '10px',
+                marginTop: '3px'
+            }
+            }
             onMouseEnter={e => { e.target.style.backgroundColor = 'cyan' }}
             onMouseLeave={e => { e.target.style.backgroundColor = '' }}
             onClick={() => navToEditObject('add', '')}>
@@ -154,6 +156,7 @@ const ObjectListPage = () => {
             </ItemsContainer>
             <ul className="object_list" style={{ paddingLeft: '1vw' }}>
                 <hr style={{ position: 'absolute', left: '0', right: '0' }} />
+                <Space size="3px" />
                 {RenderObjects()}
             </ul>
             <Space size='50px' />

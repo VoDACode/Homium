@@ -152,12 +152,23 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
     function RenderPath() {
         if (path.length > 1) {
             var rendered = [];
+
             for (let i = 0; i < path.length - 1; i++) {
+
+                var parentId = i !== 0 ? path[i - 1].id : undefined;
+
                 if (i !== 0) {
                     rendered.push(<span className={cl.arrow} key={path[i].id + '-arrow'}>{'>>'}</span>);
                 }
-                rendered.push(<span className={cl.path} key={path[i].id}>{path[i].name}</span>);
+
+                rendered.push(
+                    <span
+                        className={cl.path}
+                        key={path[i].id}
+                        onClick={() => navToEditObject(path[i].id, parentId)}
+                    >{path[i].name}</span>);
             }
+
             return rendered;
         }
         else {
@@ -167,35 +178,37 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
 
     return (
         <li className={cl.main}>
-            <div className={cl.path_cont}>{RenderPath()}</div>
-            <div className={cl.header_block}>
-                <span className={cl.header} onClick={() => setObjectState(!isObjectOpened)}>{isObjectOpened ? '▾' : '▸'}{name}</span>
-                <div className={cl.option_block}>
-                    <img
-                        className={cl.remove + " " + cl.option}
-                        onClick={() => onRemoveClick()} />
-                    <img
-                        className={cl.edit + " " + cl.option}
-                        onClick={() => onEditClick()} />
+            <div className={cl.obj_body}>
+                <div className={cl.path_cont}>{RenderPath()}</div>
+                <div className={cl.header_block}>
+                    <span className={cl.header} onClick={() => setObjectState(!isObjectOpened)}>{isObjectOpened ? '▾' : '▸'}{name}</span>
+                    <div className={cl.option_block}>
+                        <img
+                            className={cl.remove + " " + cl.option}
+                            onClick={() => onRemoveClick()} />
+                        <img
+                            className={cl.edit + " " + cl.option}
+                            onClick={() => onEditClick()} />
+                    </div>
                 </div>
+                <ul style={{ display: isObjectOpened ? 'block' : 'none' }}>
+                    <li className={cl.properties}>
+                        <span className={cl.header} onClick={() => UpdateProperties()}>{isPropsOpened ? '▾' : '▸'}Properties</span>
+                        <span className={cl.count}> ({forcedPropCount && propertyList.length === 0 ? forcedPropCount : propertyList.length})</span>
+                        <ul style={{ display: isPropsOpened ? 'block' : 'none' }}>
+                            {RenderProperties()}
+                        </ul>
+                    </li>
+                    <li className={cl.children}>
+                        <span className={cl.header} onClick={() => UpdateChildren()}>{isChildrenOpened ? '▾' : '▸'}Children</span>
+                        <span className={cl.count}> ({forcedChildCount && childList.length === 0 ? forcedChildCount : childList.length})</span>
+                        <ul style={{ display: isChildrenOpened ? 'block' : 'none' }}>
+                            <hr style={{ position: 'absolute', left: '0', right: '0' }} />
+                            {RenderChildren()}
+                        </ul>
+                    </li>
+                </ul>
             </div>
-            <ul style={{ display: isObjectOpened ? 'block' : 'none' }}>
-                <li className={cl.properties}>
-                    <span className={cl.header} onClick={() => UpdateProperties()}>{isPropsOpened ? '▾' : '▸'}Properties</span>
-                    <span className={cl.count}> ({forcedPropCount && propertyList.length === 0 ? forcedPropCount : propertyList.length})</span>
-                    <ul style={{ display: isPropsOpened ? 'block' : 'none' }}>
-                        {RenderProperties()}
-                    </ul>
-                </li>
-                <li className={cl.children}>
-                    <span className={cl.header} onClick={() => UpdateChildren()}>{isChildrenOpened ? '▾' : '▸'}Children</span>
-                    <span className={cl.count}> ({forcedChildCount && childList.length === 0 ? forcedChildCount : childList.length})</span>
-                    <ul style={{ display: isChildrenOpened ? 'block' : 'none' }}>
-                        <hr style={{ position: 'absolute', left: '0', right: '0' }} />
-                        {RenderChildren()}
-                    </ul>
-                </li>
-            </ul>
             <hr className={cl.separator} />
         </li>
     );
