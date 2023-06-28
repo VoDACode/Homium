@@ -1,12 +1,23 @@
 import { NextFunction, Response, Request } from "express";
 import db from "../db";
-import { uuid } from 'uuidv4';
 import { Session } from "../models/Session";
 import { UserModel } from "../models/UserModel";
 
 import config from "../config";
 import { ClientPermissions } from "../models/ClientPermissions";
 import { BotModel } from "../models/BotModel";
+
+const clearOldSessionsInterval = setInterval(async () => {
+    await clearOldSessions();
+}, 1000 * 60 * 60 * 24);
+
+export async function clearOldSessions() {
+    await db.sessions.deleteMany({ expiresAt: { $lt: new Date() } });
+}
+
+(async () => {
+    await clearOldSessions();
+})();
 
 export async function signin(req: Request, res: Response, next: NextFunction) {
     const { username, password } = req.body
@@ -27,7 +38,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
         return;
     }
 
-    const sessionToken = uuid();
+    const sessionToken = generateSessionToken();;
     const now = new Date();
     now.setDate(now.getDate() + 3);
     const expiresAt = now;
@@ -119,13 +130,18 @@ export async function refresh(req: Request, res: Response) {
         res.status(401).end()
         return
     }
-    const newSessionToken = uuid()
+    const newSessionToken = generateSessionToken();
 
-    const now = new Date()
-    const expiresAt = new Date(+now + 120 * 1000)
-    const session = new Session(userSession.username, expiresAt, newSessionToken);
+    const now = new Date();
+    now.setDate(now.getDate() + 3);
+    const expiresAt = now;
 
-    await db.sessions.updateOne({ session: sessionToken }, { $set: session }, { upsert: true });
+    await db.sessions.updateOne({ sessionToken: sessionToken }, {
+        $set: {
+            sessionToken: newSessionToken,
+            expiresAt: expiresAt
+        }
+    }, { upsert: true });
 
     res.cookie("token", newSessionToken, { expires: expiresAt })
     res.status(200).end()
@@ -199,4 +215,12 @@ export async function hasPermission(req: Request, perm: (p: ClientPermissions) =
         return false;
     }
     return perm(user.permissions);
+}
+
+function generateSessionToken() {
+    let token = '';
+    for (let i = 0; i < 254; i++) {
+        token += String.fromCharCode(Math.floor(Math.random() * 62) + 48);
+    }
+    return Buffer.from(token).toString('base64');
 }
