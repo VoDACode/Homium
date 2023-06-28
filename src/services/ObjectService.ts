@@ -83,6 +83,55 @@ class StoredObject {
         this._object.id = id;
         this._lastUpdated = new Date();
     }
+
+    async validateAndFix(): Promise<void> {
+        let errors = [];
+        // Validate parent
+        if (this._object.parentId) {
+            let parent = await db.objects.findOne({ id: this._object.parentId });
+            if (!parent) {
+                errors.push(`Object ${this._object.id} has invalid parent ${this._object.parentId}. Parent set to null`);
+                this._object.parentId = null;
+            }
+        }
+
+        // Validate children
+        if (this._object.children && this._object.children.length > 0) {
+            for (let child of this._object.children) {
+                let childObject = await db.objects.findOne({ id: child });
+                if (!childObject) {
+                    errors.push(`Object ${this._object.id} has invalid child ${child}. Child removed`);
+                    this._object.children.splice(this._object.children.indexOf(child), 1);
+                }
+            }
+        }
+
+        // Validate properties
+        if (this._object.properties.length > 0) {
+            for (let prop of this._object.properties) {
+                if (prop.key == undefined || prop.key.length === 0) {
+                    errors.push(`Object ${this._object.id} has invalid property ${prop.key}. Key is null or empty. Property removed`);
+                    this._object.properties.splice(this._object.properties.indexOf(prop), 1);
+                    continue;
+                }
+                if (prop.value == undefined) {
+                    errors.push(`Object ${this._object.id} has invalid property ${prop.key}. Value is null. Value set to empty string`);
+                    prop.value = "";
+                }
+                if (prop.mqttProperty == undefined) {
+                    errors.push(`Object ${this._object.id} has invalid property ${prop.key}. MqttProperty is null. MqttProperty set to default`);
+                    prop.mqttProperty = {
+                        display: false,
+                        subscribe: false,
+                    };
+                }
+            }
+        }
+
+        if (errors.length > 0) {
+            throw new Error(errors.join("\n\t"));
+        }
+    }
 }
 
 class ObjectStorage {
@@ -408,6 +457,13 @@ class ObjectStorage {
         for (let id of this.updatedObjects) {
             let object = this.objects.find((o) => o.object.id === id);
             if (object) {
+                // Validate object before saving
+                try {
+                    await object.validateAndFix();
+                } catch (err) {
+                    this.logger.warn(`Object ${id} is not valid: ${err}`);
+                    this.logger.info(`Object ${id} fixed. Saving...`);
+                }
                 // Update object in database
                 await db.objects.updateOne({ id: object.object.id }, {
                     $set: {
@@ -421,6 +477,7 @@ class ObjectStorage {
                         updatedAt: Date.now()
                     }
                 });
+
             }
             // Remove object from updated objects array
             this.updatedObjects.delete(id);

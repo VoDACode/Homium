@@ -25,6 +25,9 @@ export interface IConfigModel {
         level: string;
         console: boolean;
     },
+    swagger: {
+        enabled: boolean;
+    },
     DEBUG: {
         debug: boolean;
         allowAnonymous: boolean;

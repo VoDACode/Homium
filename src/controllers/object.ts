@@ -24,6 +24,9 @@ router.post('/create', authGuard, async (req, res) => {
     if (properties == null || !Array.isArray(properties))
         return res.status(400).send('The object must be an array.').end();
 
+    if(properties.length == 0)
+        return res.status(400).send('The object must have at least one property.').end();
+    
     for (let i = 0; i < properties.length; i++) {
         if (properties[i].key == undefined || typeof properties[i].key != 'string' || properties[i].value == undefined)
             return res.status(400).send('The object must be an array of objects with the properties "key" and "value".').end();
@@ -142,6 +145,10 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
 
     if (obj == null || !Array.isArray(obj)) {
         return res.status(400).send('The object must be an array.').end();
+    }
+
+    if(obj.length == 0){
+        return res.status(400).send('The object must contain at least one property.').end();
     }
 
     let object = await db.objects.findOne({ id: id });

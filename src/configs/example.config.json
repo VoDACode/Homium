@@ -24,6 +24,9 @@
     "extensions": {
         "enabled": true
     },
+    "swagger": {
+        "enabled": true
+    },
     "DEBUG": {
         "debug": false,
         "allowAnonymous": false,

@@ -66,11 +66,11 @@ const payload = {
                                 "type": "object",
                                 "properties": {
                                     "PROPERTY_NAME1": {
-                                        "type": "any",
+                                        "type": "string",
                                         "example": "PROPERTY_VALUE1",
                                     },
                                     "PROPERTY_NAME2": {
-                                        "type": "any",
+                                        "type": "string",
                                         "example": "PROPERTY_VALUE2",
                                     },
                                 }
@@ -180,7 +180,7 @@ const payload = {
                                 "type": "object",
                                 "properties": {
                                     "current": {
-                                        "type": "any",
+                                        "type": "string",
                                         "example": "PROPERTY_VALUE",
                                     },
                                     "history": {
@@ -244,7 +244,7 @@ const payload = {
                     "description": "Object property value",
                     "required": true,
                     "schema": {
-                        "type": "any",
+                        "type": "string",
                         "example": "PROPERTY_VALUE"
                     }
                 }
@@ -258,11 +258,11 @@ const payload = {
                                 "type": "object",
                                 "properties": {
                                     "PROPERTY_NAME1": {
-                                        "type": "any",
+                                        "type": "string",
                                         "example": "PROPERTY_VALUE1",
                                     },
                                     "PROPERTY_NAME2": {
-                                        "type": "any",
+                                        "type": "string",
                                         "example": "PROPERTY_VALUE2",
                                     },
                                 }

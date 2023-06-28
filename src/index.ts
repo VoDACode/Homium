@@ -52,7 +52,8 @@ async function start(){
     
     app.use("/", require('./router'));
 
-    swagger(app);
+    if(config.swagger.enabled == true)
+        swagger(app);
 
     app.listen(port, () => {
         logger.info(`Server running on port ${port}`);
