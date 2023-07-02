@@ -2,7 +2,7 @@ const payload = {
     "/api/users/list/": {
         "get": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "List users",
             "description": "List all users",
@@ -36,7 +36,7 @@ const payload = {
         },
         "post": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "Create user",
             "description": "Create a new user",
@@ -75,7 +75,7 @@ const payload = {
     "/api/users/list/{username}": {
         "get": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "Get user",
             "description": "Get a user by username",
@@ -123,7 +123,7 @@ const payload = {
         },
         "put": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "Update user",
             "description": "Update a user by username",
@@ -174,7 +174,7 @@ const payload = {
         },
         "delete": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "Delete user",
             "description": "Delete a user by username",
@@ -217,7 +217,7 @@ const payload = {
     "/api/users/list/{username}/permissions": {
         "get": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "List user permissions",
             "description": "List all permissions of a user by username",
@@ -267,7 +267,7 @@ const payload = {
     "/api/users/templates": {
         "get": {
             "tags": [
-                "/api/users"
+                "users"
             ],
             "summary": "List user templates",
             "description": "List all user templates",

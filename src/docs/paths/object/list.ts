@@ -2,7 +2,7 @@ const payload = {
     "/api/object/list": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "List objects",
             "description": "List objects",
@@ -54,7 +54,7 @@ const payload = {
     "/api/object/list/ids": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "List object ids",
             "description": "List object ids",
@@ -90,7 +90,7 @@ const payload = {
     "/api/object/list/{id}": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "List object",
             "description": "List object",

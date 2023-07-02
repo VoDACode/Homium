@@ -2,7 +2,7 @@ const payload = {
     "/api/auth/refresh": {
         "post": {
             "tags": [
-                "/auth"
+                "auth"
             ],
             "summary": "Refresh",
             "description": "Refresh the access token",

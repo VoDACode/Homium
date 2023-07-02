@@ -2,7 +2,7 @@ const payload = {
     "/api/auth/status": {
         "get": {
             "tags": [
-                "/auth"
+                "auth"
             ],
             "summary": "Status",
             "description": "Get the status of the current session",

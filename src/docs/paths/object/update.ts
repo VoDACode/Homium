@@ -2,7 +2,7 @@ const payload = {
     "/api/object/update/{id}/object": {
         "put": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Update object property",
             "description": "Update object property. If removeCascade is true, the removal will be applied to all children.",
@@ -69,7 +69,7 @@ const payload = {
     "/api/object/update/{id}/": {
         "put": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Update object",
             "description": "Update object",

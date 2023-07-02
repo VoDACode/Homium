@@ -2,7 +2,7 @@ const payload = {
     "/api/auth/signin": {
         "post": {
             "tags": [
-                "/auth"
+                "auth"
             ],
             "summary": "Sign in",
             "description": "Sign in to the application",

@@ -2,7 +2,7 @@ const payload = {
     "/api/object/search": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Search object",
             "description": "Search object",

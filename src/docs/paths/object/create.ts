@@ -2,7 +2,7 @@ const payload = {
     "/api/object/create": {
         "post": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Create a new Object",
             "description": "Create a new Object",

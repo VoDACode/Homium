@@ -2,7 +2,7 @@ const payload = {
     "/api/auth/signout": {
         "post": {
             "tags": [
-                "/auth"
+                "auth"
             ],
             "summary": "Sign out",
             "description": "Sign out of the application",

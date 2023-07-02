@@ -2,7 +2,7 @@ const payload = {
     "/api/object/remove/{id}": {
         "delete": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Remove object",
             "description": "Remove object",
@@ -45,7 +45,7 @@ const payload = {
     "/api/object/clear-cache": {
         "delete": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Clear object cache",
             "description": "Clear object cache",

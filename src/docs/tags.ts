@@ -1,17 +1,21 @@
 const payload = {
     "tags": [
         {
-            "name": "/api/users",
+            "name": "users",
             "description": "Users operations"
         },
         {
-            "name": "/api/object",
+            "name": "object",
             "description": "Object operations"
         },
         {
-            "name": "/auth",
+            "name": "auth",
             "description": "Authentication operations"
         },
+        {
+            "name": "structures",
+            "description": "Structure operations. Sectors -> Sections -> Devices -> Properties"
+        }
     ]
 };
 

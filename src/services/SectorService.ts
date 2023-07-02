@@ -60,34 +60,36 @@ class SectorService {
         return sector;
     }
 
-    private addSector(sector: SectorModel) {
+    private async addSector(sector: SectorModel) {
         if (this._sectors.find(s => s.name === sector.name)) {
             throw new Error(`Sector ${sector.name} already exists`);
         }
-        if(sector.isDefault == true) {
+        if (sector.isDefault == true) {
             this._sectors.forEach(s => s.isDefault = false);
         }
         this._sectors.push(sector);
-        db.sectors.insertOne(sector);
+        await db.sectors.insertOne(sector);
     }
 
-    private removeSector(sectorName: string) {
+    private async removeSector(sectorName: string) {
         const sectorIndex = this._sectors.findIndex(s => s.name === sectorName);
         if (sectorIndex === -1) {
             throw new Error(`Sector ${sectorName} not found`);
         }
         this._sectors.splice(sectorIndex, 1);
-        db.sectors.deleteOne({ name: sectorName });
+        await db.sectors.deleteOne({ name: sectorName });
     }
 
-    private updateSector(sector: SectorModel) {
-        const sectorIndex = this._sectors.findIndex(s => s.name === sector.name);
+    private async updateSector(name: string, sector: SectorModel) {
+        const sectorIndex = this._sectors.findIndex(s => s.name === name);
         if (sectorIndex === -1) {
-            throw new Error(`Sector ${sector.name} not found`);
+            throw new Error(`Sector ${name} not found`);
         }
         this._sectors[sectorIndex] = sector;
-        db.sectors.deleteOne({ name: sector.name }).then(() => {
-            db.sectors.insertOne(sector);
+        await db.sectors.updateOne({ name: name }, {
+            $set: {
+                ...sector
+            }
         });
     }
     //#endregion
@@ -105,35 +107,34 @@ class SectorService {
         return section;
     }
 
-    private addSection(sectorName: string, section: SectionModel) {
+    private async addSection(sectorName: string, section: SectionModel) {
         const sector = this.sector.get(sectorName);
         if (sector.sections.find(s => s.name === section.name)) {
             throw new Error(`Section ${section.name} already exists`);
         }
         sector.sections.push(section);
-        db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
+        await db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
     }
 
-    private removeSection(sectorName: string, sectionName: string) {
+    private async removeSection(sectorName: string, sectionName: string) {
         const sector = this.sector.get(sectorName);
         const sectionIndex = sector.sections.findIndex(s => s.name === sectionName);
         if (sectionIndex === -1) {
             throw new Error(`Section ${sectionName} not found`);
         }
         sector.sections.splice(sectionIndex, 1);
-        db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
+        await db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
     }
 
-    private updateSection(sectorName: string, section: SectionModel) {
+    private async updateSection(sectorName: string, sectionName: string, section: SectionModel) {
         const sector = this.sector.get(sectorName);
-        const sectionIndex = sector.sections.findIndex(s => s.name === section.name);
+        const sectionIndex = sector.sections.findIndex(s => s.name === sectionName);
         if (sectionIndex === -1) {
-            throw new Error(`Section ${section.name} not found`);
+            throw new Error(`Section ${sectionName} not found`);
         }
         sector.sections[sectionIndex] = section;
-        db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: section.name } } }).then(() => {
-            db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
-        });
+        await db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
+        await db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
     }
     //#endregion
 
@@ -152,33 +153,32 @@ class SectorService {
         return section.devices;
     }
 
-    private addDevice(sectorName: string, sectionName: string, device: DeviceModel) {
+    private async addDevice(sectorName: string, sectionName: string, device: DeviceModel) {
         const section = this.sections.get(sectorName, sectionName);
         if (section.devices.find(d => d.name === device.name)) {
             throw new Error(`Device ${device.name} already exists`);
         }
         section.devices.push(device);
-        db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
+        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
     }
 
-    private removeDevice(sectorName: string, sectionName: string, deviceName: string) {
+    private async removeDevice(sectorName: string, sectionName: string, deviceName: string) {
         const deviceIndex = this.devices.list(sectorName, sectionName).findIndex(d => d.name === deviceName);
         if (deviceIndex === -1) {
             throw new Error(`Device ${deviceName} not found`);
         }
         this.devices.list(sectorName, sectionName).splice(deviceIndex, 1);
-        db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
+        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
     }
 
-    private updateDevice(sectorName: string, sectionName: string, device: DeviceModel) {
-        const deviceIndex = this.devices.list(sectorName, sectionName).findIndex(d => d.name === device.name);
+    private async updateDevice(sectorName: string, sectionName: string, deviceName: string, device: DeviceModel) {
+        const deviceIndex = this.devices.list(sectorName, sectionName).findIndex(d => d.name === deviceName);
         if (deviceIndex === -1) {
-            throw new Error(`Device ${device.name} not found`);
+            throw new Error(`Device ${deviceName} not found`);
         }
         this.devices.list(sectorName, sectionName)[deviceIndex] = device;
-        db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: device.name } } }).then(() => {
-            db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
-        });
+        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
+        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
     }
 
     private setDeviceProperty(sectorName: string, sectionName: string, deviceName: string, propertyName: string, propertyValue: any) {
@@ -187,13 +187,10 @@ class SectorService {
         if (!obj) {
             throw new Error(`Property ${propertyName} not found`);
         }
-        if(!ObjectService.updateObject(obj.objectId, obj.objectProperty, propertyValue)){
+        if (!ObjectService.updateObject(obj.objectId, obj.objectProperty, propertyValue)) {
             throw new Error(`Property ${propertyName} not found`);
         }
     }
-
-
-
     //#endregion
 }
 

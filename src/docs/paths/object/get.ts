@@ -2,7 +2,7 @@ const payload = {
     "/api/object/get-root/": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Get root objects",
             "description": "Get root objects",
@@ -40,7 +40,7 @@ const payload = {
     "/api/object/get/{id}/": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Get object property",
             "description": "Get object property",
@@ -93,7 +93,7 @@ const payload = {
     "/api/object/get/{id}/children": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Get object children",
             "description": "Get object children",
@@ -144,7 +144,7 @@ const payload = {
     "/api/object/get/{id}/{prop}/history": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Get object property history",
             "description": "Get object property history",
@@ -212,7 +212,7 @@ const payload = {
     "/api/object/set/{id}/": {
         "get": {
             "tags": [
-                "/api/object"
+                "object"
             ],
             "summary": "Set object property",
             "description": "Set object property",
