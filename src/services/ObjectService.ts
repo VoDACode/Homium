@@ -2,11 +2,11 @@ import { ObjectModel } from "../models/ObjectModel";
 import { ObjectEventType } from "../types/ObjectEventType";
 import db from "../db";
 import mqtt from "./MqttService";
-import { ObjectProperty, convertAnyToCorrectType } from "../models/ObjectProperty";
+import { convertAnyToCorrectType } from "../models/ObjectProperty";
 import config from "../config";
 import { Logger } from "./LogService";
-import ScriptService from "./ScriptService";
 import { ScriptArgument, ScriptTargetEvent } from "../models/ScriptModel";
+import { Service } from "./Service";
 
 type UpdateEvent = (object: ObjectModel) => void;
 type PropertyUpdateEvent = (object: ObjectModel, property: string, value: any) => void;
@@ -134,8 +134,13 @@ class StoredObject {
     }
 }
 
-class ObjectStorage {
-    private logger = new Logger("ObjectStorage");
+class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
+
+    public get name(): string {
+        return "ObjectStorage";
+    }
+
+    private logger = new Logger(this.name);
     private _saveDelay: number = 1000 * 10;
     private _saveInterval: NodeJS.Timeout | undefined;
 
@@ -155,18 +160,15 @@ class ObjectStorage {
             clearTimeout(this._saveInterval);
             this._saveInterval = undefined;
         }
-        this._saveInterval = setInterval(() => {
-            this.save();
-        }, this._saveDelay);
+        if (this.running) {
+            this._saveInterval = setInterval(() => {
+                this.save();
+            }, this._saveDelay);
+        }
     }
 
     private constructor() {
-        this._saveInterval = setInterval(async () => {
-            await this.save();
-        }, this._saveDelay);
-        this._publishObjectsInterval = setInterval(() => {
-            this.publishObjects();
-        }, this._publishObjectsDelay);
+        super();
     }
 
     private static _instance: ObjectStorage;
@@ -180,7 +182,62 @@ class ObjectStorage {
         return this.objects.length;
     }
 
+    public start(): Promise<void> {
+        if (this.running)
+            return Promise.resolve();
+        return new Promise<void>(async (resolve, reject) => {
+            // Start save interval
+            this._saveInterval = setInterval(async () => {
+                if(this.running == false){
+                    return;
+                }
+                await this.save();
+            }, this._saveDelay);
+
+            // Start publish interval
+            this._publishObjectsInterval = setInterval(() => {
+                if(this.running == false){
+                    return;
+                }
+                this.publishObjects();
+            }, this._publishObjectsDelay);
+
+            
+            this.running = true;
+            this.emit("started");
+            resolve();
+        });
+    }
+
+    public stop(): Promise<void> {
+        if (!this.running)
+            return Promise.resolve();
+        return new Promise<void>(async (resolve, reject) => {
+            this.running = false;
+            this.emit("stopped");
+            // Stop save interval
+            if (this._saveInterval) {
+                clearTimeout(this._saveInterval);
+                this._saveInterval = undefined;
+            }
+            await this.save();
+            // Stop publish interval
+            if (this._publishObjectsInterval) {
+                clearTimeout(this._publishObjectsInterval);
+                this._publishObjectsInterval = undefined;
+            }
+
+            this.clearCache();
+
+            resolve();
+        });
+    }
+
     async add(object: ObjectModel): Promise<boolean> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't add object ${object.id}`);
+            return false;
+        }
         if (this.objects.find(o => o.object.id === object.id))
             return false;
         this.logger.debug(`Adding object ${object.id}`);
@@ -208,10 +265,15 @@ class ObjectStorage {
                 }
             }
         }
+        this.emit("objectAdded", object);
         return true;
     }
 
     async get(id: string): Promise<ObjectModel | undefined> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't get object ${id}`);
+            return undefined;
+        }
         let object = this.objects.find((o) => o.object.id === id);
         // if object is not in memory, try to get it from database
         if (!object) {
@@ -241,17 +303,24 @@ class ObjectStorage {
                     }
                 }
             }
+            this.emit('loaded', objFromDb);
             return objFromDb;
         }
+        this.emit('loaded', object.object);
         return object.object;
     }
 
     async remove(id: string): Promise<boolean> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't remove object ${id}`);
+            return false;
+        }
         // Try getting object from memory
         const index = this.objects.findIndex((o) => o.object.id === id);
         if (index > -1) {
             // Alert listeners
             this.objects[index].events.dispatchEvent('remove', this.objects[index].object);
+            var objectRemoved = this.objects[index].object;
             // Remove object from memory
             this.objects.splice(index, 1);
 
@@ -273,6 +342,7 @@ class ObjectStorage {
                 // Unsubscribe from all set topics
                 mqtt.unsubscribe(`Homium/objects/${id}/#`);
             }
+            this.emit('objectRemoved', objectRemoved);
             return true;
         }
         this.logger.warn(`Object ${id} not found`);
@@ -280,6 +350,10 @@ class ObjectStorage {
     }
 
     async setChildren(parentId: string, childrenIds: string[]): Promise<boolean> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't set children for object ${parentId}`);
+            return false;
+        }
         let parent = await this.get(parentId);
         if (!parent) {
             this.logger.warn(`Parent object ${parentId} not found`);
@@ -318,6 +392,10 @@ class ObjectStorage {
 
     // update object structure
     async update(id: string, object: ObjectModel): Promise<boolean> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't update object ${id}`);
+            return false;
+        }
         let obj = await this.get(id);
         if (!obj) {
             this.logger.warn(`Object ${id} not found`);
@@ -336,15 +414,24 @@ class ObjectStorage {
             // Update object in memory
             this.objects[index].updateObject(object);
         }
+        this.emit('objectUpdated', object);
         return true;
     }
 
     // update object property
     updateObject(id: string, prop: string, value: any): boolean {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't update object ${id}`);
+            return false;
+        }
         return this._updateObject(id, prop, value, true);
     }
 
     async reload(id: string) {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't reload object ${id}`);
+            return;
+        }
         let object = await db.objects.findOne({ id: id });
         if (!object) {
             this.logger.warn(`Object ${id} not found`);
@@ -370,6 +457,10 @@ class ObjectStorage {
     }
 
     async any(id: string): Promise<boolean> {
+        if(this.running == false){
+            this.logger.warn(`Service is not running, can't check if object ${id} exists`);
+            return false;
+        }
         let obj = await this.get(id);
         return obj !== undefined;
     }
@@ -377,6 +468,7 @@ class ObjectStorage {
     clearCache(): void {
         this.logger.debug('Clearing object cache');
         this.logger.debug(`Objects in cache: ${this.objects.length}`);
+        this.emit('clearCache');
         this.objects = [];
     }
 
@@ -400,6 +492,7 @@ class ObjectStorage {
                 }
                 // Added object to updated objects array
                 this.updatedObjects.add(id);
+                this.emit('propertyUpdated', this.objects[index].object, prop, value);
                 return true;
             } else {
                 this.logger.warn(`Property ${prop} not found on object ${id}`);
@@ -434,18 +527,20 @@ class ObjectStorage {
         // if mqtt is disabled, return
         if (!config.mqtt.enabled)
             return;
+        this.emit('publishObjects');
         this.objects.forEach((o) => {
+            this.emit('publishObject', o.object);
             // Loop through properties
             o.object.properties.forEach((p) => {
                 // If property is not displayed, return
                 if (!p.mqttProperty.display)
                     return;
+                this.emit('publishProperty', o.object, p.key, p.value);
                 // Publish value to get topic
                 mqtt.publish(`Homium/objects/${o.object.id}/properties/${p.key}/get`, p.value);
             });
         });
     }
-
 
     private async save() {
         // If objects are not changed, return
@@ -453,6 +548,7 @@ class ObjectStorage {
             return;
         }
         this.logger.debug('Saving objects...');
+        this.emit('save');
         // Loop through updated objects
         for (let id of this.updatedObjects) {
             let object = this.objects.find((o) => o.object.id === id);
@@ -463,7 +559,9 @@ class ObjectStorage {
                 } catch (err) {
                     this.logger.warn(`Object ${id} is not valid: ${err}`);
                     this.logger.info(`Object ${id} fixed. Saving...`);
+                    this.emit("warning", id, err);
                 }
+                this.emit('saveObject', object.object);
                 // Update object in database
                 await db.objects.updateOne({ id: object.object.id }, {
                     $set: {

@@ -1,8 +1,11 @@
 import * as fs from "fs";
 import path from "path";
 import config from "../config";
+import { Service, ServiceEvent } from "./Service";
 
 export type LogListener = (logRecord: LogRecord) => void;
+
+export type LogServiceEvent = "all" | "debug" | "info" | "warn" | "error" | "fatal" | ServiceEvent;
 
 export enum LogLevel {
     DEBUG = 0,
@@ -26,19 +29,49 @@ class LogRecord {
     }
 }
 
-class LogStorage{
+class LogStorage extends Service<LogServiceEvent> {
+
+    public get name(): string {
+        return "LogStorage";
+    }
+
     private logDir: string = path.join(__dirname, "..", "logs");
     private startDate: Date = new Date();
     private startDateToFile: string = this.startDate.toISOString().replace(/:/g, "-");
     private logRecords: LogRecord[] = [];
-    private logListeners: LogListener[] = [];
     private static _instance: LogStorage;
     private constructor() {
-        if(!fs.existsSync(this.logDir)){
+        super();
+        if (!fs.existsSync(this.logDir)) {
             fs.mkdirSync(this.logDir);
         }
-        fs.writeFileSync(path.join(this.logDir, `${this.startDateToFile}-all.log`), "");
+        fs.writeFileSync(path.join(this.logDir, `${this.startDateToFile}.log`), "");
     }
+
+    public start(): Promise<void> {
+        if (this.running)
+            return Promise.resolve();
+        return new Promise<void>((resolve, reject) => {
+            this.running = true;
+            this.startDate = new Date();
+            this.emit("started");
+            this.log(LogLevel.INFO, "Log service started", this.name);
+            resolve();
+        });
+    }
+
+    public stop(): Promise<void> {
+        if (!this.running)
+            return Promise.resolve();
+        return new Promise<void>((resolve, reject) => {
+            this.log(LogLevel.INFO, "Log service stopped", this.name);
+            this.running = false;
+            this.emit("stopped");
+            this.clear();
+            resolve();
+        });
+    }
+
     public static get instance(): LogStorage {
         if (!LogStorage._instance) {
             LogStorage._instance = new LogStorage();
@@ -47,27 +80,31 @@ class LogStorage{
     }
 
     public log(level: LogLevel, message: string, serviceName: string): void {
+        if (!this.running) {
+            return;
+        }
         let logLevel = config ? config.log.level : "DEBUG";
         let logInConsole = config ? config.log.console : true;
-        if(level < this.stringLeverToLogLevel(logLevel)){
+        if (level < this.stringLeverToLogLevel(logLevel)) {
             return;
         }
         this.logRecords.push(new LogRecord(level, message, serviceName));
-        if(logInConsole){
+        if (logInConsole) {
             let textColor = "";
-            if(level >= LogLevel.ERROR){
+            if (level >= LogLevel.ERROR) {
                 textColor = "\x1b[31m";
-            } else if(level == LogLevel.WARN){
+            } else if (level == LogLevel.WARN) {
                 textColor = "\x1b[33m";
             }
-            console.log(`\x1b[1m[${new Date().toISOString()}]\x1b[0m${this.getTextCollor(level)}\x1b[1m[${LogLevel[level]}]\x1b[0m\x1b[90m[${serviceName}]\x1b[0m${textColor}: ${message}\x1b[0m`);
+            console.log(`\x1b[1m[${new Date().toISOString()}]\x1b[0m${this.getTextColor(level)}\x1b[1m[${LogLevel[level]}]\x1b[0m\x1b[90m[${serviceName}]\x1b[0m${textColor}: ${message}\x1b[0m`);
         }
-        this.logListeners.forEach((listener) => {
-            listener(new LogRecord(level, message, serviceName));
-        });
+
+        this.emit("all", new LogRecord(level, message, serviceName));
+        this.emit(LogLevel[level].toLowerCase() as LogServiceEvent, new LogRecord(level, message, serviceName));
+
         new Promise<void>((resolve, reject) => {
-            fs.appendFile(path.join(this.logDir, `${this.startDateToFile}-all.log`), `[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}\n`, (err) => {
-                if(err){
+            fs.appendFile(path.join(this.logDir, `${this.startDateToFile}.log`), `[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}\n`, (err) => {
+                if (err) {
                     reject(err);
                 } else {
                     resolve();
@@ -82,17 +119,6 @@ class LogStorage{
 
     public getLogRecords(): LogRecord[] {
         return this.logRecords;
-    }
-
-    public on(listener: LogListener): void {
-        this.logListeners.push(listener);
-    }
-
-    public off(listener: LogListener): void {
-        const index = this.logListeners.indexOf(listener);
-        if(index > -1){
-            this.logListeners.splice(index, 1);
-        }
     }
 
     private stringLeverToLogLevel(level: string): LogLevel {
@@ -113,7 +139,7 @@ class LogStorage{
         }
     }
 
-    private getTextCollor(level: LogLevel): string {
+    private getTextColor(level: LogLevel): string {
         switch (level) {
             case LogLevel.DEBUG:
                 return "\x1b[34m";
@@ -131,7 +157,7 @@ class LogStorage{
     }
 }
 
-export class Logger{
+export class Logger {
     private logStorage: LogStorage;
     private serviceName: string;
     constructor(serviceName: string) {
@@ -167,15 +193,17 @@ export class Logger{
         this.logStorage.log(level, message, this.serviceName);
     }
 
-    public on(listener: LogListener): void {
-        this.logStorage.on(listener);
+    public on(event: LogServiceEvent, listener: LogListener): void {
+        this.logStorage.on(event, listener);
     }
 
-    public off(listener: LogListener): void {
-        this.logStorage.off(listener);
+    public off(event: LogServiceEvent, listener: LogListener): void {
+        this.logStorage.off(event, listener);
     }
 
     public getLogRecords(): LogRecord[] {
         return this.logStorage.getLogRecords();
     }
 }
+
+export const logService = LogStorage.instance;

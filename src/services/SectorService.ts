@@ -3,10 +3,17 @@ import db from "../db";
 import { SectionModel } from "../models/SectionModel";
 import { DeviceModel } from "../models/DeviceModel";
 import ObjectService from "./ObjectService";
+import { Service } from "./Service";
+import { Logger } from "./LogService";
 
-class SectorService {
+export type SectorServiceEvent = 'created' | 'updated' | 'deleted';
+
+class SectorService extends Service<SectorServiceEvent> {
+    public get name(): string {
+        return 'Sector';
+    }
+    private logger: Logger = new Logger(this.name);
     private static _instance: SectorService;
-    private _initialized: boolean = false;
     public static get instance(): SectorService {
         if (!this._instance) {
             this._instance = new SectorService();
@@ -14,16 +21,36 @@ class SectorService {
         return this._instance;
     }
 
-    private constructor() { }
+    private constructor() {
+        super();
+    }
 
     private _sectors: SectorModel[] = [];
 
-    async init() {
-        if (this._initialized) {
-            return;
-        }
+    public async start(): Promise<void> {
+        if (this.running || this.warning)
+            return Promise.resolve();
+        this.warning = true;
+        this.logger.info("Starting...");
         this._sectors = await db.sectors.find().toArray();
-        this._initialized = true;
+        this.running = true;
+        this.warning = false;
+        this.logger.info("Started");
+        this.emit('started');
+        return Promise.resolve();
+    }
+
+    public stop(): Promise<void> {
+        if (!this.running || this.warning)
+            return Promise.resolve();
+        this.warning = true;
+        this.logger.info("Stopping...");
+        this.running = false;
+        this._sectors = [];
+        this.warning = false;
+        this.logger.info("Stopped");
+        this.emit('stopped');
+        return Promise.resolve();
     }
 
     public sector = {
@@ -94,7 +121,7 @@ class SectorService {
     }
     //#endregion
 
-    //#region Sections
+    // #region Sections
     private getSections(sectorName: string): SectionModel[] {
         return this.sector.get(sectorName).sections;
     }

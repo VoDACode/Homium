@@ -1,7 +1,7 @@
 import { ExtensionModel } from "../models/ExtensionModel";
 import { IExtension } from "../types/IExtension";
 
-class ExtansionExpanded{
+class ExtensionExpanded{
     extension: IExtension;
     original: any;
     info: ExtensionModel;
@@ -21,7 +21,7 @@ class ExtensionsStorage{
         return this._instance || (this._instance = new this());
     }
 
-    private extensions: ExtansionExpanded[] = [];
+    private extensions: ExtensionExpanded[] = [];
 
     get count(): number {
         return this.extensions.length;
@@ -44,7 +44,7 @@ class ExtensionsStorage{
         if(this.extensions.findIndex((e) => e.extension.name == extension.name) != -1){
             return;
         }
-        this.extensions.push(new ExtansionExpanded(extension, original, info, folder));
+        this.extensions.push(new ExtensionExpanded(extension, original, info, folder));
     }
 
     getOriginal(name: string, searchBy: 'name' | 'folder' | 'id'): any {

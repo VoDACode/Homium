@@ -7,6 +7,9 @@ import extensions from './extensions';
 import { Logger } from './LogService';
 import MqttService from './MqttService';
 import ObjectService from './ObjectService';
+import { Service } from './Service';
+
+export type ScriptServiceEvent = 'created' | 'updated' | 'deleted' | 'enabled' | 'disabled' | 'executed' | 'loaded';
 
 class VMService {
     private static _instance: VMService;
@@ -38,42 +41,64 @@ class ScriptStoreModel {
     }
 }
 
-class ScriptService {
-    private logger: Logger = new Logger("ScriptService");
+class ScriptService extends Service<ScriptServiceEvent>{
+
+    public get name(): string {
+        return 'Script';
+    }
+
+    private logger: Logger = new Logger(this.name);
     private scripts: ScriptStoreModel[] = [];
-    private initialized: boolean = false;
 
     private static _instance: ScriptService;
 
     public static get instance(): ScriptService {
         return this._instance || (this._instance = new this());
     }
-    private constructor() { }
+    private constructor() {
+        super();
+    }
 
-    async init() {
-        if (ScriptService.instance.initialized == true) {
-            return;
-        }
+    public async start(): Promise<void> {
+        if (this.running || this.warning)
+            return Promise.resolve();
+        this.warning = true;
+        this.logger.info("Starting");
         let list = await db.scripts.find().toArray();
-        ScriptService.instance.logger.info("Initializing");
-        ScriptService.instance.logger.info(`Found ${list.length} script${list.length == 1 ? "" : "s"}`);
-
+        this.logger.info(`Found ${list.length} script${list.length == 1 ? "" : "s"}`);
         list.forEach(script => {
             try {
-                ScriptService.instance.logger.debug(`Initializing script ${script.id}`);
-                ScriptService.instance.scripts.push(new ScriptStoreModel(script));
-                ScriptService.instance.initTarget(script);
-                ScriptService.instance.logger.debug(`Initialized script ${script.id}`);
+                this.logger.debug(`Initializing script ${script.id}`);
+                this.scripts.push(new ScriptStoreModel(script));
+                this.initTarget(script);
+                this.logger.debug(`Initialized script ${script.id}`);
             } catch (e) {
-                ScriptService.instance.logger.error(`Error initializing script ${script.id}.`);
+                this.logger.error(`Error initializing script ${script.id}.`);
             }
         });
+        this.emit("loaded", list.length);
+        this.logger.info("Started");
+        this.emit("started");
+        this.running = true;
+        this.warning = false;
+        return Promise.resolve();
+    }
 
-        ScriptService.instance.logger.info("Initialized");
-        ScriptService.instance.initialized = true;
+    public async stop(): Promise<void> {
+        if (!this.running || this.warning)
+            return Promise.resolve();
+        this.warning = true;
+        this.logger.info("Stopping");
+        this.running = false;
+        this.scripts = [];
+        this.emit("stopped");
+        this.logger.info("Stopped");
+        this.warning = false;
+        return Promise.resolve();
     }
 
     public async executeScript(id: string, args: ScriptArgument): Promise<any> {
+        this.validateRunning();
         for (let arg of Object.keys(args)) {
             if (arg == "context") {
                 throw new Error("Argument 'context' is reserved");
@@ -112,6 +137,7 @@ class ScriptService {
     }
 
     public async createScript(script: ScriptModel): Promise<string> {
+        this.validateRunning();
         let id = script.id.length > 0 ? script.id : uuid();
         if ((await db.scripts.countDocuments({ id: id })) > 0) {
             do {
@@ -125,6 +151,7 @@ class ScriptService {
     }
 
     public async updateScript(script: ScriptModel): Promise<void> {
+        this.validateRunning();
         let dbScript = await db.scripts.findOne({ id: script.id });
         if (!dbScript) {
             throw new Error("Script not found");
@@ -139,12 +166,14 @@ class ScriptService {
     }
 
     public async updateScriptCode(id: string, code: string): Promise<void> {
+        this.validateRunning();
         let script = await this.getScript(id);
         script.code = code;
         await this.updateScript(script);
     }
 
     public async isAllowAnonymous(id: string): Promise<boolean> {
+        this.validateRunning();
         let script = this.scripts.find(s => s.script.id === id);
         if (script) {
             return script.script.allowAnonymous;
@@ -153,6 +182,7 @@ class ScriptService {
     }
 
     public async deleteScript(id: string): Promise<void> {
+        this.validateRunning();
         const index = this.scripts.findIndex(s => s.script.id === id);
         if (index > -1) {
             this.scripts.splice(index, 1);
@@ -161,10 +191,12 @@ class ScriptService {
     }
 
     public async getIds(): Promise<string[]> {
+        this.validateRunning();
         return await db.scripts.find().map(s => s.id).toArray();
     }
 
     public async getScript(id: string): Promise<ScriptModel> {
+        this.validateRunning();
         let script = this.scripts.find(s => s.script.id === id);
         if (script) {
             return script.script;
@@ -190,13 +222,13 @@ class ScriptService {
                 return;
             }
             ObjectService.addEventListener(obj.id, "remove", () => {
-                if(script.enabled == false){
+                if (script.enabled == false) {
                     return;
                 }
                 this.deleteScript(script.id);
             });
             ObjectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
-                if(script.enabled == false){
+                if (script.enabled == false) {
                     return;
                 }
                 try {
@@ -207,7 +239,7 @@ class ScriptService {
             });
         } else if (script.targetType === "Extension") {
             if (config.extensions.enabled == false) {
-                this.logger.error(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
+                this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
                 return;
             }
             let ext = extensions.get(script.targetId, 'id');
@@ -216,7 +248,7 @@ class ScriptService {
                 return;
             }
             ext.on(script.targetEvent, (args: ScriptArgument) => {
-                if(script.enabled == false){
+                if (script.enabled == false) {
                     return;
                 }
                 try {
