@@ -11,7 +11,7 @@ const ScrollDiv = ({ idName = undefined, backgroundColor = 'white', width = '100
                 fontWeight: headerWeight,
                 color: headerColor
             }}>{headerText}</p>
-            <Space size="5px"/>
+            <Space height="5px"/>
             <div className={cl.main} style={{
                 backgroundColor: backgroundColor, 
                 width: width, 

@@ -89,7 +89,7 @@ const ObjectListPage = () => {
         if (!isListLoaded) {
             return (
                 <div>
-                    <Space size="20px" />
+                    <Space height="20px" />
                     <LoadingAnimation size="50px" loadingCurveWidth="11px" />
                 </div>
             );
@@ -148,18 +148,18 @@ const ObjectListPage = () => {
                     onDeleteClick={DeleteObject} />
             </ModalWindow>
             <CustomHeader text="Object list" textColor="#0036a3" textSize="45px" isCenter={true} />
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer width="97%" inlineFlexMode={true}>
                 <CustomHeader wrap={false} onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
-                <Space isHorizontal={true} size="20px" />
+                <Space width="20px" />
                 <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={e => ChangeSearchValue(e.target.value)} />
             </ItemsContainer>
             <ul className="object_list" style={{ paddingLeft: '1vw' }}>
                 <hr style={{ position: 'absolute', left: '0', right: '0' }} />
-                <Space size="3px" />
+                <Space height="3px" />
                 {RenderObjects()}
             </ul>
-            <Space size='50px' />
+            <Space height='50px' />
         </div>
     );
 }

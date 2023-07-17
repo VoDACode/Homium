@@ -25,12 +25,12 @@ const LogInInput = () => {
                 <img className={cl.user_img} src={userPng} alt="user"/>
                 <input className={cl.user} type="text" placeholder="Username *" ref={usernameInputRef}/>
             </div>
-            <Space size="3vh"/>
+            <Space height="3vh"/>
             <div className={cl.password_cont}>
                 <img className={cl.password_img} src={passwordPng} alt="password"/>
                 <input className={cl.password} type="password" placeholder="Password *" ref={passwordInputRef}/>
             </div>
-            <Space size="5vh"/>
+            <Space height="5vh"/>
             <button className={cl.exec} onClick={() => SignInRequest(usernameInputRef.current.value, passwordInputRef.current.value)}>Sign in</button>
         </div>
     );

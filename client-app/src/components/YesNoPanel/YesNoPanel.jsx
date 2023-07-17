@@ -34,9 +34,9 @@ const YesNoPanel = ({ yesPressed, noPressed, onCheckboxCheck, checkboxName, chec
     return (
         <div>
             <p className={cl.header}>{header}</p>
-            <Space size="30px" />
+            <Space height="30px" />
             {RenderCheckbox()}
-            <Space size="30px" />
+            <Space height="30px" />
             <div className={cl.buttons}>
                 <button className={cl.yes} onClick={() => YesClick()}>Yes</button>
                 <button className={cl.no} onClick={() => NoClick()}>No</button>

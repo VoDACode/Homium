@@ -4,8 +4,6 @@ import { ApiObjects } from '../../services/api/objects';
 import LoadingAnimation from '../LoadingAnimation/LoadingAnimation';
 import Space from '../Space/Space';
 import cl from './.module.css';
-import editObjectInactivePng from './img/edit_object_inactive.png';
-import removeObjectInactivePng from './img/remove_object_inactive.png';
 
 const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, forcedPropCount = 0, path = [], sortByAsc = true, modalWindowControl, onAddPropertyClick, onAddChildClick, onEditClick, onRemoveClick }) => {
 
@@ -99,7 +97,7 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
         if (!loadingProcess.propertyList)
             return (
                 <div>
-                    <Space size="10px" />
+                    <Space height="10px" />
                     <LoadingAnimation size="50px" loadingCurveWidth="11px" />
                 </div>
             );
@@ -120,7 +118,7 @@ const ObjectSection = ({ id = undefined, name = '...', forcedChildCount = 0, for
         if (!loadingProcess.childList)
             return (
                 <div>
-                    <Space size="10px" />
+                    <Space height="10px" />
                     <LoadingAnimation size="50px" loadingCurveWidth="11px" />
                 </div>
             );

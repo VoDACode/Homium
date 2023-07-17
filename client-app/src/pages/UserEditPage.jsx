@@ -200,7 +200,7 @@ const UserEditPage = () => {
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>
             <CustomHeader text={username === 'add' ? 'New user' : 'User editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                     <InputBox title="Username *" name="username" value={userData?.username} width="300px" disabled={editMode} required={true} onError={(e) => {
@@ -260,7 +260,7 @@ const UserEditPage = () => {
                     </Accordion>
                 </Accordion>
                 <SaveOrCancelForm onSave={async () => await save()} disabledSave={errors.includes(true)} onCancel={() => navToUserList()} />
-                <Space size="25px" />
+                <Space height="25px" />
             </ItemsContainer>
         </ItemsContainer>
     );

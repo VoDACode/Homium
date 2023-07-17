@@ -113,7 +113,7 @@ const UserListPage = () => {
         if (!isListLoaded)
             return (
                 <div>
-                    <Space size="20px" />
+                    <Space height="20px" />
                     <LoadingAnimation size="70px" loadingCurveWidth="11px" isCenter={true} />
                 </div>
             );
@@ -140,7 +140,7 @@ const UserListPage = () => {
             }
             res.push(
                 <div key={sortedUsers[i].username}>
-                    <Space size="20px" />
+                    <Space height="20px" />
                     <UserRecord
                         OnEditClick={() => navigation(`/admin/users/${sortedUsers[i].username}`)}
                         OnDeleteClick={() => DeleteUserRequest(sortedUsers[i].username)}
@@ -176,12 +176,12 @@ const UserListPage = () => {
                 <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 {(selfPermission?.user?.create ?
                     <div style={{ display: 'flex' }}>
-                        <Space isHorizontal={true} size="120px" />
+                        <Space width="120px" />
                         <InputBox width="100px" type="button" value="Add User" onClick={() => navToAddUser()} />
                     </div>
                     : "")}
             </ItemsContainer>
-            <Space size="30px" />
+            <Space height="30px" />
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div style={{ width: '96%' }}>
                     <TableHeader

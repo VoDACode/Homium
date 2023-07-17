@@ -61,7 +61,7 @@ const CustomSelect = ({ enabled = true, isDefaultOptionAllowed = false, space = 
     return (
         <div className={cl.main}>
             <p className={cl.header} style={{ fontSize: headerSize, fontWeight: headerWeight }}>{headerText}</p>
-            <Space size={space} />
+            <Space height={space} />
             <select className={menuStyle} disabled={!enabled} ref={selectRef} onChange={(e) => ChangeValue(e)}
                 style={{ paddingLeft: paddingLeft, paddingRight: paddingRight, paddingTop: paddingTop, paddingBottom: paddingBottom, fontSize: optionSize, fontWeight: optionWeight, width: width }}>
                 {RenderOptions()}

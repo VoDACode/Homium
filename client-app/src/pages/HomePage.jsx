@@ -42,7 +42,7 @@ const HomePage = () => {
             </ModalWindow>
             <HomeTopMenu onLogOutClick={() => setModWinVisibility(true)} onSettingsClick={settingsPageNavigate} onAdminClick={adminPageNavigate}/>
             <CustomHeader text={curUsername ? `Welcome, ${curUsername}!` : null} textColor="#0036a3" textSize="5vh" isCenter={true}/>
-            <Space size="3vh"/>
+            <Space height="3vh"/>
             <SceneContainer>
                 <SceneCell/>
                 <SceneCell/>

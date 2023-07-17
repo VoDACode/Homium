@@ -26,7 +26,7 @@ const CustomTextarea = ({ placeholder = '', font = '', content = '', contentSize
                 fontWeight: headerWeight,
                 color: headerColor
             }}>{headerText}</p>
-            <Space size="5px" />
+            <Space height="5px" />
             <textarea
                 className={`${cl.cont} ${SetFont()}`}
                 onChange={(e) => onChange(e)}

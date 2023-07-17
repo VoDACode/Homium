@@ -25,7 +25,7 @@ const CustomCheckbox = ({ name = null, checked = false, text = "", textSize = '1
                 fontWeight: textWeight, 
                 color: textColor 
             }}>{text}</span>
-            <Space isHorizontal={true} size={space} />
+            <Space width={space} />
             <input 
                 name={name}
                 className={cl.box} 

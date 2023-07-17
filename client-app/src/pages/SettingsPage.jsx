@@ -68,17 +68,17 @@ const SettingsPage = () => {
             </ModalWindow>
             <SettingsTopMenu onHomeClick={homePageNavigate} onAdminClick={adminPageNavigate} onLogOutClick={() => setModWinVisibility(true)} />
             <CustomHeader text="Settings" textSize="50px" textColor="#0036a3" isCenter={true} />
-            <Space size="10px" />
+            <Space height="10px" />
             <Switch text="Night mode on:" textSize="30px" space="10px" />
-            <Space size="30px" />
+            <Space height="30px" />
             <CustomSelect space="5px" headerText="Language:" headerSize="30px" optionSize="20px" paddingRight="3.5em" optionWeight="600" options={[
                 { name: 'English', val: 'en' },
                 { name: 'Українська', val: 'uk' },
                 { name: 'Русский', val: 'ru' }
             ]} type="classic" chosenValue={settings.lang} onChange={(e) => ChangeAppLanguage(e.target.value)} />
-            <Space size="40px" />
+            <Space height="40px" />
             <hr />
-            <Space size="20px" />
+            <Space height="20px" />
             <CustomCheckbox
                 name="askForExecScript"
                 text="Ask before executing a script"
@@ -87,9 +87,9 @@ const SettingsPage = () => {
                 space="20px"
                 checked={settings.askForExecScript}
                 onChange={ChangeSettingsParameter} />
-            <Space size="20px" />
+            <Space height="20px" />
             <hr />
-            <Space size="10px" />
+            <Space height="10px" />
             <SaveOrCancelForm includeCancelButton={false} onSave={SaveChanges} flexEndOn={false} />
         </div>
     );

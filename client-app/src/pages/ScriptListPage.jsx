@@ -114,7 +114,7 @@ const ScriptListPage = () => {
         if (!isListLoaded)
             return (
                 <div>
-                    <Space size="20px" />
+                    <Space height="20px" />
                     <LoadingAnimation size="70px" loadingCurveWidth="11px" isCenter={true} />
                 </div>
             );
@@ -139,7 +139,7 @@ const ScriptListPage = () => {
             }
             res.push(
                 <div key={sortedScripts[i].id}>
-                    <Space size="20px" />
+                    <Space height="20px" />
                     <ScriptRecord
                         nameAttr={sortedScripts[i].name}
                         descriptionAttr={sortedScripts[i].description}
@@ -185,11 +185,11 @@ const ScriptListPage = () => {
             <ItemsContainer width="96%">
                 <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 <div style={{ display: 'flex' }}>
-                    <Space isHorizontal={true} size="110px" />
+                    <Space width="110px" />
                     <InputBox width="120px" type="button" value="Add Script" onClick={() => navToAddScript()} />
                 </div>
             </ItemsContainer>
-            <Space size="30px" />
+            <Space height="30px" />
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div style={{ width: '96%' }}>
                     <TableHeader

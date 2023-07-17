@@ -200,7 +200,7 @@ const ObjectEditPage = () => {
                     editMode={true}
                     OnSaveClick={(prop) => EditPropertyList(prop)}
                     OnCancelClick={() => setEditingProp(undefined)} />
-                <Space size="10px" /></div>);
+                <Space height="10px" /></div>);
         }
 
         for (let i = 0; i < sortedProps.length; i++) {
@@ -221,7 +221,7 @@ const ObjectEditPage = () => {
                     OnDeleteClick={() => editingProp === undefined ? RemoveProperty(sortedProps[i].key) : alert('You are editing a prop at the moment.')}
                     OnSaveClick={(prop) => EditPropertyList(prop)}
                     OnCancelClick={() => setEditingProp(undefined)} />
-                <Space size="10px" />
+                <Space height="10px" />
             </div>);
         }
 
@@ -240,7 +240,7 @@ const ObjectEditPage = () => {
     return (
         <div>
             <CustomHeader text={id === 'add' ? 'New object' : 'Object editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>
                     <p>Parent</p>
@@ -257,13 +257,13 @@ const ObjectEditPage = () => {
                     </div>
                 </div>
             </ItemsContainer>
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <InputBox title="Name *" name="name" disabled={false} width="300px" value={objectData.name} onChange={ChangeObjectAttributeByRef} />
-                <Space size="10px" />
+                <Space height="10px" />
                 <CustomCheckbox scale="1.4" text="Allow anonymous" name="allowAnonymous" textSize="16px" checked={objectData.allowAnonymous} onChange={ChangeObjectAttributeByValue} />
             </ItemsContainer>
-            <Space size="20px" />
+            <Space height="20px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <CustomTextarea
                     onChange={(e) => ChangeObjectAttributeByValue('description', e.target.value)}
@@ -274,16 +274,16 @@ const ObjectEditPage = () => {
                     isHeaderCentered={true}
                     content={objectData.description} />
             </ItemsContainer>
-            <Space size="20px" />
+            <Space height="20px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <ScrollDiv idName={"prop-list"} isHeaderCentered={true} headerText="Properties" height="500px" headerSize="20px" backgroundColor="whitesmoke" borderSize="1px" borderRadius='5px' width="90vw" padding="10px"
                     headContent={
                         <div style={{marginTop: '5px', marginLeft: '10px', marginRight: '15px'}}>
                             <div style={{display: 'flex', marginBlock: '10px', width: '100%'}}>
                                 <CustomButton text="Add" width="150px" height="40px" backColor="lightgreen" fontSize="20px" onClick={() => editingProp === undefined ? setEditingProp('') : alert('You are editing a prop at the moment.')} />
-                                <Space isHorizontal={true} size="10px" />
+                                <Space width="10px" />
                                 <CustomHeader wrap={false} onClick={() => setSortPropsByAsc(prev => { return !prev; })} text={`A ${sortPropsByAsc ? '⇧' : '⇩'}`} textColor="black" textSize="26px" border="2px solid black" borderRadius="10px" padding="1px" autoWidth={false} />
-                                <Space isHorizontal={true} size="10px" />
+                                <Space width="10px" />
                                 <CustomTextarea font="robotic" placeholder="Search" contentSize="24px" height="30px" width="100%" onChange={e => setPropSearch(e.target.value)} />
                             </div>
                             <TableHeader backColor="#b5b5b5" textColor="black" textSize="1vw" components={[
@@ -301,7 +301,7 @@ const ObjectEditPage = () => {
                 </ScrollDiv>
                 <SaveOrCancelForm disabledSave={false} onSave={() => SaveChanges()} onCancel={() => navigateObjectListPage()} />
             </ItemsContainer>
-            <Space size="30px" />
+            <Space height="30px" />
         </div>
     );
 }

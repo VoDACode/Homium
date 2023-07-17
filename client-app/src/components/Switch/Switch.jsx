@@ -6,7 +6,7 @@ const Switch = React.forwardRef(({ text = '', textSize = '15px', textWeight = 'n
     return (
         <div style={{ transform: `scale(${scale})` }}>
             <p className={cl.header} style={{ fontSize: textSize, fontWeight: textWeight }}>{text}</p>
-            <Space size={space} />
+            <Space height={space} />
             <label className={cl.main}>
                 <input className={cl.checkbox} type="checkbox" defaultChecked={checked} onChange={() => { if (onChange) { onChange() } }} ref={ref} />
                 <span className={cl.slider}></span>

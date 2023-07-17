@@ -1,10 +1,10 @@
 import React from "react";
 
-const Space = ({size, isHorizontal}) => {
+const Space = ({height = "0px", width = "0px"}) => {
     return (
             <div style={{
-                height: !isHorizontal ? size ?? '0px' : '0px',
-                width: isHorizontal ? size ?? '0px' : '0px'}}>
+                height: height,
+                width: width}}>
             </div>
     );
 }

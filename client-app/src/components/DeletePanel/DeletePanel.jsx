@@ -18,9 +18,9 @@ const DeletePanel = ({ header, idForDel, onDeleteClick, onCancelClick }) => {
     return (
         <div className={cl.main}>
             <p className={cl.header}>{header}</p>
-            <Space size="30px" />
+            <Space height="30px" />
             <input className={cl.in} placeholder="write here" ref={inputRef} />
-            <Space size="30px" />
+            <Space height="30px" />
             <div className={cl.buttons}>
                 <button className={cl.delete} onClick={() => DeleteEvent()}>Delete</button>
                 <button className={cl.cancel} onClick={() => onCancelClick()}>Cancel</button>

@@ -191,7 +191,7 @@ const ScriptEditPage = () => {
                             <p>{chosenTargetName}</p>
                         </div>
                     </div>
-                    <Space isHorizontal={true} size="10px" />
+                    <Space width="10px" />
                     <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>
                         <p>Target type</p>
                         <div style={{
@@ -218,7 +218,7 @@ const ScriptEditPage = () => {
                         onChange={(e) => LoadTargetEventsById(e.target.value)}
                         chosenValue={scriptData.targetId}
                         type="simple" space="1px" headerText="Target item *" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
-                    <Space isHorizontal={true} size="10px" />
+                    <Space width="10px" />
                     <CustomSelect
                         options={[{ name: "Object", val: "Object" }, { name: "Extension", val: "Extension" }, { name: "System", val: "System" }]}
                         onChange={(e) => OnTargetTypeChanged(e.target.value)}
@@ -295,26 +295,26 @@ const ScriptEditPage = () => {
     return (
         <div>
             <CustomHeader text={id === 'add' ? 'New script' : 'Script editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <InputBox title="Name *" name="name" disabled={false} value={scriptData?.name} onChange={ChangeScriptAttributeByRef} />
-                <Space size="10px" />
+                <Space height="10px" />
             </ItemsContainer>
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }} inlineFlexMode={true}>
                 <CustomSelect
                     options={eventList}
                     onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
                     chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event *" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
-                <Space isHorizontal={true} size="10px" />
+                <Space width="10px" />
                 {RenderTargets()}
             </ItemsContainer>
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }}>
                 <CustomCheckbox scale="1.4" text="Allow anonymous users" name="allowAnonymous" textSize="16px" checked={scriptData.allowAnonymous} onChange={ChangeScriptAttributeByValue} />
-                <Space size="10px" />
+                <Space height="10px" />
                 <CustomCheckbox scale="1.4" text="Enabled" name="enabled" textSize="16px" checked={scriptData.enabled} onChange={ChangeScriptAttributeByValue} />
             </ItemsContainer>
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <CustomTextarea
                     onChange={(e) => ChangeScriptAttributeByValue('description', e.target.value)}
@@ -326,7 +326,7 @@ const ScriptEditPage = () => {
                     isHeaderCentered={true}
                     content={scriptData.description} />
             </ItemsContainer>
-            <Space size="10px" />
+            <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <CustomTextarea
                     width="700px"
@@ -339,7 +339,7 @@ const ScriptEditPage = () => {
                     contentStyle="sans-sherif" />
                 <ItemsContainer horizontal="right" vertical="right" margin={{ top: '5px', bottom: '5px' }}>
                     <SaveOrCancelForm onSave={() => SaveChanges()} onCancel={() => navigateScriptListPage()} />
-                    <Space size="25px" />
+                    <Space height="25px" />
                 </ItemsContainer>
             </ItemsContainer>
         </div>
