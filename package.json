@@ -2,13 +2,13 @@
   "name": "homium",
   "version": "1.0.0",
   "description": "An open source smart home system",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "build": "tsc",
     "start": "node scripts/start.js",
     "start-backend": "nodemon ./src/index.ts",
-    "copy": "rimraf dist && tsc && copyfiles -u 1 src/static/**/* src/**/*.json src/**/*.html src/**/*.css dist/"
+    "copy": "rimraf dist && tsc && copyfiles -u 1 src/static/**/* src/**/*.json src/**/*.html src/**/*.css dist/src"
   },
   "repository": {
     "type": "git",
