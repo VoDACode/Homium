@@ -6,8 +6,8 @@ if [ $(id -u) != 0 ]; then
   exit 1
 fi
 
-$INSTALARION_PATH=$1
-$SERVER_TARGET=$2
+INSTALARION_PATH=$1
+SERVER_TARGET=$2
 
 node $INSTALARION_PATH &
 node $INSTALARION_PATH/host_client_app.js --target $SERVER_TARGET --port 80 --dist $INSTALARION_PATH/client-app/dist &
