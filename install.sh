@@ -213,11 +213,11 @@ fi
 echo -n "Creating file '/etc/systemd/system/$SERVICE_NAME.service'..."
 
 echo "[Unit]
-Description=Homium backend server.
+Description=Homium service
 After=network.target
 
 [Service]
-Type=simple
+Type=forking
 RestartSec=1
 User=$USER
 WorkingDirectory=$INSTALARION_PATH/
