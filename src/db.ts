@@ -28,7 +28,7 @@ export class Database {
         if (this._db) {
             return;
         }
-        this._db = await MongoClient.connect(`mongodb://${encodeURIComponent(config.db.user)}:${encodeURIComponent(config.db.password)}@${config.db.host}:${config.db.port}/?authMechanism=DEFAULT`);
+        this._db = await MongoClient.connect(`mongodb://${encodeURIComponent(config.db.user)}:${encodeURIComponent(config.db.password)}@${config.db.host}:${config.db.port}/?authMechanism=DEFAULT&authSource=${config.db.database}`);
         this._db.on('close', () => {
             this.logger.warn('Connection to database closed');
         });
