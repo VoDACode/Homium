@@ -13,6 +13,12 @@ SERVICE_NAME=homium
 INSTALARION_PATH=/opt/homium
 SERVER_TARGET=http://localhost:8080
 
+# if homium is already installed then exit
+if [ -d "$INSTALARION_PATH" ]; then
+  echo "Homium is already installed. Exiting..."
+  exit 3
+fi
+
 # install gnupg curl
 echo Update and install dependencies...
 apt-get update
@@ -215,7 +221,7 @@ Type=simple
 RestartSec=1
 User=$USER
 WorkingDirectory=$INSTALARION_PATH/
-ExecStart=sudo $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET
+ExecStart=sudo bash $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET
 
 [Install]
 WantedBy=multi-user.target" >/etc/systemd/system/$SERVICE_NAME.service
@@ -231,7 +237,7 @@ echo "Enabling service..."
 sudo systemctl enable $SERVICE_NAME.service
 echo "Done!"
 
-echo 'The "'sudo $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET'" command is started and added to autorun.'
+echo 'The "'sudo bash $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET'" command is started and added to autorun.'
 
 # remove temp files
 
