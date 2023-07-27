@@ -1,6 +1,7 @@
 import React from "react";
 import cl from "./.module.css";
 import Space from "../../components/Space/Space";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 import { ApiAuth } from "../../services/api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -8,12 +9,41 @@ const AuthorizationPage = () => {
 
     const navigate = useNavigate();
 
-    function SignInRequest(username, password) {
-        ApiAuth.signIn(username, password).then(res => {
+    const [isAuthorizing, setIsAuthorizing] = React.useState(false);
+    const [logInErr, setLogInErr] = React.useState(undefined);
+
+    async function SignInRequest(username, password) {
+        setIsAuthorizing(true);
+        await ApiAuth.signIn(username, password).then(res => {
             if (res.ok) {
                 navigate('/', { replace: true });
             }
+            else {
+                setLogInErr("authorization failed");
+            }
         });
+        setIsAuthorizing(false);
+    }
+
+    function RenderAuthError() {
+        if (logInErr) {
+            return (
+                <>
+                    <div className={cl.error}>
+                        <div className={cl.error_text_area}>
+                            <span className={cl.error_header}>Error:</span>
+                            <span className={cl.error_text}>{logInErr}</span>
+                        </div>
+                        <div className={cl.error_close_area}>
+                            <img className={cl.error_close_sign} onClick={() => setLogInErr(undefined)} />
+                        </div>
+                    </div>
+                    <Space height="20px" />
+                </>
+            );
+        }
+
+        return null;
     }
 
     React.useEffect(() => {
@@ -25,6 +55,7 @@ const AuthorizationPage = () => {
             <div className={cl.main}>
                 <h1 className={cl.page_header}>Sign in to Homium</h1>
                 <Space height="30px" />
+                {RenderAuthError()}
                 <form className={cl.log_in_panel}>
                     <div className={cl.username_cont}>
                         <img className={cl.user_img} alt="user" />
@@ -40,7 +71,14 @@ const AuthorizationPage = () => {
                         document.getElementsByClassName(cl.user)[0].value,
                         document.getElementsByClassName(cl.password)[0].value
                     )}>
-                        <p className={cl.exec_text}>Sign in</p>
+                        {
+                            isAuthorizing ?
+                                <>
+                                    <LoadingAnimation size="30px" loadingCurveWidth="8px" isCenter={true} />
+                                    <Space height="20px" />
+                                </> :
+                                <p className={cl.exec_text}>Sign in</p>
+                        }
                     </div>
                 </form>
             </div>

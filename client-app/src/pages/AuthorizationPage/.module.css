@@ -15,9 +15,9 @@
     height: fit-content;
     background-color: whitesmoke;
     border-radius: 10px;
-    -webkit-box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
-    -moz-box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
-    box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
+    -webkit-box-shadow: 0px 0px 26px 0px rgba(0, 0, 0, 1);
+    -moz-box-shadow: 0px 0px 26px 0px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 26px 0px rgba(0, 0, 0, 1);
     padding: 20px;
 }
 
@@ -27,17 +27,61 @@
     font-size: 50px;
 }
 
+.error {
+    position: relative;
+    display: grid;
+    grid-template-columns: 95% 5%;
+    background-color: rgb(214, 180, 180);
+    height: fit-content;
+    padding-inline: 10px;
+    padding-block: 10px;
+    border-radius: 10px;
+}
+
+.error_text_area {
+    overflow-wrap: break-word;
+}
+
+.error_header {
+    color: red;
+    font-size: 20px;
+    font-weight: 600;
+    padding-right: 5px;
+}
+
+.error_text {
+    font-size: 20px;
+    color: rgb(128, 0, 0);
+}
+
+.error_close_area {
+    position: relative;
+}
+
+.error_close_sign {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 10px;
+    max-height: 10px;
+    content: url(./img/cross.png);
+}
+
 .log_in_panel {
     width: 100%;
 }
 
-.username_cont, .password_cont {
+.username_cont,
+.password_cont {
     display: grid;
     grid-template-columns: auto 1fr;
     width: 100%;
 }
 
-.user, .password {
+.user,
+.password {
     width: calc(100% - 23px);
     border: 2px solid blue;
     border-radius: 10px;
@@ -46,17 +90,21 @@
     padding-right: 5px;
 }
 
-.user::placeholder, .password::placeholder {
+.user::placeholder,
+.password::placeholder {
     font-size: 25px;
 }
 
 .exec {
     cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: blue;
-    width: fit-content;
+    width: 140px;
+    height: 60px;
     margin-left: 50%;
     transform: translateX(-50%);
-    padding: 15px;
     border-radius: 35px;
 }
 
