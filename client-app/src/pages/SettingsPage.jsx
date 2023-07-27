@@ -11,7 +11,7 @@ import SettingsTopMenu from "../components/SettingsTopMenu/SettingsTopMenu";
 import Space from "../components/Space/Space";
 import Switch from "../components/Switch/Switch";
 import { ApiAuth } from "../services/api/auth";
-import Cookies from 'js-cookie';
+import { CookieManager } from "../services/CookieManager";
 
 const SettingsPage = () => {
 
@@ -19,9 +19,9 @@ const SettingsPage = () => {
 
     const [isModWinVisible, setModWinVisibility] = useState(false);
     const [settings, setSettings] = useState({
-        nightModeOn: Cookies.get('night_mode') === '1' ? true : false,
+        nightModeOn: CookieManager.get('night_mode') === '1' ? true : false,
         lang: i18n.language,
-        askForExecScript: Cookies.get('ask_for_exec_script') === '1' ? true : false
+        askForExecScript: CookieManager.get('ask_for_exec_script') === '1' ? true : false
     });
 
     const navigate = useNavigate();

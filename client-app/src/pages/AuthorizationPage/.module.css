@@ -1,0 +1,81 @@
+.background {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgb(228, 241, 255);
+}
+
+.main {
+    width: 550px;
+    height: fit-content;
+    background-color: whitesmoke;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
+    -moz-box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
+    box-shadow: 0px 0px 26px 0px rgba(0,0,0,1);
+    padding: 20px;
+}
+
+.page_header {
+    color: blue;
+    text-align: center;
+    font-size: 50px;
+}
+
+.log_in_panel {
+    width: 100%;
+}
+
+.username_cont, .password_cont {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    width: 100%;
+}
+
+.user, .password {
+    width: calc(100% - 23px);
+    border: 2px solid blue;
+    border-radius: 10px;
+    font-size: 25px;
+    padding-left: 8px;
+    padding-right: 5px;
+}
+
+.user::placeholder, .password::placeholder {
+    font-size: 25px;
+}
+
+.exec {
+    cursor: pointer;
+    background-color: blue;
+    width: fit-content;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+    border-radius: 35px;
+}
+
+.exec p {
+    color: white;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.user_img {
+    padding-right: 10px;
+    max-height: 50px;
+    max-width: 50px;
+    content: url(./img/user.png);
+}
+
+.password_img {
+    padding-right: 10px;
+    max-height: 50px;
+    max-width: 50px;
+    content: url(./img/password.png);
+}

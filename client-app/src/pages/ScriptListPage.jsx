@@ -10,13 +10,13 @@ import Space from "../components/Space/Space";
 import TableHeader from "../components/TableHeader/TableHeader";
 import YesNoPanel from "../components/YesNoPanel/YesNoPanel";
 import { ApiScripts } from "../services/api/scripts";
-import Cookies from "js-cookie";
 import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
+import { CookieManager } from "../services/CookieManager";
 
 const ScriptListPage = () => {
 
     const [isListLoaded, setIsListLoaded] = useState(false);
-    const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(Cookies.get('ask_for_exec_script') === '1' ? true : false);
+    const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(CookieManager.get('ask_for_exec_script') === '1' ? true : false);
     const [isDelWinVisible, setDelWinVisibility] = useState(false);
     const [isExecWinVisible, setExecWinVisibility] = useState(false);
     const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
@@ -178,7 +178,7 @@ const ScriptListPage = () => {
                     yesPressed={() => ExecuteScript(idForExec)}
                     onCheckboxCheck={(name, value) => {
                         setAskBeforeExecPermission(value);
-                        Cookies.set(name, value === true ? '1' : '0', { path: '/' });
+                        CookieManager.set(name, value === true ? '1' : '0');
                     }} />
             </ModalWindow>
             <CustomHeader text="Script list" textColor="#0036a3" textSize="45px" isCenter={true} />
