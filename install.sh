@@ -212,7 +212,9 @@ fi
 
 echo -n "Creating file '/etc/systemd/system/$SERVICE_NAME.service'..."
 
-echo "[Unit]
+touch /etc/systemd/system/$SERVICE_NAME.service
+cat <<EOF >/etc/systemd/system/$SERVICE_NAME.service
+[Unit]
 Description=Homium service
 After=network.target
 
@@ -224,7 +226,8 @@ WorkingDirectory=$INSTALARION_PATH/
 ExecStart=sudo bash $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET
 
 [Install]
-WantedBy=multi-user.target" >/etc/systemd/system/$SERVICE_NAME.service
+WantedBy=multi-user.target
+EOF
 
 echo "Done!"
 echo -n "Reloading deamon..."
