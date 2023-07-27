@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+DEBUG_MODE=false
+
 # requre root
 if [ $(id -u) != 0 ]; then
   echo "Please run as root"
@@ -9,6 +11,7 @@ fi
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 SERVICE_NAME=homium
 INSTALARION_PATH=/opt/homium
+SERVER_TARGET=http://localhost:8080
 
 # install gnupg curl
 echo Update and install dependencies...
@@ -29,29 +32,25 @@ apt install mongodb-org -y
 systemctl start mongod.service
 systemctl enable mongod
 
-# Перевірка з'єднання з MongoDB (максимум 10 спроб)
-for i in {1..10}; do
-    if mongo --eval 'db.runCommand({ connectionStatus: 1 })' | grep -q 'ok.*1'; then
-        break
-    else
-        echo "Waiting for MongoDB to be fully available... (Attempt $i)"
-        sleep 2
-    fi
+MONGODB_CONNECTED=false
+# wait for mongod to be fully available
+for i in {1..20}; do
+  if mongo --eval 'db.runCommand({ connectionStatus: 1 })' | grep -q 'ok.*1'; then
+    MONGODB_CONNECTED=true
+    break
+  else
+    echo "Waiting for MongoDB to be fully available... (Attempt $i)"
+    sleep 2
+  fi
 done
+
+if [ "$MONGODB_CONNECTED" = false ]; then
+  echo "MongoDB is not available. Exiting..."
+  exit 2
+fi
 
 echo MongoDB installed.
-sleep 10s
 echo "MongoDB is running!"
-
-# Перевірка з'єднання з MongoDB (максимум 10 спроб)
-for i in {1..10}; do
-    if mongo --eval 'db.runCommand({ connectionStatus: 1 })' | grep -q 'ok.*1'; then
-        break
-    else
-        echo "Waiting for MongoDB to be fully available... (Attempt $i)"
-        sleep 2
-    fi
-done
 
 echo MongoDB Configuring...
 
@@ -64,9 +63,9 @@ MONGO_PASSWORD=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 32 | hea
 MONGO_USER=homium_$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 MONGO_DATABASE=homium
 
-# create mongo 
+# create mongo
 
-mongo << EOF
+mongo <<EOF
 use admin
 db.createUser(
   {
@@ -77,7 +76,7 @@ db.createUser(
 )
 EOF
 
-mongo -u $MONGO_ADMIN_USER -p $MONGO_ADMIN_PASSWORD << EOF
+mongo -u $MONGO_ADMIN_USER -p $MONGO_ADMIN_PASSWORD <<EOF
 use $MONGO_DATABASE
 db.createUser(
   {
@@ -88,7 +87,7 @@ db.createUser(
 )
 EOF
 
-cat <<EOF > /etc/mongod.conf
+cat <<EOF >/etc/mongod.conf
 storage:
   dbPath: /var/lib/mongodb
   journal:
@@ -108,8 +107,10 @@ systemctl restart mongod
 
 echo MongoDB configured.
 
-echo MongoDB user: $MONGO_USER@$MONGO_PASSWORD
-echo MongoDB admin: $MONGO_ADMIN_USER@$MONGO_ADMIN_PASSWORD
+if [ "$DEBUG_MODE" = true ]; then
+  echo MongoDB user: $MONGO_USER@$MONGO_PASSWORD
+  echo MongoDB admin: $MONGO_ADMIN_USER@$MONGO_ADMIN_PASSWORD
+fi
 
 #create mqtt user
 MQTT_PASSWORD=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
@@ -123,7 +124,7 @@ apt install mosquitto mosquitto-clients -y
 echo MQTT installed.
 echo Configuring MQTT...
 
-cat <<EOF > /etc/mosquitto/conf.d/default.conf
+cat <<EOF >/etc/mosquitto/conf.d/default.conf
 listener 1883
 allow_anonymous false
 password_file /etc/mosquitto/passwd
@@ -132,7 +133,9 @@ EOF
 touch /etc/mosquitto/passwd
 mosquitto_passwd -b /etc/mosquitto/passwd $MQTT_USER $MQTT_PASSWORD
 
-echo Homium user: $MQTT_USER@$MQTT_PASSWORD
+if [ "$DEBUG_MODE" = true ]; then
+  echo Homium user: $MQTT_USER@$MQTT_PASSWORD
+fi
 
 systemctl restart mosquitto
 
@@ -176,12 +179,29 @@ echo Homium installed.
 
 node $INSTALARION_PATH/init.js DB_USER="$MONGO_USER" DB_USER_PASS="$MONGO_PASSWORD" DB_DATABASE="$MONGO_DATABASE" DB_ADMIN_USER="$MONGO_ADMIN_USER" DB_ADMIN_PASS="$MONGO_ADMIN_PASSWORD" MQTT_USER="$MQTT_USER" MQTT_PASS="$MQTT_PASSWORD"
 
+# build client app
+
+echo Building client app...
+
+cd $INSTALARION_PATH/client-app/
+
+npm install
+npm run build
+
+echo Client app builded.
+
+# rm all folders and files except dist from $INSTALARION_PATH/client-app/
+
+if [ "$DEBUG_MODE" = false ]; then
+  cd $INSTALARION_PATH/client-app/
+  find . -maxdepth 1 ! -name 'dist' ! -name '.' -exec rm -r {} +
+fi
+
 # add to auto run
 
-if [ "$(($(systemctl list-unit-files "$SERVICE_NAME.service" | wc -l)-4))" == 0 ]
-    then
-        echo "Service is exist!"
-        exit 5
+if [ "$(($(systemctl list-unit-files "$SERVICE_NAME.service" | wc -l) - 4))" == 0 ]; then
+  echo "Service is exist!"
+  exit 5
 fi
 
 echo -n "Creating file '/etc/systemd/system/$SERVICE_NAME.service'..."
@@ -195,10 +215,10 @@ Type=simple
 RestartSec=1
 User=$USER
 WorkingDirectory=$INSTALARION_PATH/
-ExecStart=sudo node $INSTALARION_PATH
+ExecStart=sudo $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/$SERVICE_NAME.service
+WantedBy=multi-user.target" >/etc/systemd/system/$SERVICE_NAME.service
 
 echo "Done!"
 echo -n "Reloading deamon..."
@@ -211,7 +231,10 @@ echo "Enabling service..."
 sudo systemctl enable $SERVICE_NAME.service
 echo "Done!"
 
-echo 'The "'sudo node $INSTALARION_PATH'" command is started and added to autorun.'
+echo 'The "'sudo $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET'" command is started and added to autorun.'
 
 # remove temp files
-rm -r $INSTALARION_PATH/src/
+
+if [ "$DEBUG_MODE" = false ]; then
+  rm -r $INSTALARION_PATH/src/
+fi
