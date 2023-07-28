@@ -43,7 +43,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (this.running)
             return Promise.resolve();
         return new Promise<void>((resolve, reject) => {
-            if (config.mqtt.enabled !== true) {
+            if (config.data.mqtt.enabled !== true) {
                 this.logger.info('MQTT is disabled in config!');
                 this.running = false;
                 reject();
@@ -56,9 +56,9 @@ export class MqttService extends Service<MqttServiceEvent> {
                 this.logger.warn('Generated new client ID: ' + this.clientId);
             }
 
-            this.mqttClient = mqtt.connect(`mqtt://${config.mqtt.host}:${config.mqtt.port}`, {
-                username: config.mqtt.user,
-                password: config.mqtt.password,
+            this.mqttClient = mqtt.connect(`mqtt://${config.data.mqtt.host}:${config.data.mqtt.port}`, {
+                username: config.data.mqtt.user,
+                password: config.data.mqtt.password,
                 clientId: this.clientId,
                 clean: true,
                 reconnectPeriod: 1000,
@@ -118,7 +118,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.mqtt.topic + topic;
+        topic = config.data.mqtt.topic + topic;
         this.mqttClient?.publish(topic, message.toString(), { qos: 1 }, (err) => {
             if (err) {
                 this.logger.error('Error publishing to MQTT broker! (topic: ' + topic + ')');
@@ -138,7 +138,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.mqtt.topic + topic;
+        topic = config.data.mqtt.topic + topic;
         this.mqttClient?.subscribe(topic);
         this.mqttClient?.on('message', (topic, message) => {
             callback(topic, message.toString());
@@ -154,7 +154,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.mqtt.topic + topic;
+        topic = config.data.mqtt.topic + topic;
         this.mqttClient?.unsubscribe(topic, undefined, (err) => {
             if (err) {
                 this.logger.error('Error unsubscribing from MQTT broker! (topic: ' + topic + ')');

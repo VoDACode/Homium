@@ -1,0 +1,35 @@
+{
+    "server": {
+        "port": 8080
+    },
+    "db": {
+        "host": "",
+        "port": 27017,
+        "database": "homium",
+        "user": "YOUR_DB_USER",
+        "password": "YOUR_DB_PASSWORD"
+    },
+    "mqtt":{
+        "enabled": true,
+        "host": "",
+        "port": 1883,
+        "user": "YOUR_MQTT_USER",
+        "password": "YOUR_MQTT_PASSWORD",
+        "topic": "homium"
+    },
+    "log": {
+        "level": "INFO",
+        "console": true
+    },
+    "extensions": {
+        "enabled": true
+    },
+    "swagger": {
+        "enabled": true
+    },
+    "DEBUG": {
+        "debug": false,
+        "allowAnonymous": false,
+        "checkRights": true
+    }
+}

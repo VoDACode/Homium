@@ -238,7 +238,7 @@ class ScriptService extends Service<ScriptServiceEvent>{
                 }
             });
         } else if (script.targetType === "Extension") {
-            if (config.extensions.enabled == false) {
+            if (config.data.extensions.enabled == false) {
                 this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
                 return;
             }

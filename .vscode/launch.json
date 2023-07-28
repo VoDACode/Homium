@@ -5,11 +5,11 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "program": "${workspaceFolder}/src/index.ts",
+            "program": "${workspaceFolder}/backend/src/index.ts",
             "preLaunchTask": "tsc: build - tsconfig.json",
             "skipFiles": ["<node_internals>/**"],
             "outFiles": [
-                "${workspaceFolder}/dist/**/*.js"
+                "${workspaceFolder}/backend/dist/**/*.js"
             ]
         }
     ]

@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
 
 const args = process.argv;
 const options = args.slice(2);
@@ -20,7 +19,6 @@ const config = {
     'MQTT_PASS': randomStr(32),
     'MQTT_TOPIC': 'homium',
 };
-console.log(options);
 for (let i = 0; i < options.length; i++) {
     const option = options[i].split('=');
     let key = option[0].replace('--', '');
@@ -34,16 +32,12 @@ for (let i = 0; i < options.length; i++) {
     let value = option[1];
     for (let j = 2; j < option.length; j++)
         value = value + '=' + option[j];
-    console.log({
-        k: key,
-        v: value
-    });
     config[key] = value;
 }
 
 // copy config file
-const exampleConfigPath = path.join(__dirname, 'dist', 'src', 'configs', 'example.config.json');
-const configPath = path.join(__dirname, 'dist', 'src', 'configs', 'secret.config.json');
+const exampleConfigPath = path.join(__dirname, 'backend', 'dist', 'src', 'configs', 'example.config.json');
+const configPath = path.join(__dirname, 'backend', 'dist', 'src', 'configs', 'secret.config.json');
 console.log('Config file path: ' + configPath);
 if (!fs.existsSync(configPath)) {
     console.log('First run, copy example config file to secret config file');

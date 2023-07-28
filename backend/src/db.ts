@@ -22,19 +22,20 @@ export class Database {
         if (!this._db) {
             throw new Error('Database not connected');
         }
-        return this._db.db(config.db.database);
+        return this._db.db(config.data.db.database);
     }
     async connect() {
         if (this._db) {
             return;
         }
-        this._db = await MongoClient.connect(`mongodb://${encodeURIComponent(config.db.user)}:${encodeURIComponent(config.db.password)}@${config.db.host}:${config.db.port}/?authMechanism=DEFAULT&authSource=${config.db.database}`);
+        this._db = await MongoClient.connect(`mongodb://${encodeURIComponent(config.data.db.user)}:${encodeURIComponent(config.data.db.password)}@${config.data.db.host}:${config.data.db.port}/?authMechanism=DEFAULT&authSource=${config.data.db.database}`);
         this._db.on('close', () => {
             this.logger.warn('Connection to database closed');
         });
         this._db.on('error', (err) => {
             this.logger.error(err.message);
         });
+        this.logger.info('Database connection - successful!');
     }
     public get users() {
         return this.db.collection<UserModel>('users');

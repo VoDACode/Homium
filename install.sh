@@ -178,7 +178,12 @@ echo Installing Homium...
 cd $INSTALARION_PATH
 
 npm install
-npm run copy
+
+cd $INSTALARION_PATH/backend/
+
+npm install
+npm run build
+
 echo Homium installed.
 
 # configure Homium

@@ -54,7 +54,7 @@ export async function signin(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function authGuard(req: Request, res: Response, next: NextFunction) {
-    if (config.DEBUG.debug && config.DEBUG.allowAnonymous) {
+    if (config.data.DEBUG.debug && config.data.DEBUG.allowAnonymous) {
         next();
         return;
     }
