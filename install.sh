@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DEBUG_MODE=false
+ONLY_DEPENDENCIES=false
 
 # requre root
 if [ $(id -u) != 0 ]; then
@@ -173,39 +174,55 @@ echo Homium extracted.
 
 mv $repository_folder_name $INSTALARION_PATH
 
-echo Installing Homium...
+if [ "$ONLY_DEPENDENCIES" = false ]; then
 
-cd $INSTALARION_PATH
+  echo Installing Homium...
 
-npm install
+  cd $INSTALARION_PATH
 
-cd $INSTALARION_PATH/backend/
+  npm install
 
-npm install
-npm run build
+  cd $INSTALARION_PATH/backend/
 
-echo Homium installed.
+  npm install
+  npm run build
+
+  echo Homium installed.
+fi
 
 # configure Homium
 
+if [ "$DEBUG_MODE" = true ]; then
+  touch $INSTALARION_PATH/init.sh
+  cat <<EOF >$INSTALARION_PATH/init.sh
+#!/usr/bin/env bash
 node $INSTALARION_PATH/init.js DB_USER="$MONGO_USER" DB_USER_PASS="$MONGO_PASSWORD" DB_DATABASE="$MONGO_DATABASE" DB_ADMIN_USER="$MONGO_ADMIN_USER" DB_ADMIN_PASS="$MONGO_ADMIN_PASSWORD" MQTT_USER="$MQTT_USER" MQTT_PASS="$MQTT_PASSWORD"
+EOF
+fi
 
-# build client app
+if [ "$ONLY_DEPENDENCIES" = false ]; then
+  node $INSTALARION_PATH/init.js DB_USER="$MONGO_USER" DB_USER_PASS="$MONGO_PASSWORD" DB_DATABASE="$MONGO_DATABASE" DB_ADMIN_USER="$MONGO_ADMIN_USER" DB_ADMIN_PASS="$MONGO_ADMIN_PASSWORD" MQTT_USER="$MQTT_USER" MQTT_PASS="$MQTT_PASSWORD"
 
-echo Building client app...
+  echo Homium configured.
 
-cd $INSTALARION_PATH/client-app/
+  # build client app
 
-npm install
-npm run build
+  echo Building client app...
 
-echo Client app builded.
-
-# rm all folders and files except dist from $INSTALARION_PATH/client-app/
-
-if [ "$DEBUG_MODE" = false ]; then
   cd $INSTALARION_PATH/client-app/
-  find . -maxdepth 1 ! -name 'dist' ! -name '.' -exec rm -r {} +
+
+  npm install
+  npm run build
+
+  echo Client app builded.
+
+  # rm all folders and files except dist from $INSTALARION_PATH/client-app/
+
+  if [ "$DEBUG_MODE" = false ]; then
+    cd $INSTALARION_PATH/client-app/
+    find . -maxdepth 1 ! -name 'dist' ! -name '.' -exec rm -r {} +
+  fi
+
 fi
 
 # add to auto run

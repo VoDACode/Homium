@@ -10,18 +10,17 @@ import { uuid } from 'uuidv4';
 import { ExtensionModel } from './models/ExtensionModel';
 import { Logger } from './services/LogService';
 
-const app = express();
 const logger = new Logger('boot');
 
-export function bootExtensions() {
-    return _bootExtensions('all');
+export function bootExtensions(app: express.Application) {
+    return _bootExtensions(app, 'all');
 }
 
-export function bootNewExtensions() {
-    return _bootExtensions('onlyNew');
+export function bootNewExtensions(app: express.Application) {
+    return _bootExtensions(app, 'onlyNew');
 }
 
-export function loadControllers() {
+export function loadControllers(app: express.Application) {
     logger.info('Loading controllers...');
     const controllersPath = path.join(__dirname, 'controllers');
     fs.readdirSync(controllersPath).forEach((file) => {
@@ -68,7 +67,7 @@ export async function firstStart() {
     logger.info('First start check complete.');
 }
 
-function _bootExtensions(mode: 'onlyNew' | 'all') {
+function _bootExtensions(app: express.Application, mode: 'onlyNew' | 'all') {
     logger.info('Booting extensions...');
     const extensionsPath = path.join(__dirname, 'extensions');
     fs.readdirSync(extensionsPath).forEach(async (file) => {

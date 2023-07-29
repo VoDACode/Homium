@@ -3,7 +3,6 @@ import { Service } from "./Service";
 import express from 'express';
 import { Server } from 'http';
 import expressWs from 'express-ws';
-import path from 'path';
 import db from '../db';
 import config from '../config';
 import * as bodyParser from 'body-parser';
@@ -108,14 +107,19 @@ class SystemService extends Service<string>{
 
         this.app.use(bodyParser.json());
         this.app.use(cookieParser());
-
-        this.app.use("/", boot.loadControllers());
+        boot.loadControllers(this.app);
         if (config.data.extensions.enabled == true) {
-            this.app.use("/", boot.bootExtensions());
+            boot.bootExtensions(this.app);
         }
 
+        this.logger.info("Loading proxy...");
+        this.app.use(require('../router'));
+        this.logger.info("Proxy loaded");
+
         if (config.data.swagger.enabled == true) {
+            this.logger.info("Loading swagger...");
             swagger(this.app);
+            this.logger.info("Swagger loaded");
         }
 
         this.webServer = this.app.listen(config.data.server.port, () => {

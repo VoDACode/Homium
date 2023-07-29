@@ -1,7 +1,14 @@
+import config from '../config';
+import ip from 'ip';
+
 const payload = {
     "servers": [
         {
-            "url": "http://localhost:3000",
+            "url": "http://" + ip.address() + ":" + config.data.server.port,
+            "description": "Local network server"
+        },
+        {
+            "url": "http://localhost:" + config.data.server.port,
             "description": "Local server"
         },
         {
@@ -10,6 +17,5 @@ const payload = {
         }
     ]
 };
-            
 
 export default payload;
