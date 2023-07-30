@@ -12,7 +12,7 @@ fi
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 SERVICE_NAME=homium
 INSTALARION_PATH=/opt/homium
-SERVER_TARGET=http://localhost:8080
+SERVER_TARGET=localhost:8080
 
 # if homium is already installed then exit
 if [ -d "$INSTALARION_PATH" ]; then

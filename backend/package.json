@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn ./src/index.ts",
     "start-backend": "nodemon ./src/index.ts",
-    "build": "rimraf dist && tsc && copyfiles -u 1 src/**/*.json src/**/**/*.json src/**/*.html src/**/*.css dist/src"
+    "build": "rimraf dist && tsc && rsync -av --exclude='*.ts' src/ dist/src"
   },
   "repository": {
     "type": "git",

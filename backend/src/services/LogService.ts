@@ -15,7 +15,7 @@ export enum LogLevel {
     FATAL = 4
 }
 
-class LogRecord {
+export class LogRecord {
     public level: LogLevel;
     public message: string;
     public serviceName: string;

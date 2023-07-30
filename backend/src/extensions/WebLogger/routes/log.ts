@@ -1,6 +1,7 @@
 import express from 'express';
 import WebLogger from '..';
 import { authGuard, isAuthorized } from '../../../guards/AuthGuard';
+import { LogRecord } from '../../../services/LogService';
 
 const router = express.Router();
 
@@ -16,11 +17,11 @@ router.ws('/stream', async (ws, req) => {
         WebLogger.instance.logger.off('all', send);
     });
 
-    function send(...data: any) {
+    function send(data: LogRecord) {
         if (ws.readyState >= ws.CLOSING) {
             WebLogger.instance.logger.off('all', send);
         }
-        ws.send(JSON.stringify(data[0]));
+        ws.send(JSON.stringify(data));
     }
 });
 

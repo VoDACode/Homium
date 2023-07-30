@@ -6,7 +6,7 @@ const path = require('path');
 const app = express();
 
 const options = {
-    target: 'http://localhost:8080', // target host
+    target: 'localhost:8080', // target host
     port: 80,
     dist: '/opt/homium/client-app/dist'
 };
@@ -25,7 +25,13 @@ process.argv.forEach((val, index) => {
 });
 
 // proxy /api to options.target + '/api'
-app.use('/api', createProxyMiddleware({ target: options.target, ws: true, changeOrigin: true }));
+app.use(createProxyMiddleware('/api', { target: `http://${options.target}`, changeOrigin: true }));
+let apiWsProxy = createProxyMiddleware('/api', { target: `ws://${options.target}`, ws: true, changeOrigin: true });
+
+app.use(createProxyMiddleware('/extensions', { target: `http://${options.target}`, changeOrigin: true }));
+let extensionWsProxy = createProxyMiddleware('/extensions', { target: `ws://${options.target}`, ws: true, changeOrigin: true });
+
+app.use(createProxyMiddleware('/extension-info', { target: `http://${options.target}`, changeOrigin: true }));
 
 // add use for static files
 app.use(express.static(options.dist));
@@ -40,6 +46,16 @@ app.use((req, res) => {
 });
 
 
-app.listen(options.port, () => {
+let server = app.listen(options.port, () => {
     console.log(`App listening at http://127.0.0.1:${options.port}`);
+});
+
+server.on('upgrade', (req, socket, head) => {
+    if (req.url.startsWith('/api')) {
+        apiWsProxy.upgrade(req, socket, head);
+    } else if (req.url.startsWith('/extensions')) {
+        extensionWsProxy.upgrade(req, socket, head);
+    } else {
+        socket.destroy();
+    }
 });
