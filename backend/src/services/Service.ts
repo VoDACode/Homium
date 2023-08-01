@@ -1,5 +1,4 @@
 import EventEmitter from "events";
-import { type } from "os";
 
 export type ServiceEvent = "started" | "stopped" | "error" | "warning";
 

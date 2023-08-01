@@ -15,7 +15,7 @@ router.ws('/object-update/:id', async (ws, req) => {
         return;
     }
 
-    if (!config.DEBUG.debug && !config.DEBUG.allowAnonymous) {
+    if (!config.data.DEBUG.debug && !config.data.DEBUG.allowAnonymous) {
         if (!object.allowAnonymous && !await isAuthorized(req)) {
             ws.close();
             return;
@@ -55,7 +55,7 @@ router.ws('/object-update/:id/:prop', async (ws, req) => {
         return;
     }
 
-    if (!config.DEBUG.debug && !config.DEBUG.allowAnonymous) {
+    if (!config.data.DEBUG.debug && !config.data.DEBUG.allowAnonymous) {
         if (!object.allowAnonymous && !await isAuthorized(req)) {
             ws.close();
             return;

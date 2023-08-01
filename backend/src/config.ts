@@ -2,6 +2,7 @@ import { IConfigModel } from "./models/IConfigModel";
 import { readFileSync, existsSync, writeFileSync, copyFileSync } from "fs";
 import { join } from "path";
 import { Logger } from "./services/LogService";
+import system from "./services/system";
 
 const logger = new Logger('Config');
 
@@ -10,15 +11,35 @@ class Config {
         return join(__dirname, 'configs', 'secret.config.json');
     }
     private static _instance: Config;
+    private _loaded: boolean = false;
+    public get loaded(): boolean {
+        return this._loaded;
+    }
     private constructor() {
+        this._config = {} as IConfigModel;
+    }
+    public static get instance(): Config {
+        return this._instance || (this._instance = new this());
+    }
+    private _config: IConfigModel;
+
+    public get data(): IConfigModel {
+        return this._config;
+    }
+
+    public async loadConfig(): Promise<void> {
+        if(this.loaded){
+            return;
+        }
         if (existsSync(Config.configFile)) {
             let file = readFileSync(Config.configFile, 'utf8');
             this._config = JSON.parse(file);
             try {
                 this.validateConfig();
+                this._loaded = true;
             } catch (error: any) {
                 logger.error(error.message);
-                process.exit(1);
+                await system.stop(true);
             }
         } else {
             copyFileSync(join(__dirname, 'configs', 'example.config.json'), Config.configFile);
@@ -26,16 +47,8 @@ class Config {
             logger.info('Please fill the config file');
             logger.info('Path: ' + Config.configFile);
             logger.info('Exiting...');
-            process.exit(0);
+            await system.stop(true);
         }
-    }
-    public static get Instance(): Config {
-        return this._instance || (this._instance = new this());
-    }
-    private _config: IConfigModel;
-
-    public get config(): IConfigModel {
-        return this._config;
     }
 
     private validateConfig(): void {
@@ -108,4 +121,4 @@ class Config {
     }
 }
 
-export default Config.Instance.config;
+export default Config.instance;

@@ -15,7 +15,7 @@ export enum LogLevel {
     FATAL = 4
 }
 
-class LogRecord {
+export class LogRecord {
     public level: LogLevel;
     public message: string;
     public serviceName: string;
@@ -34,11 +34,19 @@ class LogStorage extends Service<LogServiceEvent> {
     public get name(): string {
         return "LogStorage";
     }
-
+    private _onlyConsole: boolean = false;
+    public get onlyConsole(): boolean {
+        return this._onlyConsole;
+    }
+    public set onlyConsole(value: boolean) {
+        this._onlyConsole = value;
+    }
     private logDir: string = path.join(__dirname, "..", "logs");
     private startDate: Date = new Date();
     private startDateToFile: string = this.startDate.toISOString().replace(/:/g, "-");
     private logRecords: LogRecord[] = [];
+    private logStack: LogRecord[] = [];
+    private handelInterval: NodeJS.Timer | undefined;
     private static _instance: LogStorage;
     private constructor() {
         super();
@@ -53,6 +61,9 @@ class LogStorage extends Service<LogServiceEvent> {
             return Promise.resolve();
         return new Promise<void>((resolve, reject) => {
             this.running = true;
+            this.logRecords = [];
+            this.logStack = [];
+            this.handelInterval = setInterval(this.handel.bind(this), 10);
             this.startDate = new Date();
             this.emit("started");
             this.log(LogLevel.INFO, "Log service started", this.name);
@@ -83,34 +94,15 @@ class LogStorage extends Service<LogServiceEvent> {
         if (!this.running) {
             return;
         }
-        let logLevel = config ? config.log.level : "DEBUG";
-        let logInConsole = config ? config.log.console : true;
+
+        let logLevel = config.loaded ? config.data.log.level : "DEBUG";
+
         if (level < this.stringLeverToLogLevel(logLevel)) {
             return;
         }
-        this.logRecords.push(new LogRecord(level, message, serviceName));
-        if (logInConsole) {
-            let textColor = "";
-            if (level >= LogLevel.ERROR) {
-                textColor = "\x1b[31m";
-            } else if (level == LogLevel.WARN) {
-                textColor = "\x1b[33m";
-            }
-            console.log(`\x1b[1m[${new Date().toISOString()}]\x1b[0m${this.getTextColor(level)}\x1b[1m[${LogLevel[level]}]\x1b[0m\x1b[90m[${serviceName}]\x1b[0m${textColor}: ${message}\x1b[0m`);
-        }
-
-        this.emit("all", new LogRecord(level, message, serviceName));
-        this.emit(LogLevel[level].toLowerCase() as LogServiceEvent, new LogRecord(level, message, serviceName));
-
-        new Promise<void>((resolve, reject) => {
-            fs.appendFile(path.join(this.logDir, `${this.startDateToFile}.log`), `[${new Date().toISOString()}][${LogLevel[level]}][${serviceName}]: ${message}\n`, (err) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve();
-                }
-            });
-        });
+        let logRecord = new LogRecord(level, message, serviceName);
+        this.logRecords.push(logRecord);
+        this.logStack.push(logRecord);
     }
 
     public clear(): void {
@@ -119,6 +111,49 @@ class LogStorage extends Service<LogServiceEvent> {
 
     public getLogRecords(): LogRecord[] {
         return this.logRecords;
+    }
+
+    public waitToFinish(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            let interval = setInterval(() => {
+                if (this.logStack.length == 0) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 100);
+        });
+    }
+
+    private async handel(): Promise<void> {
+        if (this.logStack.length > 0) {
+            let logRecord = this.logStack.shift();
+            if (!logRecord) {
+                return;
+            }
+
+            let logInConsole = config.loaded ? config.data.log.console : true;
+            if (logInConsole || this.onlyConsole) {
+                let textColor = "";
+                if (logRecord.level >= LogLevel.ERROR) {
+                    textColor = "\x1b[31m";
+                } else if (logRecord.level == LogLevel.WARN) {
+                    textColor = "\x1b[33m";
+                }
+                console.log(`\x1b[1m[${new Date().toISOString()}]\x1b[0m${this.getTextColor(logRecord.level)}\x1b[1m[${LogLevel[logRecord.level]}]\x1b[0m\x1b[90m[${logRecord.serviceName}]\x1b[0m${textColor}: ${logRecord.message}\x1b[0m`);
+            }
+
+            this.emit("all", logRecord);
+            this.emit(LogLevel[logRecord.level].toLowerCase() as LogServiceEvent, logRecord);
+            if (this.onlyConsole == false) {
+                await fs.appendFile(path.join(this.logDir, `${this.startDateToFile}.log`), `[${new Date().toISOString()}][${LogLevel[logRecord.level]}][${logRecord.serviceName}]: ${logRecord.message}\n`, (err) => {
+                    if (err) {
+                        console.error(err);
+                    }
+                });
+            }
+        } else if (!this.running) {
+            clearInterval(this.handelInterval);
+        }
     }
 
     private stringLeverToLogLevel(level: string): LogLevel {
