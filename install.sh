@@ -264,8 +264,3 @@ echo "Done!"
 
 echo 'The "'sudo bash $INSTALARION_PATH/run.sh $INSTALARION_PATH $SERVER_TARGET'" command is started and added to autorun.'
 
-# remove temp files
-
-if [ "$DEBUG_MODE" = false ]; then
-  rm -r $INSTALARION_PATH/src/
-fi

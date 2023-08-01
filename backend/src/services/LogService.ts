@@ -34,7 +34,13 @@ class LogStorage extends Service<LogServiceEvent> {
     public get name(): string {
         return "LogStorage";
     }
-
+    private _onlyConsole: boolean = false;
+    public get onlyConsole(): boolean {
+        return this._onlyConsole;
+    }
+    public set onlyConsole(value: boolean) {
+        this._onlyConsole = value;
+    }
     private logDir: string = path.join(__dirname, "..", "logs");
     private startDate: Date = new Date();
     private startDateToFile: string = this.startDate.toISOString().replace(/:/g, "-");
@@ -126,7 +132,7 @@ class LogStorage extends Service<LogServiceEvent> {
             }
 
             let logInConsole = config.loaded ? config.data.log.console : true;
-            if (logInConsole) {
+            if (logInConsole || this.onlyConsole) {
                 let textColor = "";
                 if (logRecord.level >= LogLevel.ERROR) {
                     textColor = "\x1b[31m";
@@ -138,12 +144,13 @@ class LogStorage extends Service<LogServiceEvent> {
 
             this.emit("all", logRecord);
             this.emit(LogLevel[logRecord.level].toLowerCase() as LogServiceEvent, logRecord);
-
-            await fs.appendFile(path.join(this.logDir, `${this.startDateToFile}.log`), `[${new Date().toISOString()}][${LogLevel[logRecord.level]}][${logRecord.serviceName}]: ${logRecord.message}\n`, (err) => {
-                if (err) {
-                    console.error(err);
-                }
-            });
+            if (this.onlyConsole == false) {
+                await fs.appendFile(path.join(this.logDir, `${this.startDateToFile}.log`), `[${new Date().toISOString()}][${LogLevel[logRecord.level]}][${logRecord.serviceName}]: ${logRecord.message}\n`, (err) => {
+                    if (err) {
+                        console.error(err);
+                    }
+                });
+            }
         } else if (!this.running) {
             clearInterval(this.handelInterval);
         }
