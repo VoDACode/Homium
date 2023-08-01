@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import cl from "./.module.css";
 import { useNavigate } from "react-router-dom";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import CustomSelect from "../components/CustomSelect/CustomSelect";
-import CustomCheckbox from "../components/CustomCheckbox/CustomCheckbox";
-import LogOutPanel from "../components/LogOutPanel/LogOutPanel";
-import ModalWindow from "../components/ModalWindow/ModalWindow";
-import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
-import SettingsTopMenu from "../components/SettingsTopMenu/SettingsTopMenu";
-import Space from "../components/Space/Space";
-import Switch from "../components/Switch/Switch";
-import { ApiAuth } from "../services/api/auth";
-import { CookieManager } from "../services/CookieManager";
+import CustomHeader from "../../components/CustomHeader/CustomHeader";
+import CustomSelect from "../../components/CustomSelect/CustomSelect";
+import CustomCheckbox from "../../components/CustomCheckbox/CustomCheckbox";
+import ModalWindow from "../../components/ModalWindow/ModalWindow";
+import SaveOrCancelForm from "../../components/SaveOrCancelForm/SaveOrCancelForm";
+import SettingsTopMenu from "../../components/SettingsTopMenu/SettingsTopMenu";
+import Space from "../../components/Space/Space";
+import Switch from "../../components/Switch/Switch";
+import { ApiAuth } from "../../services/api/auth";
+import { CookieManager } from "../../services/CookieManager";
 
 const SettingsPage = () => {
-
-    const { t: locale, i18n } = useTranslation();
 
     const [isModWinVisible, setModWinVisibility] = useState(false);
     const [settings, setSettings] = useState({
@@ -64,7 +61,14 @@ const SettingsPage = () => {
     return (
         <div>
             <ModalWindow visible={isModWinVisible}>
-                <LogOutPanel onLogOutClick={authPageNavigate} onCancelClick={() => setModWinVisibility(false)} />
+                <div className={cl.log_out_panel}>
+                    <p className={cl.log_out_panel_header}>Do you want to log out?</p>
+                    <Space height="40px" />
+                    <div className={cl.log_out_panel_buttons}>
+                        <button className={cl.log_out_panel_exec_button} onClick={() => authPageNavigate()}>Log out</button>
+                        <button className={cl.log_out_panel_cancel_button} onClick={() => setModWinVisibility(false)}>Cancel</button>
+                    </div>
+                </div>
             </ModalWindow>
             <SettingsTopMenu onHomeClick={homePageNavigate} onAdminClick={adminPageNavigate} onLogOutClick={() => setModWinVisibility(true)} />
             <CustomHeader text="Settings" textSize="50px" textColor="#0036a3" isCenter={true} />

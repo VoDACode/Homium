@@ -6,6 +6,55 @@
     z-index: 1;
 }
 
+.log_out_panel {
+    position: relative;
+}
+
+.log_out_panel_header {
+    cursor: default;
+    font-family: sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.log_out_panel_buttons {
+    float: right;
+}
+
+.log_out_panel_exec_button {
+    cursor: pointer;
+    margin-right: 40px;
+    background-color: blue;
+    border-radius: 10px;
+    border: none;
+    width: 100px;
+    height: 55px;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.log_out_panel_exec_button:hover {
+    background-color: rgb(0, 0, 196);
+}
+
+.log_out_panel_cancel_button {
+    cursor: pointer;
+    background-color: rgb(255, 255, 186);
+    border: none;
+    width: 100px;
+    height: 55px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.log_out_panel_cancel_button:hover {
+    background-color: rgb(224, 224, 162);
+}
+
 .logo {
     cursor: pointer;
     position: absolute;

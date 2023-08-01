@@ -1,19 +1,19 @@
-.main {
+.log_out_panel {
     position: relative;
 }
 
-.header {
+.log_out_panel_header {
     cursor: default;
     font-family: sans-serif;
     font-size: 30px;
     font-weight: 500;
 }
 
-.buttons {
+.log_out_panel_buttons {
     float: right;
 }
 
-.log_out {
+.log_out_panel_exec_button {
     cursor: pointer;
     margin-right: 40px;
     background-color: blue;
@@ -27,11 +27,11 @@
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
 }
 
-.log_out:hover {
+.log_out_panel_exec_button:hover {
     background-color: rgb(0, 0, 196);
 }
 
-.cancel {
+.log_out_panel_cancel_button {
     cursor: pointer;
     background-color: rgb(255, 255, 186);
     border: none;
@@ -43,6 +43,6 @@
     box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
 }
 
-.cancel:hover {
+.log_out_panel_cancel_button:hover {
     background-color: rgb(224, 224, 162);
 }
