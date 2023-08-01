@@ -90,16 +90,10 @@
     right: 2.5vw;
 }
 
-.top_menu_settings_button {
-    content: url(./img/settings.png);
-    background-color: rgb(255, 228, 118);
-    right: 8vw;
-}
-
 .top_menu_admin_button {
     content: url(./img/admin.png);
     background-color: rgb(122, 222, 255);
-    right: 13.5vw;
+    right: 8vw;
 }
 
 .page_header {

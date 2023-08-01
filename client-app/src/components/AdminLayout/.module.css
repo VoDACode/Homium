@@ -1,7 +1,6 @@
 .main {
     position: relative;
-    background: rgb(1,255,0);
-    background: linear-gradient(0deg, rgba(1,255,0,1) 5%, rgba(49,255,29,1) 23%, rgba(42,242,72,1) 34%, rgba(37,230,159,1) 73%, rgba(40,217,219,1) 92%);
+    background-color: rgba(70, 78, 120, 0.16);
     height: 10vh;
     z-index: 1;
 }
@@ -128,26 +127,6 @@
 
 .page_list .menu_container:not(:last-child) {
     margin-right: 4vw;
-}
-
-.settings {
-    cursor: pointer;
-    position: absolute;
-    border: 0.5vh solid blue;
-    border-radius: 1vh;
-    padding: 0.8vh;
-    height: 5.5vh;
-    width: 2.75vw;
-    top: 1.2vh;
-    background-color: rgb(255, 237, 165);
-    right: 8vw;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.settings:hover {
-    background-color: aquamarine;
 }
 
 .log_out {

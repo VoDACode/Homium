@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
-import Accordion from "../components/Accordion/Accordion";
-import InputBox from "../components/InputBox/InputBox";
-import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
 import { useNavigate } from "react-router-dom";
-import { ApiUsers } from "../services/api/users";
-import Space from "../components/Space/Space";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
+import { ApiUsers } from "../../services/api/users";
+import cl from "./.module.css";
+import Accordion from "../../components/Accordion/Accordion";
+import InputBox from "../../components/InputBox/InputBox";
+import SaveOrCancelForm from "../../components/SaveOrCancelForm/SaveOrCancelForm";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import Space from "../../components/Space/Space";
 
 class DefaultPermissions {
     constructor(val = false) {
@@ -55,10 +55,14 @@ const UserEditPage = () => {
     
     const { username } = useParams();
 
-    const [canChange, setCanChange] = useState(true);
-    const [editMode, setEditMode] = useState(false);
-    const [errors, setErrors] = useState([]);
-    const [userData, setUserData] = useState({
+    const [canChange, setCanChange] = React.useState(true);
+    const [editMode, setEditMode] = React.useState(false);
+    const [errors, setErrors] = React.useState([]);
+    const [selfUser, setSelfUser] = React.useState({});
+    const [selfPermissions, setSelfPermissions] = React.useState(new DefaultPermissions());
+    const [permissions, setPermissions] = React.useState(new DefaultPermissions());
+    const [permissionsEnabled, setPermissionsEnabled] = React.useState(new DefaultPermissions());
+    const [userData, setUserData] = React.useState({
         username: "",
         firstname: "",
         lastname: "",
@@ -66,10 +70,6 @@ const UserEditPage = () => {
         enabled: false,
         password: ""
     });
-    const [selfUser, setSelfUser] = useState({});
-    const [selfPermissions, setSelfPermissions] = useState(new DefaultPermissions());
-    const [permissions, setPermissions] = useState(new DefaultPermissions());
-    const [permissionsEnabled, setPermissionsEnabled] = useState(new DefaultPermissions());
 
     function switchPermission(prop) {
         setPermissions(prevState => {
@@ -169,7 +169,7 @@ const UserEditPage = () => {
         }
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
 
         setEditMode(username !== 'add');
@@ -199,7 +199,7 @@ const UserEditPage = () => {
 
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>
-            <CustomHeader text={username === 'add' ? 'New user' : 'User editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>{username === 'add' ? 'New user' : 'User editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>

@@ -1,9 +1,9 @@
 import React from "react";
+import { ApiAuth } from "../../services/api/auth";
+import { useNavigate } from "react-router-dom";
 import cl from "./.module.css";
 import Space from "../../components/Space/Space";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
-import { ApiAuth } from "../../services/api/auth";
-import { useNavigate } from "react-router-dom";
 
 const AuthorizationPage = () => {
 

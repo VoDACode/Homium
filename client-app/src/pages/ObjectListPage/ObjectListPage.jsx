@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import ObjectSection from "../components/ObjectSection/ObjectSection";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
-import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
-import ModalWindow from "../components/ModalWindow/ModalWindow";
-import DeletePanel from "../components/DeletePanel/DeletePanel";
-import { ApiObjects } from "../services/api/objects";
-import Space from "../components/Space/Space";
-import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
+import React from "react";
+import { ApiObjects } from "../../services/api/objects";
 import { useNavigate } from "react-router-dom";
+import cl from "./.module.css";
+import CustomHeader from "../../components/CustomHeader/CustomHeader";
+import ObjectSection from "../../components/ObjectSection/ObjectSection";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
+import ModalWindow from "../../components/ModalWindow/ModalWindow";
+import DeletePanel from "../../components/DeletePanel/DeletePanel";
+import Space from "../../components/Space/Space";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const ObjectListPage = () => {
 
@@ -19,12 +20,12 @@ const ObjectListPage = () => {
         navigate(`/admin/objects/${id}${parent}${newProp}`);
     }
 
-    const [isDelWinVisible, setDelWinVisibility] = useState(false);
-    const [isListLoaded, setIsListLoaded] = useState(false);
-    const [sortByAsc, setSortMode] = useState(true);
-    const [searchValue, setSearchValue] = useState('');
-    const [objectList, setObjectList] = useState([]);
-    const [idForDelete, setDeletingId] = useState(null);
+    const [isDelWinVisible, setDelWinVisibility] = React.useState(false);
+    const [isListLoaded, setIsListLoaded] = React.useState(false);
+    const [sortByAsc, setSortMode] = React.useState(true);
+    const [searchValue, setSearchValue] = React.useState('');
+    const [objectList, setObjectList] = React.useState([]);
+    const [idForDelete, setDeletingId] = React.useState(null);
 
     function ChangeSearchValue(value) {
         setSearchValue(value);
@@ -133,7 +134,7 @@ const ObjectListPage = () => {
         return rendered;
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         UpdateObjects();
     }, [searchValue]);
@@ -147,7 +148,7 @@ const ObjectListPage = () => {
                     onCancelClick={() => setDelWinVisibility(false)}
                     onDeleteClick={DeleteObject} />
             </ModalWindow>
-            <CustomHeader text="Object list" textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>Object list</h1>
             <Space height="10px" />
             <ItemsContainer width="97%" inlineFlexMode={true}>
                 <CustomHeader wrap={false} onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />

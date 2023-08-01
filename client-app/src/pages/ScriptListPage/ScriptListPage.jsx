@@ -1,29 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import DeletePanel from "../components/DeletePanel/DeletePanel";
-import InputBox from "../components/InputBox/InputBox";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
-import ModalWindow from "../components/ModalWindow/ModalWindow";
-import ScriptRecord from "../components/ScriptRecord/ScriptRecord";
-import Space from "../components/Space/Space";
-import TableHeader from "../components/TableHeader/TableHeader";
-import YesNoPanel from "../components/YesNoPanel/YesNoPanel";
-import { ApiScripts } from "../services/api/scripts";
-import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
-import { CookieManager } from "../services/CookieManager";
+import { ApiScripts } from "../../services/api/scripts";
+import { CookieManager } from "../../services/CookieManager";
+import cl from "./.module.css";
+import DeletePanel from "../../components/DeletePanel/DeletePanel";
+import InputBox from "../../components/InputBox/InputBox";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import ModalWindow from "../../components/ModalWindow/ModalWindow";
+import ScriptRecord from "../../components/ScriptRecord/ScriptRecord";
+import Space from "../../components/Space/Space";
+import TableHeader from "../../components/TableHeader/TableHeader";
+import YesNoPanel from "../../components/YesNoPanel/YesNoPanel";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const ScriptListPage = () => {
 
-    const [isListLoaded, setIsListLoaded] = useState(false);
-    const [askBeforeExecPermission, setAskBeforeExecPermission] = useState(CookieManager.get('ask_for_exec_script') === '1' ? true : false);
-    const [isDelWinVisible, setDelWinVisibility] = useState(false);
-    const [isExecWinVisible, setExecWinVisibility] = useState(false);
-    const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
-    const [idForExec, setExecId] = useState(null);
-    const [idForDelete, setDeletingId] = useState(null);
-    const [search, setSearch] = useState('');
-    const [scripts, setScrips] = useState([]);
+    const [isListLoaded, setIsListLoaded] = React.useState(false);
+    const [askBeforeExecPermission, setAskBeforeExecPermission] = React.useState(CookieManager.get('ask_for_exec_script') === '1' ? true : false);
+    const [isDelWinVisible, setDelWinVisibility] = React.useState(false);
+    const [isExecWinVisible, setExecWinVisibility] = React.useState(false);
+    const [sortMode, setSortMode] = React.useState({ parameter: '', dir: '' });
+    const [idForExec, setExecId] = React.useState(null);
+    const [idForDelete, setDeletingId] = React.useState(null);
+    const [search, setSearch] = React.useState('');
+    const [scripts, setScrips] = React.useState([]);
 
     const navigation = useNavigate();
     const navToAddScript = () => navigation('add');
@@ -153,7 +153,7 @@ const ScriptListPage = () => {
         return res;
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         UpdateScripts();
     }, []);
@@ -181,7 +181,7 @@ const ScriptListPage = () => {
                         CookieManager.set(name, value === true ? '1' : '0');
                     }} />
             </ModalWindow>
-            <CustomHeader text="Script list" textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>Script list</h1>
             <ItemsContainer width="96%">
                 <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 <div style={{ display: 'flex' }}>

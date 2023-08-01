@@ -5,16 +5,12 @@ import cl from './.module.css';
 import Space from "../Space/Space";
 import ModalWindow from "../ModalWindow/ModalWindow";
 import logOutPng from './img/log-out.png';
-import settingsPng from './img/settings.png';
 
 const AdminLayout = () => {
     const [chosenMenu, openMenu] = React.useState(null);
     const [isModWinVisible, setModWinVisibility] = React.useState(false);
 
     const navigate = useNavigate();
-    const settingsPageNavigate = () => {
-        navigate('/settings');
-    }
     const authPageNavigate = () => {
         ApiAuth.signOut().then(res => {
             navigate('/auth');
@@ -77,7 +73,6 @@ const AdminLayout = () => {
                         </div>
                     </div>
                 </div>
-                <img className={cl.settings} src={settingsPng} onClick={() => settingsPageNavigate()} title="settings" alt="settings" />
                 <img className={cl.log_out} src={logOutPng} onClick={() => setModWinVisibility(true)} title="log out" alt="log out" />
             </header>
             <Outlet />

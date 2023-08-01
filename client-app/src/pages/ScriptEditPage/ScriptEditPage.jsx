@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import CustomCheckbox from "../components/CustomCheckbox/CustomCheckbox";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import CustomSelect from "../components/CustomSelect/CustomSelect";
-import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
-import InputBox from "../components/InputBox/InputBox";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
-import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
-import Space from "../components/Space/Space";
-import { ApiExtensions } from "../services/api/extensions";
-import { ApiObjects } from "../services/api/objects";
-import { ApiScripts } from "../services/api/scripts";
+import { ApiExtensions } from "../../services/api/extensions";
+import { ApiObjects } from "../../services/api/objects";
+import { ApiScripts } from "../../services/api/scripts";
+import cl from "./.module.css";
+import CustomCheckbox from "../../components/CustomCheckbox/CustomCheckbox";
+import CustomSelect from "../../components/CustomSelect/CustomSelect";
+import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
+import InputBox from "../../components/InputBox/InputBox";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import SaveOrCancelForm from "../../components/SaveOrCancelForm/SaveOrCancelForm";
+import Space from "../../components/Space/Space";
 
 const ScriptEditPage = () => {
 
@@ -23,7 +23,7 @@ const ScriptEditPage = () => {
         { name: "remove", val: "remove" }
     ];
 
-    const [scriptData, setScriptData] = useState({
+    const [scriptData, setScriptData] = React.useState({
         name: "",
         code: "",
         targetEvent: "",
@@ -34,10 +34,10 @@ const ScriptEditPage = () => {
         enabled: false
     });
 
-    const [chosenTargetName, setChosenTargetName] = useState(null);
-    const [currentType, setCurrentType] = useState('');
-    const [itemList, setItemList] = useState([]);
-    const [eventList, setEventList] = useState([]);
+    const [chosenTargetName, setChosenTargetName] = React.useState(null);
+    const [currentType, setCurrentType] = React.useState('');
+    const [itemList, setItemList] = React.useState([]);
+    const [eventList, setEventList] = React.useState([]);
 
     const { id } = useParams();
 
@@ -245,7 +245,7 @@ const ScriptEditPage = () => {
         }
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
 
         if (id !== 'add') {
@@ -294,7 +294,7 @@ const ScriptEditPage = () => {
 
     return (
         <div>
-            <CustomHeader text={id === 'add' ? 'New script' : 'Script editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>{id === 'add' ? 'New script' : 'Script editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <InputBox title="Name *" name="name" disabled={false} value={scriptData?.name} onChange={ChangeScriptAttributeByRef} />

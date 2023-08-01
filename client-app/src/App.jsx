@@ -1,17 +1,16 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ApiAuth } from "./services/api/auth";
 import AdminLayout from "./components/AdminLayout/AdminLayout";
-import SystemInfoPage from "./pages/SystemInfoPage";
+import SystemInfoPage from "./pages/SystemInfoPage/SystemInfoPage";
 import AuthorizationPage from "./pages/AuthorizationPage/AuthorizationPage";
 import HomePage from "./pages/HomePage/HomePage";
-import ObjectListPage from "./pages/ObjectListPage";
-import UserListPage from "./pages/UserListPage";
-import UserEditPage from "./pages/UserEditPage";
-import { ApiAuth } from "./services/api/auth";
-import SettingsPage from "./pages/SettingsPage/SettingsPage";
-import ScriptListPage from "./pages/ScriptListPage";
-import ScriptEditPage from "./pages/ScriptEditPage";
-import ObjectEditPage from "./pages/ObjectEditPage";
+import ObjectListPage from "./pages/ObjectListPage/ObjectListPage";
+import UserListPage from "./pages/UserListPage/UserListPage";
+import UserEditPage from "./pages/UserEditPage/UserEditPage";
+import ScriptListPage from "./pages/ScriptListPage/ScriptListPage";
+import ScriptEditPage from "./pages/ScriptEditPage/ScriptEditPage";
+import ObjectEditPage from "./pages/ObjectEditPage/ObjectEditPage";
 
 function App() {
 
@@ -30,7 +29,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/auth" element={<AuthorizationPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<SystemInfoPage />} />
           <Route path="objects" element={<ObjectListPage />} />

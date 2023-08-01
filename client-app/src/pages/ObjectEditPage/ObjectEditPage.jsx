@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import CustomButton from "../components/CustomButton/CustomButton";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import CustomTextarea from "../components/CustomTextarea/CustomTextarea";
-import InputBox from "../components/InputBox/InputBox";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
-import PropertyRecord from "../components/PropertyRecord/PropertyRecord";
-import SaveOrCancelForm from "../components/SaveOrCancelForm/SaveOrCancelForm";
-import ScrollDiv from "../components/ScrollDiv/ScrollDiv";
-import Space from "../components/Space/Space";
-import TableHeader from "../components/TableHeader/TableHeader";
-import { ApiObjects } from "../services/api/objects";
-import CustomCheckbox from "../components/CustomCheckbox/CustomCheckbox";
+import { ApiObjects } from "../../services/api/objects";
+import cl from "./.module.css";
+import CustomButton from "../../components/CustomButton/CustomButton";
+import CustomHeader from "../../components/CustomHeader/CustomHeader";
+import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
+import InputBox from "../../components/InputBox/InputBox";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import PropertyRecord from "../../components/PropertyRecord/PropertyRecord";
+import SaveOrCancelForm from "../../components/SaveOrCancelForm/SaveOrCancelForm";
+import ScrollDiv from "../../components/ScrollDiv/ScrollDiv";
+import Space from "../../components/Space/Space";
+import TableHeader from "../../components/TableHeader/TableHeader";
+import CustomCheckbox from "../../components/CustomCheckbox/CustomCheckbox";
 
 const ObjectEditPage = () => {
 
@@ -23,17 +24,17 @@ const ObjectEditPage = () => {
         navigate('/admin/objects');
     }
 
-    const [objectData, setObjectData] = useState({
+    const [objectData, setObjectData] = React.useState({
         name: '',
         properties: [],
         description: null,
         parentId: null,
         allowAnonymous: false
     });
-    const [parentName, setParentName] = useState(null);
-    const [sortPropsByAsc, setSortPropsByAsc] = useState(true);
-    const [propSearch, setPropSearch] = useState('');
-    const [editingProp, setEditingProp] = useState(undefined);
+    const [parentName, setParentName] = React.useState(null);
+    const [sortPropsByAsc, setSortPropsByAsc] = React.useState(true);
+    const [propSearch, setPropSearch] = React.useState('');
+    const [editingProp, setEditingProp] = React.useState(undefined);
 
     function RemoveProperty(key) {
         for (let i = 0; i < objectData.properties.length; i++) {
@@ -232,14 +233,14 @@ const ObjectEditPage = () => {
         return rendered;
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         LoadObjectInfo();
     }, []);
 
     return (
         <div>
-            <CustomHeader text={id === 'add' ? 'New object' : 'Object editing'} textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>{id === 'add' ? 'New object' : 'Object editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>

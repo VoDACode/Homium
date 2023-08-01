@@ -1,25 +1,25 @@
-import React, { useEffect, useState } from "react";
-import UserRecord from "../components/UserRecord/UserRecord";
-import ItemsContainer from "../components/ItemsContainer/ItemsContainer";
-import InputBox from "../components/InputBox/InputBox";
+import React from "react";
 import { useNavigate } from 'react-router-dom';
-import { ApiUsers } from "../services/api/users";
-import CustomHeader from "../components/CustomHeader/CustomHeader";
-import TableHeader from "../components/TableHeader/TableHeader";
-import Space from "../components/Space/Space";
-import ModalWindow from "../components/ModalWindow/ModalWindow";
-import DeletePanel from "../components/DeletePanel/DeletePanel";
-import LoadingAnimation from "../components/LoadingAnimation/LoadingAnimation";
+import { ApiUsers } from "../../services/api/users";
+import cl from "./.module.css";
+import UserRecord from "../../components/UserRecord/UserRecord";
+import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
+import InputBox from "../../components/InputBox/InputBox";
+import TableHeader from "../../components/TableHeader/TableHeader";
+import Space from "../../components/Space/Space";
+import ModalWindow from "../../components/ModalWindow/ModalWindow";
+import DeletePanel from "../../components/DeletePanel/DeletePanel";
+import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const UserListPage = () => {
 
-    const [isListLoaded, setIsListLoaded] = useState(false);
-    const [users, setUsers] = useState([]);
-    const [isModWinVisible, setModWinVisibility] = useState(false);
-    const [usernameForDelete, setDeletingUsername] = useState(null);
-    const [search, setSearch] = useState('');
-    const [selfPermission, setSelfPermission] = useState({});
-    const [sortMode, setSortMode] = useState({ parameter: '', dir: '' });
+    const [isListLoaded, setIsListLoaded] = React.useState(false);
+    const [users, setUsers] = React.useState([]);
+    const [isModWinVisible, setModWinVisibility] = React.useState(false);
+    const [usernameForDelete, setDeletingUsername] = React.useState(null);
+    const [search, setSearch] = React.useState('');
+    const [selfPermission, setSelfPermission] = React.useState({});
+    const [sortMode, setSortMode] = React.useState({ parameter: '', dir: '' });
 
     const navigation = useNavigate();
     const navToAddUser = () => navigation('add');
@@ -157,7 +157,7 @@ const UserListPage = () => {
         return res;
     }
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.body.style.backgroundColor = 'whitesmoke';
         UpdateUsers();
     }, []);
@@ -171,7 +171,7 @@ const UserListPage = () => {
                     onDeleteClick={DeleteUser}
                     onCancelClick={() => setModWinVisibility(false)} />
             </ModalWindow>
-            <CustomHeader text="User list" textColor="#0036a3" textSize="45px" isCenter={true} />
+            <h1 className={cl.page_header}>User list</h1>
             <ItemsContainer width="96%">
                 <InputBox width="340px" value={search} onChange={(e) => setSearch(e.value)} placeholder="Search" />
                 {(selfPermission?.user?.create ?

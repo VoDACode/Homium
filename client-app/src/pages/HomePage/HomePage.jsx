@@ -1,19 +1,16 @@
 import React from "react";
-import cl from "./.module.css";
-import Space from "../../components/Space/Space";
-import ModalWindow from "../../components/ModalWindow/ModalWindow";
 import { ApiUsers } from "../../services/api/users";
 import { useNavigate } from "react-router-dom";
 import { ApiAuth } from "../../services/api/auth";
+import cl from "./.module.css";
+import Space from "../../components/Space/Space";
+import ModalWindow from "../../components/ModalWindow/ModalWindow";
 
 const HomePage = () => {
     const [curUsername, setCurUsername] = React.useState(null);
     const [isModWinVisible, setModWinVisibility] = React.useState(false);
 
     const navigate = useNavigate();
-    const settingsPageNavigate = () => {
-        navigate('/settings');
-    };
     const adminPageNavigate = () => {
         navigate('/admin');
     };
@@ -46,7 +43,6 @@ const HomePage = () => {
             <header className={cl.top_menu}>
                 <span className={cl.logo}>Homium</span>
                 <img className={`${cl.top_menu_img_button} ${cl.top_menu_log_out_button}`} onClick={() => setModWinVisibility(true)} title="log out" alt="log out" />
-                <img className={`${cl.top_menu_img_button} ${cl.top_menu_settings_button}`} onClick={() => settingsPageNavigate()} title="settings" alt="settings" />
                 <img className={`${cl.top_menu_img_button} ${cl.top_menu_admin_button}`} onClick={() => adminPageNavigate()} title="admin dashboard" alt="admin" />
             </header>
             <h1 className={cl.page_header}>{curUsername ? `Welcome, ${curUsername}!` : '...'}</h1>
