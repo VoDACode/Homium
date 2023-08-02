@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { ApiScripts } from "../../services/api/scripts";
 import { CookieManager } from "../../services/CookieManager";
 import cl from "./.module.css";
-import DeletePanel from "../../components/DeletePanel/DeletePanel";
 import InputBox from "../../components/InputBox/InputBox";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
-import ScriptRecord from "../../components/ScriptRecord/ScriptRecord";
 import Space from "../../components/Space/Space";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import YesNoPanel from "../../components/YesNoPanel/YesNoPanel";
@@ -140,12 +138,31 @@ const ScriptListPage = () => {
             res.push(
                 <div key={sortedScripts[i].id}>
                     <Space height="20px" />
-                    <ScriptRecord
-                        nameAttr={sortedScripts[i].name}
-                        descriptionAttr={sortedScripts[i].description}
-                        OnExecClick={() => ExecuteScriptRequest(sortedScripts[i].id)}
-                        OnEditClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)}
-                        OnDeleteClick={() => DeleteScriptRequest(sortedScripts[i].id)} />
+                    <div className={cl.script_record}>
+                        <div className={cl.cont}>
+                            <p className={cl.name}>
+                                {sortedScripts[i].name ?? ""}
+                            </p>
+                        </div>
+                        <div className={cl.script_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.cont}>
+                            <p className={cl.description} title={sortedScripts[i].description === "—" ? "" : sortedScripts[i].description}>
+                                {sortedScripts[i].description ?? "—"}
+                            </p>
+                        </div>
+                        <div className={cl.script_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.buttons}>
+                            <div>
+                                <button className={cl.base_button} type="exec" onClick={() => ExecuteScriptRequest(sortedScripts[i].id)}>Exec</button>
+                                <button className={cl.base_button} type="edit" onClick={() => navigation(`/admin/scripts/${sortedScripts[i].id}`)}>Edit</button>
+                                <button className={cl.base_button} type="delete" onClick={() => DeleteScriptRequest(sortedScripts[i].id)}>Delete</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -161,11 +178,24 @@ const ScriptListPage = () => {
     return (
         <div>
             <ModalWindow visible={isDelWinVisible}>
-                <DeletePanel
-                    header="Type 'yes' to confirm that you want to delete the script."
-                    idForDel={idForDelete}
-                    onCancelClick={() => setDelWinVisibility(false)}
-                    onDeleteClick={DeleteScript} />
+                <div className={cl.delete_panel}>
+                    <p className={cl.delete_panel_header}>Type 'yes' to confirm that you want to delete the script.</p>
+                    <Space height="30px" />
+                    <input className={cl.delete_panel_input} placeholder="write here" />
+                    <Space height="30px" />
+                    <div className={cl.delete_panel_buttons}>
+                        <button className={cl.delete_panel_delete_button}
+                            onClick={() => {
+                                if (document.getElementsByClassName(cl.delete_panel_input)[0].value === 'yes') {
+                                    DeleteScript(idForDelete);
+                                }
+                                else {
+                                    alert("The input does not equal 'yes'!");
+                                }
+                            }}>Delete</button>
+                        <button className={cl.delete_panel_cancel_button} onClick={() => setDelWinVisibility(false)}>Cancel</button>
+                    </div>
+                </div>
             </ModalWindow>
             <ModalWindow visible={isExecWinVisible}>
                 <YesNoPanel

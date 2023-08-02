@@ -2,13 +2,11 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { ApiUsers } from "../../services/api/users";
 import cl from "./.module.css";
-import UserRecord from "../../components/UserRecord/UserRecord";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import InputBox from "../../components/InputBox/InputBox";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import Space from "../../components/Space/Space";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
-import DeletePanel from "../../components/DeletePanel/DeletePanel";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const UserListPage = () => {
@@ -85,7 +83,7 @@ const UserListPage = () => {
     }
 
     function DeleteUser(username) {
-        
+
         setModWinVisibility(false);
         setIsListLoaded(false);
 
@@ -138,18 +136,50 @@ const UserListPage = () => {
                 !sortedUsers[i].lastname.toLowerCase().includes(search.toLowerCase())) {
                 continue;
             }
+
             res.push(
                 <div key={sortedUsers[i].username}>
                     <Space height="20px" />
-                    <UserRecord
-                        OnEditClick={() => navigation(`/admin/users/${sortedUsers[i].username}`)}
-                        OnDeleteClick={() => DeleteUserRequest(sortedUsers[i].username)}
-                        canEdit={selfPermission?.user?.update}
-                        canDelete={selfPermission?.user?.remove}
-                        username={sortedUsers[i].username}
-                        firstname={sortedUsers[i].firstname}
-                        lastname={sortedUsers[i].lastname}
-                        email={sortedUsers[i].email} />
+                    <div className={cl.user_record}>
+                        <div className={cl.content_un}>
+                            <p className={cl.username}>{sortedUsers[i].username}</p>
+                        </div>
+                        <div className={cl.user_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.content_fn}>
+                            <p className={cl.first_name}>{sortedUsers[i].firstname}</p>
+                        </div>
+                        <div className={cl.user_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.content_ln}>
+                            <p className={cl.last_name}>{sortedUsers[i].lastname}</p>
+                        </div>
+                        <div className={cl.user_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.content_e}>
+                            <p className={cl.email}>{sortedUsers[i].email}</p>
+                        </div>
+                        <div className={cl.user_info_sep_line}>
+                            <div></div>
+                        </div>
+                        <div className={cl.buttons}>
+                            <div>
+                                <div type="edit" onClick={() => navigation(`/admin/users/${sortedUsers[i].username}`)} className={cl.base_button}>
+                                    <p>{selfPermission?.user?.update ? "Edit" : "Info"}</p>
+                                </div>
+                                {(
+                                    selfPermission?.user?.remove ?
+                                        <div className={cl.base_button} type="delete" onClick={() => DeleteUserRequest(sortedUsers[i].username)}>
+                                            <p>Delete</p>
+                                        </div>
+                                        : <></>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -165,11 +195,24 @@ const UserListPage = () => {
     return (
         <div>
             <ModalWindow visible={isModWinVisible}>
-                <DeletePanel
-                    header="Type 'yes' to confirm that you want to delete the user."
-                    idForDel={usernameForDelete}
-                    onDeleteClick={DeleteUser}
-                    onCancelClick={() => setModWinVisibility(false)} />
+                <div className={cl.delete_panel}>
+                    <p className={cl.delete_panel_header}>Type 'yes' to confirm that you want to delete the user.</p>
+                    <Space height="30px" />
+                    <input className={cl.delete_panel_input} placeholder="write here" />
+                    <Space height="30px" />
+                    <div className={cl.delete_panel_buttons}>
+                        <button className={cl.delete_panel_delete_button}
+                            onClick={() => {
+                                if (document.getElementsByClassName(cl.delete_panel_input)[0].value === 'yes') {
+                                    DeleteUser(usernameForDelete);
+                                }
+                                else {
+                                    alert("The input does not equal 'yes'!");
+                                }
+                            }}>Delete</button>
+                        <button className={cl.delete_panel_cancel_button} onClick={() => setModWinVisibility(false)}>Cancel</button>
+                    </div>
+                </div>
             </ModalWindow>
             <h1 className={cl.page_header}>User list</h1>
             <ItemsContainer width="96%">

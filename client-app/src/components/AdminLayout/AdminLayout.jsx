@@ -21,6 +21,28 @@ const AdminLayout = () => {
         openMenu(null);
         navigate(path);
     }
+    
+    function WindowClickEvent(event) {
+        var elements = document.getElementsByClassName(cl.var)
+
+        if (chosenMenu !== null) {
+            for (var i = 0; i < elements.length; i++) {
+                if (elements[i].contains(event.target)) {
+                    return;
+                }
+            }
+
+            openMenu(null);
+        }
+    }
+
+    React.useEffect(() => {
+        window.addEventListener("click", WindowClickEvent);
+
+        return () => {
+            window.removeEventListener("click", WindowClickEvent);
+        };
+    });
 
     return (
         <>
