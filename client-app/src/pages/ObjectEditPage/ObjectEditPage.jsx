@@ -2,8 +2,6 @@ import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ApiObjects } from "../../services/api/objects";
 import cl from "./.module.css";
-import CustomButton from "../../components/CustomButton/CustomButton";
-import CustomHeader from "../../components/CustomHeader/CustomHeader";
 import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 import InputBox from "../../components/InputBox/InputBox";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
@@ -145,7 +143,7 @@ const ObjectEditPage = () => {
         }
 
         if (searchParams.get('prop') === 'add') {
-            document.getElementById('prop-list').scrollIntoView({behavior: "smooth"});
+            document.getElementById('prop-list').scrollIntoView({ behavior: "smooth" });
             setEditingProp('');
         }
     }
@@ -227,7 +225,7 @@ const ObjectEditPage = () => {
         }
 
         if (rendered.length === 0) {
-            return <CustomHeader text="There is no properties at the object" textSize="1.5vw" isCenter={true} />
+            return <p className={cl.no_props_text}>There is no properties at the object</p>
         }
 
         return rendered;
@@ -279,11 +277,11 @@ const ObjectEditPage = () => {
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <ScrollDiv idName={"prop-list"} isHeaderCentered={true} headerText="Properties" height="500px" headerSize="20px" backgroundColor="whitesmoke" borderSize="1px" borderRadius='5px' width="90vw" padding="10px"
                     headContent={
-                        <div style={{marginTop: '5px', marginLeft: '10px', marginRight: '15px'}}>
-                            <div style={{display: 'flex', marginBlock: '10px', width: '100%'}}>
-                                <CustomButton text="Add" width="150px" height="40px" backColor="lightgreen" fontSize="20px" onClick={() => editingProp === undefined ? setEditingProp('') : alert('You are editing a prop at the moment.')} />
+                        <div style={{ marginTop: '5px', marginLeft: '10px', marginRight: '15px' }}>
+                            <div style={{ display: 'flex', marginBlock: '10px', width: '100%' }}>
+                                <button className={cl.add_prop_button} onClick={() => editingProp === undefined ? setEditingProp('') : alert('You are editing a prop at the moment.')}>Add</button>
                                 <Space width="10px" />
-                                <CustomHeader wrap={false} onClick={() => setSortPropsByAsc(prev => { return !prev; })} text={`A ${sortPropsByAsc ? '⇧' : '⇩'}`} textColor="black" textSize="26px" border="2px solid black" borderRadius="10px" padding="1px" autoWidth={false} />
+                                <p className={cl.sort_props_button} onClick={() => setSortPropsByAsc(prev => { return !prev; })}>{`A ${sortPropsByAsc ? '⇧' : '⇩'}`}</p>
                                 <Space width="10px" />
                                 <CustomTextarea font="robotic" placeholder="Search" contentSize="24px" height="30px" width="100%" onChange={e => setPropSearch(e.target.value)} />
                             </div>

@@ -63,3 +63,14 @@
     font-size: 45px;
     text-align: center;
 }
+
+.sort_objects_button {
+    cursor: pointer;
+    color: rgb(50, 50, 213);
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 26px;
+    font-weight: bold;
+    border: 2px solid rgb(50, 50, 213);
+    border-radius: 10px;
+    padding: 1px;
+}

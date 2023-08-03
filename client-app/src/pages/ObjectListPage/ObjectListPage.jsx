@@ -2,7 +2,6 @@ import React from "react";
 import { ApiObjects } from "../../services/api/objects";
 import { useNavigate } from "react-router-dom";
 import cl from "./.module.css";
-import CustomHeader from "../../components/CustomHeader/CustomHeader";
 import ObjectSection from "../../components/ObjectSection/ObjectSection";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
@@ -163,7 +162,7 @@ const ObjectListPage = () => {
             <h1 className={cl.page_header}>Object list</h1>
             <Space height="10px" />
             <ItemsContainer width="97%" inlineFlexMode={true}>
-                <CustomHeader wrap={false} onClick={() => setSortMode(prev => { return !prev; })} text={`A ${sortByAsc ? '⇧' : '⇩'}`} textColor="rgb(50, 50, 213)" textSize="26px" border="2px solid rgb(50, 50, 213)" borderRadius="10px" padding="1px" autoWidth={false} />
+                <p className={cl.sort_objects_button} onClick={() => setSortMode(prev => { return !prev; })}>{`A ${sortByAsc ? '⇧' : '⇩'}`}</p>
                 <Space width="20px" />
                 <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={e => ChangeSearchValue(e.target.value)} />
             </ItemsContainer>
