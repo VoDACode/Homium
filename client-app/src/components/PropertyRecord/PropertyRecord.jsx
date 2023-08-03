@@ -97,13 +97,13 @@ const PropertyRecord = ({ editMode = false, name = '', value = '', canHaveHistor
     function RenderButtons() {
         if (editMode) {
             return (<div>
-                <button type="save" onClick={() => SaveEvent()} className={cl.baseButton}>Save</button>
-                <button type="delete" onClick={() => OnCancelClick()} className={cl.baseButton}>Cancel</button>
+                <button type="save" onClick={() => SaveEvent()} className={ cl.base_button}>Save</button>
+                <button type="delete" onClick={() => OnCancelClick()} className={ cl.base_button}>Cancel</button>
             </div>)
         }
         return (<div>
-            <button type="edit" onClick={() => OnEditClick()} className={cl.baseButton}>Edit</button>
-            <button type="delete" onClick={() => OnDeleteClick()} className={cl.baseButton}>Delete</button>
+            <button type="edit" onClick={() => OnEditClick()} className={ cl.base_button}>Edit</button>
+            <button type="delete" onClick={() => OnDeleteClick()} className={ cl.base_button}>Delete</button>
         </div>);
     }
 

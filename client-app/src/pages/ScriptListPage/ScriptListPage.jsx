@@ -1,20 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiScripts } from "../../services/api/scripts";
-import { CookieManager } from "../../services/CookieManager";
 import cl from "./.module.css";
 import InputBox from "../../components/InputBox/InputBox";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
 import Space from "../../components/Space/Space";
 import TableHeader from "../../components/TableHeader/TableHeader";
-import YesNoPanel from "../../components/YesNoPanel/YesNoPanel";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
 const ScriptListPage = () => {
 
     const [isListLoaded, setIsListLoaded] = React.useState(false);
-    const [askBeforeExecPermission, setAskBeforeExecPermission] = React.useState(CookieManager.get('ask_for_exec_script') === '1' ? true : false);
     const [isDelWinVisible, setDelWinVisibility] = React.useState(false);
     const [isExecWinVisible, setExecWinVisibility] = React.useState(false);
     const [sortMode, setSortMode] = React.useState({ parameter: '', dir: '' });
@@ -27,13 +24,8 @@ const ScriptListPage = () => {
     const navToAddScript = () => navigation('add');
 
     function ExecuteScriptRequest(scriptId) {
-        if (askBeforeExecPermission) {
-            setExecWinVisibility(true);
-            setExecId(scriptId);
-        }
-        else {
-            ExecuteScript(scriptId);
-        }
+        setExecWinVisibility(true);
+        setExecId(scriptId);
     }
 
     async function ExecuteScript(id) {
@@ -198,18 +190,14 @@ const ScriptListPage = () => {
                 </div>
             </ModalWindow>
             <ModalWindow visible={isExecWinVisible}>
-                <YesNoPanel
-                    checkboxName="ask_for_exec_script"
-                    checkboxValue={askBeforeExecPermission}
-                    checkboxText="Always ask"
-                    includeCheckbox={true}
-                    header="Do you want to run the script?"
-                    noPressed={() => setExecWinVisibility(false)}
-                    yesPressed={() => ExecuteScript(idForExec)}
-                    onCheckboxCheck={(name, value) => {
-                        setAskBeforeExecPermission(value);
-                        CookieManager.set(name, value === true ? '1' : '0');
-                    }} />
+                <div className={cl.yes_no_panel}>
+                    <p className={cl.yes_no_panel_header}>Do you want to run the script?</p>
+                    <Space height="30px" />
+                    <div className={cl.yes_no_panel_buttons}>
+                        <button className={cl.yes_no_panel_yes_button} onClick={() => ExecuteScript(idForExec)}>Yes</button>
+                        <button className={cl.yes_no_panel_no_button} onClick={() => setExecWinVisibility(false)}>No</button>
+                    </div>
+                </div>
             </ModalWindow>
             <h1 className={cl.page_header}>Script list</h1>
             <ItemsContainer width="96%">

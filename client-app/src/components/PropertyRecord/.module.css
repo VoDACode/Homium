@@ -1,6 +1,6 @@
 .box {
     border: 1px solid rgb(38, 38, 38);
-    width: 100%;
+    width: calc(100% + 4px);
     background-color: white;
     color: rgb(0, 0, 0);
     padding-block: 10px;
@@ -50,21 +50,19 @@
     color: #000;
     text-align: center;
     font-family: 'Roboto', sans-serif;
-    padding-inline: 1px;
 }
 
 .buttons {
     position: relative;
-    padding-inline: 1px;
 }
 
 .buttons div {
-    position: absolute;
-    left: 23%;
-    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.baseButton {
+.base_button {
     margin-left: 10px;
     margin-right: 10px;
     padding: 3px;
@@ -78,43 +76,43 @@
     user-select: none;
 }
 
-.baseButton[type="save"]:active {
+.base_button[type="save"]:active {
     background-color: #00e608;
 }
 
-.baseButton[type="edit"]:active {
+.base_button[type="edit"]:active {
     box-shadow: #009ace 0px 0px 3px 0px;
 }
 
-.baseButton[type="delete"]:active {
+.base_button[type="delete"]:active {
     box-shadow: #d80000 0px 0px 3px 0px;
 }
 
-.baseButton[type="save"]:hover {
+.base_button[type="save"]:hover {
     background-color: #7be17f;
 }
 
-.baseButton[type="edit"]:hover {
+.base_button[type="edit"]:hover {
     background-color: #00bfffb4 !important;
 }
 
-.baseButton[type="delete"]:hover {
+.base_button[type="delete"]:hover {
     background-color: #ff0000b4 !important;
 }
 
-.baseButton[type="save"] {
+.base_button[type="save"] {
     background-color: #00e608;
     border-color: #00a908;
     color: #fff;
 }
 
-.baseButton[type="edit"] {
+.base_button[type="edit"] {
     background-color: #00bfff;
     border-color: #009ace;
     color: #fff;
 }
 
-.baseButton[type="delete"] {
+.base_button[type="delete"] {
     background-color: #ff0000;
     border-color: #d80000;
     color: #fff;

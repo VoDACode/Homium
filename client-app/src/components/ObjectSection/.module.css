@@ -75,6 +75,7 @@ ul {
     cursor: pointer;
     width: fit-content;
     color: rgb(10, 117, 67);
+    padding-block: 4px;
 }
 
 .count {
