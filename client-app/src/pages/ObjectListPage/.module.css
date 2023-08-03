@@ -1,3 +1,62 @@
+.delete_panel {
+    position: relative;
+}
+
+.delete_panel_header {
+    cursor: default;
+    font-family: sans-serif;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.delete_panel_buttons {
+    float: right;
+}
+
+.delete_panel_delete_button {
+    cursor: pointer;
+    margin-right: 40px;
+    background-color: rgb(214, 10, 10);
+    border-radius: 10px;
+    border: none;
+    width: 100px;
+    height: 55px;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.delete_panel_delete_button:hover {
+    background-color: rgb(158, 11, 11);
+}
+
+.delete_panel_cancel_button {
+    cursor: pointer;
+    background-color: rgb(255, 255, 186);
+    border: none;
+    width: 100px;
+    height: 55px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 500;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.4);
+}
+
+.delete_panel_cancel_button:hover {
+    background-color: rgb(224, 224, 162);
+}
+
+.delete_panel_input {
+    width: 100%;
+    height: 30px;
+    border: 3px solid black;
+    border-radius: 10px;
+    padding-left: 5px;
+    font-size: 20px;
+    outline: none;
+}
+
 .page_header {
     color: #0036a3;
     font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

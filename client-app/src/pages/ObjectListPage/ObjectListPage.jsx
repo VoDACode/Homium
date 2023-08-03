@@ -7,7 +7,6 @@ import ObjectSection from "../../components/ObjectSection/ObjectSection";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
-import DeletePanel from "../../components/DeletePanel/DeletePanel";
 import Space from "../../components/Space/Space";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
 
@@ -142,11 +141,24 @@ const ObjectListPage = () => {
     return (
         <div>
             <ModalWindow visible={isDelWinVisible}>
-                <DeletePanel
-                    header="Type 'yes' to confirm that you want to delete the object."
-                    idForDel={idForDelete}
-                    onCancelClick={() => setDelWinVisibility(false)}
-                    onDeleteClick={DeleteObject} />
+                <div className={cl.delete_panel}>
+                    <p className={cl.delete_panel_header}>Type 'yes' to confirm that you want to delete the object.</p>
+                    <Space height="30px" />
+                    <input className={cl.delete_panel_input} placeholder="write here" />
+                    <Space height="30px" />
+                    <div className={cl.delete_panel_buttons}>
+                        <button className={cl.delete_panel_delete_button}
+                            onClick={() => {
+                                if (document.getElementsByClassName(cl.delete_panel_input)[0].value === 'yes') {
+                                    DeleteObject(idForDelete);
+                                }
+                                else {
+                                    alert("The input does not equal 'yes'!");
+                                }
+                            }}>Delete</button>
+                        <button className={cl.delete_panel_cancel_button} onClick={() => setDelWinVisibility(false)}>Cancel</button>
+                    </div>
+                </div>
             </ModalWindow>
             <h1 className={cl.page_header}>Object list</h1>
             <Space height="10px" />
