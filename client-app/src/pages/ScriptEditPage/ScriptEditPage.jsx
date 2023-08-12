@@ -5,7 +5,6 @@ import { ApiObjects } from "../../services/api/objects";
 import { ApiScripts } from "../../services/api/scripts";
 import cl from "./.module.css";
 import CustomCheckbox from "../../components/CustomCheckbox/CustomCheckbox";
-import CustomSelect from "../../components/CustomSelect/CustomSelect";
 import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 import InputBox from "../../components/InputBox/InputBox";
 import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
@@ -21,6 +20,11 @@ const ScriptEditPage = () => {
         { name: "start", val: "start" },
         { name: "call", val: "call" },
         { name: "remove", val: "remove" }
+    ];
+    const typeSet = [
+        { name: "Object", val: "Object" },
+        { name: "Extension", val: "Extension" },
+        { name: "System", val: "System" }
     ];
 
     const [scriptData, setScriptData] = React.useState({
@@ -68,7 +72,6 @@ const ScriptEditPage = () => {
             setScriptData(prevState => {
                 var newData = { ...prevState };
                 newData.targetId = targetId;
-                newData.targetEvent = objectEventSet[0].val;
                 return newData;
             });
         }
@@ -173,10 +176,35 @@ const ScriptEditPage = () => {
         }
     }
 
-    function RenderTargets() {
+    function RenderSelectMenus() {
+        var events = [];
+        var items = [];
+        var types = [];
+
+        eventList.forEach(el => {
+            events.push(<option className={cl.select_option} value={el.val} key={el.val}>{el.name}</option>);
+        });
+        itemList.forEach(el => {
+            items.push(<option className={cl.select_option} value={el.val} key={el.val}>{el.name}</option>);
+        });
+        typeSet.forEach(el => {
+            types.push(<option className={cl.select_option} value={el.val} key={el.val}>{el.name}</option>);
+        });
+
+
         if (id !== 'add') {
             return (
                 <>
+                    <div className={cl.select_list_cont}>
+                        <p className={cl.select_list_header}>Target event *</p>
+                        <Space height="1px" />
+                        <select className={cl.select_list}
+                            onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
+                            value={scriptData.targetEvent}>
+                            {events}
+                        </select>
+                    </div>
+                    <Space width="10px" />
                     <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>
                         <p>Target item</p>
                         <div style={{
@@ -213,17 +241,35 @@ const ScriptEditPage = () => {
         else {
             return (
                 <>
-                    <CustomSelect
-                        options={itemList}
-                        onChange={(e) => LoadTargetEventsById(e.target.value)}
-                        chosenValue={scriptData.targetId}
-                        type="simple" space="1px" headerText="Target item *" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
+                    <div className={cl.select_list_cont}>
+                        <p className={cl.select_list_header}>Target event *</p>
+                        <Space height="1px" />
+                        <select className={cl.select_list}
+                            onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
+                            value={eventList > 0 ? scriptData.targetEvent : undefined}>
+                            {events}
+                        </select>
+                    </div>
                     <Space width="10px" />
-                    <CustomSelect
-                        options={[{ name: "Object", val: "Object" }, { name: "Extension", val: "Extension" }, { name: "System", val: "System" }]}
-                        onChange={(e) => OnTargetTypeChanged(e.target.value)}
-                        chosenValue={scriptData.targetType}
-                        type="simple" space="1px" headerText="Target type" headerSize="16px" width="200px" enabled={id === "add"} paddingLeft="10px" paddingRight="0" />
+                    <div className={cl.select_list_cont}>
+                        <p className={cl.select_list_header}>Target item *</p>
+                        <Space height="1px" />
+                        <select className={cl.select_list}
+                            onChange={(e) => LoadTargetEventsById(e.target.value)}
+                            value={itemList > 0 ? scriptData.targetId : undefined}>
+                            {items}
+                        </select>
+                    </div>
+                    <Space width="10px" />
+                    <div className={cl.select_list_cont}>
+                        <p className={cl.select_list_header}>Target type *</p>
+                        <Space height="1px" />
+                        <select className={cl.select_list}
+                            onChange={(e) => OnTargetTypeChanged(e.target.value)}
+                            value={typeSet > 0 ? scriptData.targetType : undefined}>
+                            {types}
+                        </select>
+                    </div>
                 </>
             );
         }
@@ -301,12 +347,7 @@ const ScriptEditPage = () => {
                 <Space height="10px" />
             </ItemsContainer>
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }} inlineFlexMode={true}>
-                <CustomSelect
-                    options={eventList}
-                    onChange={(e) => ChangeScriptAttributeByValue("targetEvent", e.target.value)}
-                    chosenValue={scriptData.targetEvent} type="simple" space="1px" headerText="Target event *" headerSize="16px" width="200px" paddingLeft="10px" paddingRight="0" />
-                <Space width="10px" />
-                {RenderTargets()}
+                {RenderSelectMenus()}
             </ItemsContainer>
             <Space height="10px" />
             <ItemsContainer margin={{ top: '5px', bottom: '5px' }}>

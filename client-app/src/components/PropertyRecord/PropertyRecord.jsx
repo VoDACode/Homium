@@ -112,26 +112,26 @@ const PropertyRecord = ({ editMode = false, name = '', value = '', canHaveHistor
     }, [editMode, historyLimit]);
 
     return (
-        <div className={cl.box}>
-            <div className={cl.content_n + " " + cl.content}>
+        <div className={cl.property_record}>
+            <div className={cl.property_record_content_n + " " + cl.property_record_content}>
                 {RenderName()}
             </div>
-            <div className={cl.content_v + " " + cl.content}>
+            <div className={cl.property_record_content_v + " " + cl.property_record_content}>
                 {RenderValue()}
             </div>
-            <div className={cl.content_hl + " " + cl.content}>
+            <div className={cl.property_record_content_hl + " " + cl.property_record_content}>
                 {RenderHistoryLimit()}
             </div>
-            <div className={cl.content_chh + " " + cl.content}>
+            <div className={cl.property_record_content_chh + " " + cl.property_record_content}>
                 {RenderCanHaveHistory()}
             </div>
-            <div className={cl.content_mqtt_d + " " + cl.content}>
+            <div className={cl.property_record_content_mqtt_d + " " + cl.property_record_content}>
                 {RenderMQTTDisplay()}
             </div>
-            <div className={cl.content_mqtt_s + " " + cl.content}>
+            <div className={cl.property_record_content_mqtt_s + " " + cl.property_record_content}>
                 {RenderMQTTSubscribe()}
             </div>
-            <div className={cl.buttons}>
+            <div className={cl.property_record_buttons}>
                 {RenderButtons()}
             </div>
         </div>
