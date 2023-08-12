@@ -15,11 +15,16 @@ const AuthorizationPage = () => {
     async function SignInRequest(username, password) {
         setIsAuthorizing(true);
         await ApiAuth.signIn(username, password).then(res => {
-            if (res.ok) {
-                navigate('/', { replace: true });
-            }
-            else {
-                setLogInErr("authorization failed");
+            switch (res.status) {
+                case 200:
+                    navigate('/', { replace: true });
+                    break;
+                case 500:
+                    setLogInErr("initial server error");
+                    break;
+                default:
+                    setLogInErr("authorization failed");
+                    break;
             }
         });
         setIsAuthorizing(false);

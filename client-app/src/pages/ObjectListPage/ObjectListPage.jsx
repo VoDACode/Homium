@@ -111,7 +111,6 @@ const ObjectListPage = () => {
                     onAddPropertyClick={() => navToEditObject(fixedObjects[i].id, fixedObjects[i].parentId, 'add')}
                     onEditClick={() => navToEditObject(fixedObjects[i].id)}
                     onRemoveClick={() => DeleteObjectRequest(fixedObjects[i].id)} />);
-            console.log(fixedObjects[i]);
         }
 
         rendered.push(<li
