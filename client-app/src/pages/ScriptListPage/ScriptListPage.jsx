@@ -140,7 +140,10 @@ const ScriptListPage = () => {
                             <div></div>
                         </div>
                         <div className={cl.cont}>
-                            <p className={cl.description} title={sortedScripts[i].description === "—" ? "" : sortedScripts[i].description}>
+                            <p
+                                className={cl.description}
+                                title={sortedScripts[i].description === "—" ? "" : sortedScripts[i].description}
+                                style={{textAlign: sortedScripts[i].description !== '—' ? 'left' : 'center'}}>
                                 {sortedScripts[i].description ?? "—"}
                             </p>
                         </div>

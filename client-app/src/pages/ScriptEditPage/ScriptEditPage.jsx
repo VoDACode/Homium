@@ -33,7 +33,7 @@ const ScriptEditPage = () => {
         targetEvent: "",
         targetType: "Object",
         targetId: null,
-        description: null,
+        description: "",
         allowAnonymous: false,
         enabled: false
     });
