@@ -12,9 +12,9 @@ import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation
 const ObjectListPage = () => {
 
     const navigate = useNavigate();
-    const navToEditObject = (id, parentId, addProp = '') => {
+    const navToEditObject = (id, parentId, prop = '') => {
         var parent = `?parent=${parentId ?? ''}`;
-        var newProp = `&prop=${addProp}`;
+        var newProp = `&prop=${prop}`;
         navigate(`/admin/objects/${id}${parent}${newProp}`);
     }
 
@@ -108,9 +108,10 @@ const ObjectListPage = () => {
                     modalWindowControl={DeleteObjectRequest}
                     sortByAsc={sortByAsc}
                     onAddChildClick={() => navToEditObject('add', fixedObjects[i].id)}
-                    onAddPropertyClick={() => navToEditObject(fixedObjects[i].id, fixedObjects[i].id.parentId, 'add')}
+                    onAddPropertyClick={() => navToEditObject(fixedObjects[i].id, fixedObjects[i].parentId, 'add')}
                     onEditClick={() => navToEditObject(fixedObjects[i].id)}
                     onRemoveClick={() => DeleteObjectRequest(fixedObjects[i].id)} />);
+            console.log(fixedObjects[i]);
         }
 
         rendered.push(<li
