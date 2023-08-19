@@ -128,29 +128,29 @@
     user-select: none;
 }
 
-.base_button[type="edit"]:active {
+.edit_user_button:active {
     box-shadow: #009ace 0px 0px 3px 0px;
 }
 
-.base_button[type="delete"]:active {
+.delete_user_button:active {
     box-shadow: #d80000 0px 0px 3px 0px;
 }
 
-.base_button[type="edit"]:hover {
+.edit_user_button:hover {
     background-color: #00bfffb4 !important;
 }
 
-.base_button[type="delete"]:hover {
+.delete_user_button:hover {
     background-color: #ff0000b4 !important;
 }
 
-.base_button[type="edit"] {
+.edit_user_button {
     background-color: #00bfff;
     border-color: #009ace;
     color: #fff;
 }
 
-.base_button[type="delete"] {
+.delete_user_button {
     background-color: #ff0000;
     border-color: #d80000;
     color: #fff;

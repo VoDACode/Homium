@@ -76,43 +76,43 @@
     user-select: none;
 }
 
-.base_button[type="save"]:active {
+.save_prop_button:active {
     background-color: #00e608;
 }
 
-.base_button[type="edit"]:active {
+.edit_prop_button:active {
     box-shadow: #009ace 0px 0px 3px 0px;
 }
 
-.base_button[type="delete"]:active {
+.delete_prop_button:active {
     box-shadow: #d80000 0px 0px 3px 0px;
 }
 
-.base_button[type="save"]:hover {
+.save_prop_button:hover {
     background-color: #7be17f;
 }
 
-.base_button[type="edit"]:hover {
+.edit_prop_button:hover {
     background-color: #00bfffb4 !important;
 }
 
-.base_button[type="delete"]:hover {
+.delete_prop_button:hover {
     background-color: #ff0000b4 !important;
 }
 
-.base_button[type="save"] {
+.save_prop_button {
     background-color: #00e608;
     border-color: #00a908;
     color: #fff;
 }
 
-.base_button[type="edit"] {
+.edit_prop_button {
     background-color: #00bfff;
     border-color: #009ace;
     color: #fff;
 }
 
-.base_button[type="delete"] {
+.delete_prop_button {
     background-color: #ff0000;
     border-color: #d80000;
     color: #fff;
