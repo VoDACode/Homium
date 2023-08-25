@@ -2,12 +2,11 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { ApiUsers } from "../../services/api/users";
 import cl from "./.module.css";
-import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
-import InputBox from "../../components/InputBox/InputBox";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import Space from "../../components/Space/Space";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 
 type SortMode = {
     parameter: string,
@@ -219,17 +218,15 @@ const UserListPage = () => {
                     </div>
                 </div>
             </ModalWindow>
-            <h1 className={cl.page_header}>User list</h1>
-            <ItemsContainer width="96%">
-                <InputBox width="340px" value={search} onChange={(e: HTMLInputElement) => setSearch(e.value)} placeholder="Search" />
-                {(selfPermission?.user?.create ?
-                    <div style={{ display: 'flex' }}>
-                        <Space width="120px" />
-                        <InputBox width="100px" type="button" value="Add User" onClick={() => navToAddUser()} />
-                    </div>
-                    : "")}
-            </ItemsContainer>
-            <Space height="30px" />
+            <Space height="20px" />
+            <div className={cl.list_control_panel}>
+                <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSearch(e.target.value)} />
+                <Space width="20px" />
+                <div className={cl.add_user_button} onClick={() => navToAddUser()}>
+                    <p>Add user</p>
+                </div>
+            </div>
+            <Space height="20px" />
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div style={{ width: '96%' }}>
                     <TableHeader

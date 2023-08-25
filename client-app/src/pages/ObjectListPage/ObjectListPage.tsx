@@ -3,7 +3,6 @@ import { ApiObjects } from "../../services/api/objects";
 import { useNavigate } from "react-router-dom";
 import cl from "./.module.css";
 import ObjectSection from "../../components/ObjectSection/ObjectSection";
-import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
 import Space from "../../components/Space/Space";
@@ -141,21 +140,6 @@ const ObjectListPage = () => {
                     onRemoveClick={() => DeleteObjectRequest(fixedObjects[i].id)} />);
         }
 
-        rendered.push(<li
-            className={cl.adder}
-            key={"adder"}
-            style={{
-                cursor: 'pointer',
-                color: 'rgb(234, 132, 0)',
-                width: 'fit-content',
-                border: '5px dotted rgb(255, 38, 0)',
-                borderRadius: '10px',
-                marginTop: '3px'
-            }}
-            onClick={() => navToEditObject('add', '')}>
-            Add new object</li>
-        );
-
         return rendered;
     }
 
@@ -186,16 +170,19 @@ const ObjectListPage = () => {
                     </div>
                 </div>
             </ModalWindow>
-            <h1 className={cl.page_header}>Object list</h1>
-            <Space height="10px" />
-            <ItemsContainer width="97%" inlineFlexMode={true}>
+            <Space height="20px" />
+            <div className={cl.list_control_panel}>
                 <p className={cl.sort_objects_button} onClick={() => setSortMode(prev => { return !prev; })}>{`A ${sortByAsc ? '⇧' : '⇩'}`}</p>
                 <Space width="20px" />
                 <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => ChangeSearchValue(e.target.value)} />
-            </ItemsContainer>
-            <ul className="object_list" style={{ paddingLeft: '1vw' }}>
-                <hr style={{ position: 'absolute', left: '0', right: '0' }} />
-                <Space height="3px" />
+                <Space width="20px" />
+                <div className={cl.add_object_button} onClick={() => navToEditObject('add', '')}>
+                    <p>Add object</p>
+                </div>
+            </div>
+            <Space height="10px" />
+            <ul className={cl.object_list} style={{ paddingLeft: '1vw' }}>
+                <hr className={cl.start_object_line} />
                 {RenderObjects()}
             </ul>
             <Space height='50px' />

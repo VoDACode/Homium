@@ -8,7 +8,6 @@ const SystemInfoPage = () => {
 
     return (
         <div>
-            <h1 className={cl.page_header}>System information</h1>
         </div>
     );
 }

@@ -258,7 +258,6 @@ const ObjectEditPage = () => {
 
     return (
         <div>
-            <h1 className={cl.page_header}>{id === 'add' ? 'New object' : 'Object editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <div style={{ fontFamily: 'sans-serif', cursor: 'default' }}>

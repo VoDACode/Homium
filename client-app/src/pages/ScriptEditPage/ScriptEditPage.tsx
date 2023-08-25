@@ -358,7 +358,6 @@ const ScriptEditPage = () => {
 
     return (
         <div>
-            <h1 className={cl.page_header}>{id === 'add' ? 'New script' : 'Script editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>
                 <InputBox title="Name *" name="name" disabled={false} value={scriptData?.name} onChange={ChangeScriptAttributeByRef} />

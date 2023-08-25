@@ -2,12 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiScripts } from "../../services/api/scripts";
 import cl from "./.module.css";
-import InputBox from "../../components/InputBox/InputBox";
-import ItemsContainer from "../../components/ItemsContainer/ItemsContainer";
 import ModalWindow from "../../components/ModalWindow/ModalWindow";
 import Space from "../../components/Space/Space";
 import TableHeader from "../../components/TableHeader/TableHeader";
 import LoadingAnimation from "../../components/LoadingAnimation/LoadingAnimation";
+import CustomTextarea from "../../components/CustomTextarea/CustomTextarea";
 
 type SortMode = {
     parameter: string,
@@ -208,15 +207,15 @@ const ScriptListPage = () => {
                     </div>
                 </div>
             </ModalWindow>
-            <h1 className={cl.page_header}>Script list</h1>
-            <ItemsContainer width="96%">
-                <InputBox width="340px" value={search} onChange={(e: HTMLInputElement) => setSearch(e.value)} placeholder="Search" />
-                <div style={{ display: 'flex' }}>
-                    <Space width="110px" />
-                    <InputBox width="120px" type="button" value="Add Script" onClick={() => navToAddScript()} />
+            <Space height="20px" />
+            <div className={cl.list_control_panel}>
+                <CustomTextarea font="robotic" placeholder="Search" contentSize="28px" height="33px" width="500px" onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setSearch(e.target.value)} />
+                <Space width="20px" />
+                <div className={cl.add_script_button} onClick={() => navToAddScript()}>
+                    <p>Add script</p>
                 </div>
-            </ItemsContainer>
-            <Space height="30px" />
+            </div>
+            <Space height="20px" />
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div style={{ width: '96%' }}>
                     <TableHeader

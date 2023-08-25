@@ -1,8 +1,12 @@
-.main {
-    position: relative;
-    background-color: rgba(70, 78, 120, 0.16);
-    height: 10vh;
-    z-index: 1;
+.admin_space {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 73px 1fr;
+    transition: 0.5s;
 }
 
 .log_out_panel {
@@ -54,101 +58,277 @@
     background-color: rgb(224, 224, 162);
 }
 
-.logo {
-    cursor: pointer;
+.navigation {
     position: absolute;
-    top: 50%;
-    left: 1vw;
-    transform: translateY(-60%);
-    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 2.445vw;
-    font-weight: bold;
-    color: blue;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgb(120, 120, 255);
+    width: 73px;
+    overflow-y: auto;
+    z-index: 1;
+    transition: 0.5s;
 }
 
-.logo:hover {
-    color: rgb(97, 115, 255);
+.navigation_opened {
+    width: 230px;
 }
 
-.page_list {
-    position: absolute;
-    display: flex;
-    top: 50%;
-    left: 17vw;
-    transform: translateY(-50%);
+.navigation::-webkit-scrollbar {
+    display: none;
 }
 
-.menu_container {
+.top_nav_panel {
     position: relative;
+    width: 100%;
+    height: 90px;
 }
 
-.var {
+.menu_img {
+    cursor: pointer;
+    position: absolute;
+    left: 19px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35px;
+    border-radius: 50px;
+    content: url(./img/menu.png);
+    -moz-user-select: none;
+    -webkit-user-select: none;
     user-select: none;
-    border: 0.5vh solid rgba(0, 0, 0, 0);
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: sans-serif;
-    font-size: 2vw;
-    font-weight: 600;
-    color: rgb(128, 0, 255);
+    transition: 0.5s;
 }
 
-.var:hover {
-    border-color: rgb(128, 0, 255);
+.menu_img_rotated {
+    transform: translateY(-50%) rotate(180deg);
 }
 
-.items {
+.app_name {
+    cursor: default;
     position: absolute;
-    top: 5vh;
-    text-align: center;
-    background-color: rgb(255, 242, 224);
-    border-radius: 1vh;
-    -webkit-box-shadow: 0px 0px 21px -5px rgba(0,0,0,0.75);
-    -moz-box-shadow: 0px 0px 21px -5px rgba(0,0,0,0.75);
-    box-shadow: 0px 0px 21px -5px rgba(0,0,0,0.75);
-}
-
-.items .comp {
-    border: 0.5vh solid rgba(0, 0, 0, 0);
-    cursor: pointer;
-    color: rgb(122, 42, 165);
-    font-family: sans-serif;
+    left: 68px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    background-color: rgb(0, 26, 141);
+    border-radius: 10px;
+    padding-inline: 5px;
+    padding-block: 5px;
+    font-size: 33px;
     font-weight: 600;
-    font-size: 3vh;
-    padding-left: 1vw;
-    padding-right: 1vw;
-    border-radius: 0.6vh;
-    text-decoration: none;
+    white-space: nowrap;
+    opacity: 0;
+    transition: 0.5s;
+
 }
 
-.items .comp:hover {
-    border-color: rgb(122, 42, 165);
+.app_name_visible {
+    opacity: 1;
 }
 
-.page_list .menu_container:not(:last-child) {
-    margin-right: 4vw;
+.page_collection {
+    position: relative;
+    width: 100%;
 }
 
-.log_out {
+.theme_separate_line_cont {
+    position: relative;
+    width: 100%;
+}
+
+.theme_separate_line_cont:first-child {
+    padding-bottom: 14px;
+}
+
+.theme_separate_line_cont:not(:first-child) {
+    padding-block: 14px;
+}
+
+.theme_separate_line {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 1px;
+    background-color: white;
+}
+
+.sep_theme_text {
+    position: absolute;
+    display: none;
+}
+
+.pages {
+    width: 100%;
+}
+
+.page {
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    height: 70px;
+}
+
+.page:hover {
+    background-color: rgb(0, 51, 255);
+}
+
+.page_img {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.sys_info_img {
+    content: url(./img/system-info.png);
+}
+
+.objects_img {
+    content: url(./img/objects.png);
+}
+
+.devices_img {
+    content: url(./img/devices.png);
+}
+
+.rooms_img {
+    content: url(./img/rooms.png);
+}
+
+.schedules_img {
+    content: url(./img/schedules.png);
+}
+
+.scripts_img {
+    content: url(./img/scripts.png);
+}
+
+.triggers_img {
+    content: url(./img/triggers.png);
+}
+
+.repositories_img {
+    content: url(./img/repositories.png);
+}
+
+.installed_ext_img {
+    content: url(./img/installed-ext.png);
+}
+
+.users_img {
+    content: url(./img/users.png);
+}
+
+.page_name {
+    position: absolute;
+    left: 68px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 25px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.page_name_visible {
+    opacity: 1;
+}
+
+.top_menu {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-color: rgba(70, 78, 120, 0.16);
+    height: 90px;
+}
+
+.content {
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.content::-webkit-scrollbar {
+    width: 7px;
+}
+
+.content::-webkit-scrollbar-track {
+    background-color: aquamarine;
+}
+
+.content::-webkit-scrollbar-thumb {
+    background-color: #0036a3;
+    border-radius: 10px;
+}
+
+.page_header {
+    cursor: default;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-58%);
+    margin-left: 20px;
+    color: #0036a3;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 40px;
+    width: fit-content;
+}
+
+.logo {
+    cursor: default;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-55%);
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    padding: 0;
+    color: rgb(34, 34, 255);
+}
+
+.go_to_home_page_button {
     cursor: pointer;
     position: absolute;
-    border: 0.5vh solid blue;
-    border-radius: 1vh;
-    padding: 0.8vh;
-    height: 5.5vh;
-    width: 2.75vw;
-    top: 1.2vh;
-    background-color: rgb(207, 238, 207);
-    right: 2.5vw;
+    right: 120px;
+    top: 50%;
+    transform: translateY(-50%);
+    content: url(./img/home-page.png);
+    background-color: rgb(206, 238, 194);
+    border: 4px solid blue;
+    border-radius: 10px;
+    padding: 5px;
+    width: 50px;
     -moz-user-select: none;
     -webkit-user-select: none;
     user-select: none;
 }
 
-.log_out:hover {
+.go_to_home_page_button:hover {
     background-color: aquamarine;
 }
 
-.active_link {
-    background-color: rgb(242, 255, 56);
+.log_out_button {
+    cursor: pointer;
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    content: url(./img/log-out.png);
+    background-color: rgb(223, 207, 238);
+    border: 4px solid blue;
+    border-radius: 10px;
+    padding: 5px;
+    width: 50px;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.log_out_button:hover {
+    background-color: aquamarine;
 }

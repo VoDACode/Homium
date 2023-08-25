@@ -213,7 +213,6 @@ const UserEditPage = () => {
 
     return (
         <ItemsContainer horizontal="center" vertical="center" width='100%'>
-            <h1 className={cl.page_header}>{username === 'add' ? 'New user' : 'User editing'}</h1>
             <Space height="10px" />
             <ItemsContainer horizontal="center" vertical="top" width='80%' margin={{ left: 'auto', right: 'auto' }}>
                 <ItemsContainer horizontal="center" vertical="center" margin={{ top: '5px', bottom: '5px' }}>

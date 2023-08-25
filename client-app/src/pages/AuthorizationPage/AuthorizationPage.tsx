@@ -24,6 +24,7 @@ const AuthorizationPage = () => {
                     break;
                 default:
                     setLogInErr("authorization failed");
+                    (document.getElementsByClassName(cl.password)[0] as HTMLInputElement).value = "";
                     break;
             }
         });
@@ -51,8 +52,23 @@ const AuthorizationPage = () => {
         return null;
     }
 
+    function WindowKeyPressEvent(event: KeyboardEvent) {
+        var userInput = document.getElementsByClassName(cl.user)[0] as HTMLInputElement;
+        var passwordInput = document.getElementsByClassName(cl.password)[0] as HTMLInputElement;
+
+        if (event.key === "Enter" && (document.activeElement === userInput || document.activeElement === passwordInput)) {
+            SignInRequest(userInput.value, passwordInput.value);
+        }
+    }
+
     React.useEffect(() => {
         document.body.style.backgroundColor = 'white';
+
+        window.addEventListener("keypress", WindowKeyPressEvent);
+
+        return () => {
+            window.removeEventListener("keypress", WindowKeyPressEvent);
+        };
     }, []);
 
     return (
