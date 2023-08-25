@@ -161,13 +161,9 @@ const AdminLayout = () => {
                             <span className={cl.sep_theme_text + " " + cl.extension_sep_theme_line}>Extensions</span>
                         </div>
                         <div className={cl.pages + " " + cl.extension_pages}>
-                            <div className={cl.page + " " + cl.repositories_page} title="Repositories">
-                                <img className={cl.page_img + " " + cl.repositories_img} alt="repositories" />
-                                <span className={`${cl.page_name} ${cl.repositories_name} ${isNavMenuOpened ? cl.page_name_visible : ''}`}>Repositories</span>
-                            </div>
-                            <div className={cl.page + " " + cl.installed_ext_page} title="Installed">
-                                <img className={cl.page_img + " " + cl.installed_ext_img} alt="installed extensions" />
-                                <span className={`${cl.page_name} ${cl.installed_ext_name} ${isNavMenuOpened ? cl.page_name_visible : ''}`}>Installed</span>
+                            <div className={cl.page + " " + cl.extensions_page} title="Extensions">
+                                <img className={cl.page_img + " " + cl.extensions_img} alt="extensions" />
+                                <span className={`${cl.page_name} ${cl.extensions_name} ${isNavMenuOpened ? cl.page_name_visible : ''}`}>Extensions</span>
                             </div>
                         </div>
                         <div className={cl.theme_separate_line_cont + " " + cl.users_separate_line_cont}>

@@ -211,12 +211,8 @@
     content: url(./img/triggers.png);
 }
 
-.repositories_img {
-    content: url(./img/repositories.png);
-}
-
-.installed_ext_img {
-    content: url(./img/installed-ext.png);
+.extensions_img {
+    content: url(./img/extensions.png);
 }
 
 .users_img {
