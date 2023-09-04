@@ -1,0 +1,246 @@
+.list_control_panel {
+    position: relative;
+    display: flex;
+    padding-left: 10px;
+}
+
+.search_type_panel {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    background-color: rgb(228, 255, 250);
+    border: 2px solid blue;
+    border-radius: 5px;
+}
+
+.search_type_option_cont {
+    padding: 5px;
+}
+
+.search_type_option {
+    cursor: pointer;
+    width: 100px;
+    background-color: #2828ff;
+    color: white;
+    padding-block: 5px;
+    border-radius: 5px;
+}
+
+.search_type_option:not(.search_type_option_current):hover {
+    background-color: rgb(48, 145, 255);
+}
+
+.search_type_option_current {
+    background-color: rgb(136, 0, 255);
+}
+
+.search_type_option_text {
+    text-align: center;
+    font-size: 20px;
+}
+
+.search_type_option_browse {
+    left: 1vw;
+}
+
+.search_type_option_installed {
+    left: calc(100px + 2vw);
+}
+
+.search_type_option_updates {
+    left: calc(200px + 3vw);
+}
+
+.extension_record {
+    position: relative;
+    display: grid;
+    grid-template-columns: 80% 20%;
+    border: 3px solid rgb(0, 0, 178);
+    background-color: white;
+    width: calc(100% - 20px);
+    border-radius: 15px;
+    height: fit-content;
+    padding: 7px;
+}
+
+@media (max-width: 385px) {
+    .extension_record {
+        display: block;
+    }
+}
+
+@media (max-device-width: 385px) {
+    .extension_record {
+        display: block;
+    }
+}
+
+.extension_info_part {
+    position: relative;
+}
+
+.extension_main_info_cont {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.extension_img {
+    background-color: grey;
+    border: 1px solid black;
+    width: 60px;
+    height: 60px;
+}
+
+.extension_name_and_author_cont {
+    display: grid;
+    grid-template-rows: 1.3fr 1fr;
+    padding-left: 7px;
+    width: fit-content;
+}
+
+.extension_author {
+    font-size: 19px;
+}
+
+.active_text_link:hover {
+    cursor: pointer;
+    color: blue;
+}
+
+.extension_description_cont {
+    padding-top: 10px;
+    width: 100%;
+}
+
+.extension_description {
+    text-align: justify;
+    white-space: normal;
+}
+
+.tag_cont {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tag {
+    padding-top: 13px;
+}
+
+.tag:not(:last-child) {
+    padding-right: 7px;
+}
+
+.tag>span {
+    cursor: pointer;
+    border-radius: 8px;
+    background-color: #517fff;
+    color: white;
+    padding: 5px;
+}
+
+.tag>span:hover {
+    background-color: rgb(54, 228, 255);
+}
+
+.stat_cont {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.installed_count_cont {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin-right: 30px;
+    margin-top: 10px;
+}
+
+.installed_count_text {
+    font-weight: bold;
+}
+
+.installed_count_img {
+    content: url(./img/installed.png);
+    width: 20px;
+    margin-left: 5px;
+}
+
+.last_update_cont {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    margin-top: 10px;
+}
+
+.last_update_text {
+    font-weight: bold;
+}
+
+.extension_version_control_part {
+    position: relative;
+}
+
+@media (max-width: 385px) {
+    .extension_version_control_part {
+        padding-top: 10px;
+    }
+}
+
+@media (max-device-width: 385px) {
+    .extension_version_control_part {
+        padding-top: 10px;
+    }
+}
+
+.extension_version_cont {
+    width: 100%;
+}
+
+.extension_current_version {
+    text-align: right;
+    font-weight: bold;
+}
+
+.extension_new_version {
+    text-align: right;
+    font-weight: bold;
+    color: goldenrod;
+    margin-top: 10px;
+}
+
+.extension_actions {
+    position: relative;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.extension_install_button_cont {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.extension_install_button {
+    cursor: pointer;
+    background-color: rgb(61, 74, 255);
+    width: fit-content;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.extension_install_button:hover {
+    background-color: rgb(0, 208, 255);
+}
+
+.extension_install_button_text {
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+}

@@ -11,6 +11,7 @@ import UserEditPage from "./pages/UserEditPage/UserEditPage";
 import ScriptListPage from "./pages/ScriptListPage/ScriptListPage";
 import ScriptEditPage from "./pages/ScriptEditPage/ScriptEditPage";
 import ObjectEditPage from "./pages/ObjectEditPage/ObjectEditPage";
+import ExtensionListPage from "./pages/ExtensionListPage/ExtensionListPage";
 
 const App: React.FC = () => {
 
@@ -35,6 +36,7 @@ const App: React.FC = () => {
           <Route path="objects/:id" element={<ObjectEditPage />} />
           <Route path="scripts" element={<ScriptListPage />} />
           <Route path="scripts/:id" element={<ScriptEditPage />} />
+          <Route path="extensions" element={<ExtensionListPage />} />
           <Route path="users" element={<UserListPage />} />
           <Route path="users/:username" element={<UserEditPage />} />
         </Route>

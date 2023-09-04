@@ -121,13 +121,14 @@ const UserListPage = () => {
     }
 
     function RenderUserList() {
-        if (!isListLoaded)
+        if (!isListLoaded) {
             return (
                 <div>
                     <Space height="20px" />
                     <LoadingAnimation size="70px" loadingCurveWidth="11px" isCenter={true} />
                 </div>
             );
+        }
 
         var res = [];
         var fixedUsers: Array<UserData> = [...users];
@@ -228,7 +229,7 @@ const UserListPage = () => {
             </div>
             <Space height="20px" />
             <div style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <div style={{ width: '96%' }}>
+                <div style={{ width: '100%', paddingInline: '10px' }}>
                     <TableHeader
                         components={[
                             { text: 'username', val: 'username' },

@@ -6,7 +6,6 @@
     bottom: 0;
     display: grid;
     grid-template-columns: 73px 1fr;
-    transition: 0.5s;
 }
 
 .log_out_panel {
@@ -168,8 +167,12 @@
     height: 70px;
 }
 
-.page:hover {
+.page:not(.current_page):hover {
     background-color: rgb(0, 51, 255);
+}
+
+.current_page {
+    background-color: rgb(162, 32, 255);
 }
 
 .page_img {
