@@ -1,5 +1,5 @@
 import React from "react";
-import cl from "./.module.css";
+// import cl from "./.module.css";
 
 const SystemInfoPage = () => {
     React.useEffect(() => {
