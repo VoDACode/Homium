@@ -5,6 +5,7 @@ import UserCreate from './UserCreate.json';
 import UserUpdate from './UserUpdate.json';
 import object from './object';
 import structures from './structures';
+import ExtensionInfo from './ExtensionInfo.json';
 
 const payload = {
     ...signin,
@@ -14,6 +15,7 @@ const payload = {
     ...ClientPermission,
     ...object,
     ...structures,
+    ...ExtensionInfo,
 }
 
 export default payload;

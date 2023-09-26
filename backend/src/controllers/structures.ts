@@ -1,10 +1,8 @@
 import express from 'express';
-import { authGuard, hasPermission } from '../guards/AuthGuard';
-import { DeviceModel, DeviceProperty } from '../models/DeviceModel';
-import { SectionModel } from '../models/SectionModel';
-import { SectorModel } from '../models/SectorModel';
-import ObjectService from '../services/ObjectService';
-import SectorService from '../services/SectorService';
+import { authGuard, hasPermission } from 'homium-lib/utils/auth-guard';
+import { serviceManager, IObjectService, ISectorService } from 'homium-lib/services';
+import { SectionModel, SectorModel } from 'homium-lib/models';
+import { DeviceModel, DeviceProperty } from 'homium-lib/models/device.model';
 
 const router = express.Router();
 
@@ -18,7 +16,10 @@ router.get('/', authGuard, async (req, res) => {
         res.status(403).send('Permission denied');
         return;
     }
-    res.send(SectorService.sector.list().map(s => {
+
+    const sectorService = serviceManager.get(ISectorService);
+
+    res.send(sectorService.sector.list().map(s => {
         return {
             name: s.name,
             description: s.description,
@@ -37,7 +38,8 @@ router.get('/:sectorName', authGuard, async (req, res) => {
     }
 
     try {
-        const sections = SectorService.sections.list(req.params.sectorName);
+        const sectorService = serviceManager.get(ISectorService);
+        const sections = sectorService.sections.list(req.params.sectorName);
         res.send(sections.map(s => {
             return {
                 name: s.name,
@@ -59,7 +61,10 @@ router.get('/:sectorName/:sectionName', authGuard, async (req, res) => {
     }
 
     try {
-        const devices = SectorService.devices.list(req.params.sectorName, req.params.sectionName);
+        const sectorService = serviceManager.get(ISectorService);
+        const objectService = serviceManager.get(IObjectService);
+
+        const devices = sectorService.devices.list(req.params.sectorName, req.params.sectionName);
         res.send(await devices.map(async d => {
             return {
                 name: d.name,
@@ -73,7 +78,7 @@ router.get('/:sectorName/:sectionName', authGuard, async (req, res) => {
                         aliases: p.aliases,
                         objectId: p.objectId,
                         objectProperty: p.objectProperty,
-                        value: (await ObjectService.get(p.objectId))?.properties.find(op => op.key === p.objectProperty)?.value
+                        value: (await objectService.get(p.objectId))?.properties.find(op => op.key === p.objectProperty)?.value
                     }
                 })
             }
@@ -122,7 +127,8 @@ router.post('/', authGuard, async (req, res) => {
     sector.isDefault = isDefault;
 
     try {
-        await SectorService.sector.add(sector);
+        const sectorService = serviceManager.get(ISectorService);
+        await sectorService.sector.add(sector);
         res.status(201).send();
     }
     catch (e) {
@@ -159,7 +165,8 @@ router.post('/:sectorName', authGuard, async (req, res) => {
     let section = new SectionModel(name, description);
 
     try {
-        await SectorService.sections.add(req.params.sectorName, section);
+        const sectorService = serviceManager.get(ISectorService);
+        await sectorService.sections.add(req.params.sectorName, section);
         res.status(201).send();
     }
     catch (e) {
@@ -205,6 +212,9 @@ router.post('/:sectorName/:sectionName', authGuard, async (req, res) => {
         return;
     }
 
+    const objectService = serviceManager.get(IObjectService);
+    const sectorService = serviceManager.get(ISectorService);
+
     for (let i = 0; i < properties.length; i++) {
         const p = properties[i];
         if (p.name === undefined || typeof p.name !== 'string') {
@@ -226,7 +236,7 @@ router.post('/:sectorName/:sectionName', authGuard, async (req, res) => {
             res.status(400).send('Invalid property objectId');
             return;
         }
-        let object = await ObjectService.get(p.objectId);
+        let object = await objectService.get(p.objectId);
         if (object === undefined) {
             res.status(400).send('Invalid property objectId. Object not found');
             return;
@@ -254,7 +264,7 @@ router.post('/:sectorName/:sectionName', authGuard, async (req, res) => {
     });
 
     try {
-        await SectorService.devices.add(req.params.sectorName, req.params.sectionName, device);
+        await sectorService.devices.add(req.params.sectorName, req.params.sectionName, device);
         res.status(201).send();
     }
     catch (e) {
@@ -278,7 +288,8 @@ router.post('/:sectorName/:sectionName/:deviceName', authGuard, async (req, res)
     }
 
     try {
-        SectorService.devices.setProperty(req.params.sectorName, req.params.sectionName, req.params.deviceName, prop, value);
+        const sectorService = serviceManager.get(ISectorService);
+        sectorService.devices.setProperty(req.params.sectorName, req.params.sectionName, req.params.deviceName, prop, value);
         res.status(200).send();
     }
     catch (e) {
@@ -301,7 +312,8 @@ router.delete('/', authGuard, async (req, res) => {
     }
 
     try {
-        await SectorService.sector.remove(target);
+        const sectorService = serviceManager.get(ISectorService);
+        await sectorService.sector.remove(target);
         res.status(200).send();
     }
     catch (e) {
@@ -324,7 +336,8 @@ router.delete('/:sectorName', authGuard, async (req, res) => {
     }
 
     try {
-        await SectorService.sections.remove(req.params.sectorName, target);
+        const sectorService = serviceManager.get(ISectorService);
+        await sectorService.sections.remove(req.params.sectorName, target);
         res.status(200).send();
     }
     catch (e) {
@@ -347,7 +360,8 @@ router.delete('/:sectorName/:sectionName', authGuard, async (req, res) => {
     }
 
     try {
-        await SectorService.devices.remove(req.params.sectorName, req.params.sectionName, target);
+        const sectorService = serviceManager.get(ISectorService);
+        await sectorService.devices.remove(req.params.sectorName, req.params.sectionName, target);
         res.status(200).send();
     } catch (e) {
         res.status(400).send(e);
@@ -367,7 +381,7 @@ router.put('/', authGuard, async (req, res) => {
     const aliases: string[] = req.body.aliases || [];
     const sectorType: string = req.body.sectorType;
 
-    if(target === undefined || target === '' || typeof target !== 'string') {
+    if (target === undefined || target === '' || typeof target !== 'string') {
         res.status(400).send('Invalid target');
         return;
     }
@@ -377,14 +391,16 @@ router.put('/', authGuard, async (req, res) => {
         return;
     }
 
+    const sectorService = serviceManager.get(ISectorService);
+
     try {
-        var sector = await SectorService.sector.get(target);
+        var sector = await sectorService.sector.get(target);
     } catch (e) {
         res.status(400).send(e);
         return;
     }
 
-    if (sector.name !== name && SectorService.sector.get(name) !== undefined) {
+    if (sector.name !== name && sectorService.sector.get(name) !== undefined) {
         res.status(400).send('Sector with this name already exists');
         return;
     } else {
@@ -413,7 +429,7 @@ router.put('/', authGuard, async (req, res) => {
     }
 
     try {
-        await SectorService.sector.update(target, sector);
+        await sectorService.sector.update(target, sector);
         res.status(200).send();
     }
     catch (e) {
@@ -432,7 +448,7 @@ router.put('/:sectorName', authGuard, async (req, res) => {
     const description: string = req.body.description;
     const aliases: string[] = req.body.aliases;
 
-    if(target === undefined || target === '' || typeof target !== 'string') {
+    if (target === undefined || target === '' || typeof target !== 'string') {
         res.status(400).send('Invalid target');
         return;
     }
@@ -442,14 +458,16 @@ router.put('/:sectorName', authGuard, async (req, res) => {
         return;
     }
 
+    const sectorService = serviceManager.get(ISectorService);
+
     try {
-        var section = await SectorService.sections.get(req.params.sectorName, target);
+        var section = await sectorService.sections.get(req.params.sectorName, target);
     } catch (e) {
         res.status(400).send(e);
         return;
     }
 
-    if (section.name !== name && SectorService.sections.get(req.params.sectorName, name) !== undefined) {
+    if (section.name !== name && sectorService.sections.get(req.params.sectorName, name) !== undefined) {
         res.status(400).send('Section with this name already exists');
         return;
     } else {
@@ -471,7 +489,7 @@ router.put('/:sectorName', authGuard, async (req, res) => {
     }
 
     try {
-        await SectorService.sections.update(req.params.sectorName, target, section);
+        await sectorService.sections.update(req.params.sectorName, target, section);
         res.status(200).send();
     }
     catch (e) {
@@ -494,7 +512,7 @@ router.put('/:sectorName/:sectionName', authGuard, async (req, res) => {
     const deviceType: string = req.body.type;
     const properties: DeviceProperty[] = req.body.properties;
 
-    if(target === undefined || target === '' || typeof target !== 'string') {
+    if (target === undefined || target === '' || typeof target !== 'string') {
         res.status(400).send('Invalid target');
         return;
     }
@@ -504,14 +522,16 @@ router.put('/:sectorName/:sectionName', authGuard, async (req, res) => {
         return;
     }
 
+    const sectorService = serviceManager.get(ISectorService);
+
     try {
-        var device = await SectorService.devices.get(req.params.sectorName, req.params.sectionName, target);
+        var device = await sectorService.devices.get(req.params.sectorName, req.params.sectionName, target);
     } catch (e) {
         res.status(400).send(e);
         return;
     }
 
-    if (device.name !== name && SectorService.devices.get(req.params.sectorName, req.params.sectionName, name) !== undefined) {
+    if (device.name !== name && sectorService.devices.get(req.params.sectorName, req.params.sectionName, name) !== undefined) {
         res.status(400).send('Device with this name already exists');
         return;
     } else {
@@ -544,13 +564,15 @@ router.put('/:sectorName/:sectionName', authGuard, async (req, res) => {
         return;
     }
 
+    const objectService = serviceManager.get(IObjectService);
+
     for (let i = 0; i < properties.length; i++) {
         if (properties[i].name === undefined || properties[i].name === '' || typeof properties[i].name !== 'string') {
             res.status(400).send('Invalid property name');
             return;
         }
 
-        var object = await ObjectService.get(properties[i].name);
+        var object = await objectService.get(properties[i].name);
 
         if (properties[i].objectId === undefined || properties[i].objectId === '' || typeof properties[i].objectId !== 'string') {
             res.status(400).send('Invalid property objectId ' + properties[i].objectId);
@@ -580,7 +602,7 @@ router.put('/:sectorName/:sectionName', authGuard, async (req, res) => {
         if (properties !== undefined) {
             device.properties = properties;
         }
-        await SectorService.devices.update(req.params.sectorName, req.params.sectionName, target, device);
+        await sectorService.devices.update(req.params.sectorName, req.params.sectionName, target, device);
         res.status(200).send();
     }
     catch (e) {

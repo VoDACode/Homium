@@ -1,12 +1,13 @@
-import { ExtensionModel } from "../models/ExtensionModel";
-import { IExtension } from "../types/IExtension";
+import { IExtensionsService } from "homium-lib/services";
+import { Extension } from "homium-lib/extension";
+import { ExtensionModel } from "homium-lib/models";
 
 class ExtensionExpanded{
-    extension: IExtension;
+    extension: Extension;
     original: any;
     info: ExtensionModel;
     folder: string;
-    constructor(extension: IExtension, original: any, info: ExtensionModel, folder: string) {
+    constructor(extension: Extension, original: any, info: ExtensionModel, folder: string) {
         this.extension = extension;
         this.original = original;
         this.info = info;
@@ -14,13 +15,7 @@ class ExtensionExpanded{
     }
 }
 
-class ExtensionsStorage{
-    private constructor() { }
-    private static _instance: ExtensionsStorage;
-    public static get instance(): ExtensionsStorage {
-        return this._instance || (this._instance = new this());
-    }
-
+export class ExtensionsService implements IExtensionsService{
     private extensions: ExtensionExpanded[] = [];
 
     get count(): number {
@@ -35,9 +30,9 @@ class ExtensionsStorage{
         return context;
     }
 
-    add(extension: IExtension, original: any, info: ExtensionModel, folder: string): void {
-        if(!(original.__proto__ instanceof IExtension)){
-            throw new Error("Extension must be inherited from IExtension");
+    add(extension: Extension, original: any, info: ExtensionModel, folder: string): void {
+        if(!(original.__proto__ instanceof Extension)){
+            throw new Error("Extension must be inherited from Extension");
         }
         if(this.extensions.findIndex(e => e.info.id == info.id) != -1)
             return;
@@ -57,7 +52,7 @@ class ExtensionsStorage{
         }
     }
 
-    get(name: string, searchBy: 'name' | 'folder' | 'id'): IExtension | undefined {
+    get(name: string, searchBy: 'name' | 'folder' | 'id'): Extension | undefined {
         if(searchBy == 'name'){
             return this.extensions.find((e) => e.extension.name === name)?.extension;
         }else if(searchBy == 'folder'){
@@ -70,8 +65,7 @@ class ExtensionsStorage{
     reload(name: string, searchBy: 'name' | 'folder' | 'id'): boolean {
         let extension = this.get(name, searchBy);
         if(extension){
-            extension.stop();
-            extension.start();
+            extension.restart();
             return true;
         }
         return false;
@@ -91,14 +85,17 @@ class ExtensionsStorage{
         return this.get(name, searchBy) != undefined;
     }
 
-    on(name: string, searchBy: 'name' | 'folder' | 'id', event: string, callback: (...args: any[]) => void): void {
+    addEventListener(name: string, searchBy: 'name' | 'folder' | 'id', event: string, callback: (...args: any[]) => void): void {
         let extension = this.get(name, searchBy);
         extension?.on(event, callback);
+    }
+
+    removeEventListener(name: string, searchBy: 'name' | 'folder' | 'id', event: string, callback: (...args: any[]) => void): void {
+        let extension = this.get(name, searchBy);
+        extension?.off(event, callback);
     }
 
     get allInfo(): ExtensionModel[] {
         return this.extensions.map((e) => e.info);
     }
 }
-
-export default ExtensionsStorage.instance;

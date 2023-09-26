@@ -1,9 +1,9 @@
-import { IExtension } from "../../types/IExtension";
 import TelegramBot from "node-telegram-bot-api";
 import { TelegramUser } from "./models/TelegramUser";
 import { UserService } from "./services/UsersService";
+import { Extension } from "homium-lib/extension";
 
-class TelegramBotApp extends IExtension {
+class TelegramBotApp extends Extension {
     private _bot: TelegramBot | null = null;
     public name: string = "telegram-bot";
     public globalName: string = "telegramBot";

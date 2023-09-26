@@ -1,11 +1,9 @@
 import * as express from 'express';
 import { uuid } from 'uuidv4';
-import db from '../db';
-import { authGuard, hasPermission, isAuthorized } from '../guards/AuthGuard';
-import { ScriptModel, ScriptTargetEvent, ScriptTargetType } from '../models/ScriptModel';
-import extensions from '../services/extensions';
-import ObjectService from '../services/ObjectService';
-import ScriptService from '../services/ScriptService';
+import { authGuard, hasPermission, isAuthorized } from 'homium-lib/utils/auth-guard';
+import { ScriptTargetEvent, ScriptTargetType } from 'homium-lib/types/script.types';
+import { serviceManager, IDatabaseService, IExtensionsService, IObjectService, IScriptService } from 'homium-lib/services';
+import { ScriptModel } from 'homium-lib/models';
 
 export const router = express.Router();
 
@@ -60,6 +58,11 @@ router.post('/', authGuard, async (req, res) => {
         return;
     }
 
+    const db = serviceManager.get(IDatabaseService);
+    const extensions = serviceManager.get(IExtensionsService);
+    const objectService = serviceManager.get(IObjectService);
+    const scriptService = serviceManager.get(IScriptService);
+
     let id = "";
     do {
         id = uuid();
@@ -74,12 +77,12 @@ router.post('/', authGuard, async (req, res) => {
     if (targetType === 'Extension' && extensions.any(targetId, 'id') === false) {
         res.status(400).send("Invalid extension id");
         return;
-    } else if (targetType === 'Object' && await ObjectService.any(targetId) == false) {
+    } else if (targetType === 'Object' && await objectService.any(targetId) == false) {
         res.status(400).send("Invalid object id");
         return;
     }
 
-    await ScriptService.createScript(script);
+    await scriptService.createScript(script);
     res.status(201).send({ id: id });
 });
 
@@ -90,7 +93,9 @@ router.get('/', authGuard, async (req, res) => {
         return;
     }
 
-    res.status(200).json(await ScriptService.getIds());
+    const scriptService = serviceManager.get(IScriptService);
+
+    res.status(200).json(await scriptService.getIds());
 });
 
 router.get('/:id', authGuard, async (req, res) => {
@@ -105,7 +110,8 @@ router.get('/:id', authGuard, async (req, res) => {
         return;
     }
     try {
-        let script = await ScriptService.getScript(req.params.id);
+        const scriptService = serviceManager.get(IScriptService);
+        let script = await scriptService.getScript(req.params.id);
         res.status(200).json(script);
     } catch (e) {
         res.status(404).send("Script not found");
@@ -131,7 +137,9 @@ router.put('/:id', authGuard, async (req, res) => {
         return;
     }
 
-    let script = await ScriptService.getScript(req.params.id);
+    const scriptService = serviceManager.get(IScriptService);
+
+    let script = await scriptService.getScript(req.params.id);
     if (!script) {
         res.status(400).send("Invalid script");
         return;
@@ -180,7 +188,7 @@ router.put('/:id', authGuard, async (req, res) => {
     }
 
     try {
-        await ScriptService.updateScript(script);
+        await scriptService.updateScript(script);
         res.status(200).send({ success: true });
     } catch (e) {
         res.status(404).send("Script not found");
@@ -204,7 +212,8 @@ router.put("/:id/code", authGuard, async (req, res) => {
         return;
     }
     try {
-        await ScriptService.updateScriptCode(req.params.id, code);
+        const scriptService = serviceManager.get(IScriptService);
+        await scriptService.updateScriptCode(req.params.id, code);
         res.status(200).send({ success: true });
     } catch (e) {
         res.status(404).send("Script not found");
@@ -222,7 +231,10 @@ router.delete('/:id', authGuard, async (req, res) => {
         res.status(400).send("Invalid id");
         return;
     }
-    await ScriptService.deleteScript(req.params.id);
+
+    const scriptService = serviceManager.get(IScriptService);
+
+    await scriptService.deleteScript(req.params.id);
     res.status(200).send({ success: true });
 });
 
@@ -231,8 +243,11 @@ router.get('/:id/execute', async (req, res) => {
         res.status(400).send("Invalid id");
         return;
     }
+
+    const scriptService = serviceManager.get(IScriptService);
+
     try {
-        if (await ScriptService.isAllowAnonymous(req.params.id) === false) {
+        if (await scriptService.isAllowAnonymous(req.params.id) === false) {
             if (await isAuthorized(req) === false) {
                 res.status(401).send("Unauthorized").redirect('/auth');
                 return;
@@ -246,18 +261,18 @@ router.get('/:id/execute', async (req, res) => {
         res.status(404).send("Script not found");
         return;
     }
-    if (await (await ScriptService.getScript(req.params.id)).targetEvent !== 'call') {
+    if (await (await scriptService.getScript(req.params.id)).targetEvent !== 'call') {
         res.status(400).send("Invalid target event");
         return;
     }
 
-    if (await (await ScriptService.getScript(req.params.id)).enabled === false) {
+    if (await (await scriptService.getScript(req.params.id)).enabled === false) {
         res.status(400).send("Script is disabled");
         return;
     }
 
     try {
-        await ScriptService.executeScript(req.params.id, []);
+        await scriptService.executeScript(req.params.id, []);
         res.status(200).send({ success: true });
     } catch (e: any) {
         res.status(404).send(e);

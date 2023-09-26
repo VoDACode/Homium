@@ -1,29 +1,27 @@
-import { IConfigModel } from "./models/IConfigModel";
-import { readFileSync, existsSync, writeFileSync, copyFileSync } from "fs";
+import { readFileSync, existsSync, copyFileSync } from "fs";
+import { IConfigScheme } from "homium-lib/schemas";
+import { serviceManager, IConfigService, ISystemService } from "homium-lib/services";
 import { join } from "path";
-import { Logger } from "./services/LogService";
-import system from "./services/system";
 
-const logger = new Logger('Config');
-
-class Config {
-    static get configFile(): string {
-        return join(__dirname, 'configs', 'secret.config.json');
-    }
-    private static _instance: Config;
+export class ConfigService implements IConfigService {
     private _loaded: boolean = false;
+
+    private system: ISystemService;
+
     public get loaded(): boolean {
         return this._loaded;
     }
-    private constructor() {
-        this._config = {} as IConfigModel;
+    constructor() {
+        this._config = {} as IConfigScheme;
+        this.system = serviceManager.get(ISystemService);
     }
-    public static get instance(): Config {
-        return this._instance || (this._instance = new this());
+    public getPath(): string {
+        return join(__dirname, '..', 'configs', 'secret.config.json');
     }
-    private _config: IConfigModel;
+    
+    private _config: IConfigScheme;
 
-    public get data(): IConfigModel {
+    public get config(): IConfigScheme {
         return this._config;
     }
 
@@ -31,28 +29,29 @@ class Config {
         if(this.loaded){
             return;
         }
-        if (existsSync(Config.configFile)) {
-            let file = readFileSync(Config.configFile, 'utf8');
+        if (existsSync(this.getPath())) {
+            let file = readFileSync(this.getPath(), 'utf8');
             this._config = JSON.parse(file);
             try {
                 this.validateConfig();
                 this._loaded = true;
             } catch (error: any) {
-                logger.error(error.message);
-                await system.stop(true);
+                console.log(error.message);
+                await this.system.stop(true);
             }
         } else {
-            copyFileSync(join(__dirname, 'configs', 'example.config.json'), Config.configFile);
-            logger.info('Config file created');
-            logger.info('Please fill the config file');
-            logger.info('Path: ' + Config.configFile);
-            logger.info('Exiting...');
-            await system.stop(true);
+            copyFileSync(join(__dirname, '..', 'configs', 'example.config.json'), this.getPath());
+
+            console.log('Config file created');
+            console.log('Please fill the config file');
+            console.log('Path: ' + this.getPath());
+            console.log('Exiting...');
+            await this.system.stop(true);
         }
     }
 
     private validateConfig(): void {
-        if (!existsSync(Config.configFile) || this._config == null)
+        if (!existsSync(this.getPath()) || this._config == null)
             throw new Error('Config file not found');
 
         // validate config
@@ -120,5 +119,3 @@ class Config {
         }
     }
 }
-
-export default Config.instance;

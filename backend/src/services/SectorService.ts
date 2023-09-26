@@ -1,28 +1,20 @@
-import { SectorModel } from "../models/SectorModel";
-import db from "../db";
-import { SectionModel } from "../models/SectionModel";
-import { DeviceModel } from "../models/DeviceModel";
-import ObjectService from "./ObjectService";
-import { Service } from "./Service";
-import { Logger } from "./LogService";
+import { DeviceModel, SectionModel, SectorModel } from "homium-lib/models";
+import { serviceManager, BaseService, IDatabaseService, ILogger, IObjectService, ISectorService } from "homium-lib/services";
+import { SectorServiceEvent } from "homium-lib/types/scene.types";
 
-export type SectorServiceEvent = 'created' | 'updated' | 'deleted';
-
-class SectorService extends Service<SectorServiceEvent> {
+export class SectorService extends BaseService<SectorServiceEvent> implements ISectorService {
     public get name(): string {
         return 'Sector';
     }
-    private logger: Logger = new Logger(this.name);
-    private static _instance: SectorService;
-    public static get instance(): SectorService {
-        if (!this._instance) {
-            this._instance = new SectorService();
-        }
-        return this._instance;
-    }
+    private logger: ILogger;
+    private db: IDatabaseService;
+    private objectService: IObjectService;
 
-    private constructor() {
+    constructor() {
         super();
+        this.logger = serviceManager.get(ILogger, this.name);
+        this.db = serviceManager.get(IDatabaseService);
+        this.objectService = serviceManager.get(IObjectService);
     }
 
     private _sectors: SectorModel[] = [];
@@ -32,7 +24,7 @@ class SectorService extends Service<SectorServiceEvent> {
             return Promise.resolve();
         this.warning = true;
         this.logger.info("Starting...");
-        this._sectors = await db.sectors.find().toArray();
+        this._sectors = await this.db.sectors.find().toArray();
         this.running = true;
         this.warning = false;
         this.logger.info("Started");
@@ -95,7 +87,7 @@ class SectorService extends Service<SectorServiceEvent> {
             this._sectors.forEach(s => s.isDefault = false);
         }
         this._sectors.push(sector);
-        await db.sectors.insertOne(sector);
+        await this.db.sectors.insertOne(sector);
     }
 
     private async removeSector(sectorName: string) {
@@ -104,7 +96,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Sector ${sectorName} not found`);
         }
         this._sectors.splice(sectorIndex, 1);
-        await db.sectors.deleteOne({ name: sectorName });
+        await this.db.sectors.deleteOne({ name: sectorName });
     }
 
     private async updateSector(name: string, sector: SectorModel) {
@@ -113,7 +105,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Sector ${name} not found`);
         }
         this._sectors[sectorIndex] = sector;
-        await db.sectors.updateOne({ name: name }, {
+        await this.db.sectors.updateOne({ name: name }, {
             $set: {
                 ...sector
             }
@@ -140,7 +132,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Section ${section.name} already exists`);
         }
         sector.sections.push(section);
-        await db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
+        await this.db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
     }
 
     private async removeSection(sectorName: string, sectionName: string) {
@@ -150,7 +142,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Section ${sectionName} not found`);
         }
         sector.sections.splice(sectionIndex, 1);
-        await db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
+        await this.db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
     }
 
     private async updateSection(sectorName: string, sectionName: string, section: SectionModel) {
@@ -160,8 +152,8 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Section ${sectionName} not found`);
         }
         sector.sections[sectionIndex] = section;
-        await db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
-        await db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
+        await this.db.sectors.updateOne({ name: sectorName }, { $pull: { sections: { name: sectionName } } });
+        await this.db.sectors.updateOne({ name: sectorName }, { $push: { sections: section } });
     }
     //#endregion
 
@@ -186,7 +178,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Device ${device.name} already exists`);
         }
         section.devices.push(device);
-        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
+        await this.db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
     }
 
     private async removeDevice(sectorName: string, sectionName: string, deviceName: string) {
@@ -195,7 +187,7 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Device ${deviceName} not found`);
         }
         this.devices.list(sectorName, sectionName).splice(deviceIndex, 1);
-        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
+        await this.db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
     }
 
     private async updateDevice(sectorName: string, sectionName: string, deviceName: string, device: DeviceModel) {
@@ -204,8 +196,8 @@ class SectorService extends Service<SectorServiceEvent> {
             throw new Error(`Device ${deviceName} not found`);
         }
         this.devices.list(sectorName, sectionName)[deviceIndex] = device;
-        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
-        await db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
+        await this.db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $pull: { "sections.$.devices": { name: deviceName } } });
+        await this.db.sectors.updateOne({ name: sectorName, "sections.name": sectionName }, { $push: { "sections.$.devices": device } });
     }
 
     private setDeviceProperty(sectorName: string, sectionName: string, deviceName: string, propertyName: string, propertyValue: any) {
@@ -214,11 +206,9 @@ class SectorService extends Service<SectorServiceEvent> {
         if (!obj) {
             throw new Error(`Property ${propertyName} not found`);
         }
-        if (!ObjectService.updateObject(obj.objectId, obj.objectProperty, propertyValue)) {
+        if (!this.objectService.updateObject(obj.objectId, obj.objectProperty, propertyValue)) {
             throw new Error(`Property ${propertyName} not found`);
         }
     }
     //#endregion
 }
-
-export default SectorService.instance;

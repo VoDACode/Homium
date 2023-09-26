@@ -1,12 +1,12 @@
 import express from 'express';
 import { uuid } from 'uuidv4';
-import db from '../db';
-import { authGuard, getPermissions, getUser } from '../guards/AuthGuard';
-import { BotModel, BotViewModel } from '../models/BotModel';
-import crypto, { Hash } from 'crypto';
-import { ClientPermissions } from '../models/ClientPermissions';
-import { UserModel } from '../models/UserModel';
+import { authGuard, getPermissions, getUser } from 'homium-lib/utils/auth-guard';
+import crypto from 'crypto';
 import { fetch } from 'cross-fetch';
+import { serviceManager, IDatabaseService } from 'homium-lib/services';
+import { BotModel, BotViewModel } from 'homium-lib/models/bot.model';
+import { UserModel } from 'homium-lib/models';
+import { ClientPermissions } from 'homium-lib/models/permission.model';
 
 
 const router = express.Router();
@@ -21,6 +21,7 @@ router.get('/list', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+    const db = serviceManager.get(IDatabaseService);
     res.send(await db.bots.find({}).map((bot) => new BotViewModel(bot)).toArray());
 });
 
@@ -30,6 +31,7 @@ router.get('/list/:id', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+    const db = serviceManager.get(IDatabaseService);
     let bot = await db.bots.findOne({ id: req.params.id });
     if (!bot) {
         res.status(404).send("Bot not found!");
@@ -44,6 +46,8 @@ router.post('/create', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     const name = req.body.name;
     const description = req.body.description || "";
@@ -107,6 +111,7 @@ router.get('/getApiKey/:id', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+    const db = serviceManager.get(IDatabaseService);
     let bot = await db.bots.findOne({ id: req.params.id });
     if (!bot) {
         res.status(404).send("Bot not found!");
@@ -121,6 +126,7 @@ router.put('/regenerate/:id', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+    const db = serviceManager.get(IDatabaseService);
     let bot = await db.bots.findOne({ id: req.params.id });
     if (!bot) {
         res.status(404).send("Bot not found!");
@@ -144,6 +150,8 @@ router.put('/update', authGuard, async (req, res) => {
         res.status(403).send("Permission denied!");
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     const id: string | undefined = req.body.id;
     const name: string | undefined = req.body.name;
@@ -205,6 +213,8 @@ router.delete('/delete', authGuard, async (req, res) => {
         res.status(400).send("Missing required id field!");
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     let bot = await db.bots.findOne({ id: id });
     if (!bot) {
@@ -275,7 +285,7 @@ router.get('/oath2/verify', authGuard, async (req, res) => {
     let key: string = req.query.code as string;
     let event = req.query.event as string;
 
-    if(!key || !event) {
+    if (!key || !event) {
         res.send({
             message: "Missing required fields",
             success: false
@@ -286,8 +296,8 @@ router.get('/oath2/verify', authGuard, async (req, res) => {
     let oauth2Key = oauth2Keys.get(key);
     if (oauth2Key !== undefined && oauth2Key.event === event) {
         let code = crypto.randomBytes(Math.ceil(OATH2_KEY_LENGTH / 2))
-        .toString('hex')
-        .slice(0, OATH2_KEY_LENGTH);
+            .toString('hex')
+            .slice(0, OATH2_KEY_LENGTH);
         oauth2Key.callback(code, null);
         res.send({
             code: code,

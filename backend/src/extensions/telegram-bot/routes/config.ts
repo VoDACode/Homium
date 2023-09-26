@@ -1,6 +1,6 @@
 import express from 'express';
 import TelegramBotApp from '../index';
-import { authGuard } from '../../../guards/AuthGuard';
+import { authGuard } from 'homium-lib/utils/auth-guard';
 import { TelegramBotConfig } from '../models/TelegramBotConfig';
 
 const router = express.Router();

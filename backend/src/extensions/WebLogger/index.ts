@@ -1,6 +1,6 @@
-import { IExtension } from "../../types/IExtension";
+import { Extension } from "homium-lib/extension";
 
-class WebLogger extends IExtension{
+class WebLogger extends Extension{
     globalName: string = "WebLogger";
     name: string = "WebLogger";
     start(): void {

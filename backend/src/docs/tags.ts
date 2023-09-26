@@ -15,6 +15,10 @@ const payload = {
         {
             "name": "structures",
             "description": "Structure operations. Sectors -> Sections -> Devices -> Properties"
+        },
+        {
+            "name": "extensions",
+            "description": "Extensions operations"
         }
     ]
 };

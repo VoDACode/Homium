@@ -1,0 +1,44 @@
+{
+    "ExtensionInfo":{
+        "type":"object",
+        "properties":{
+            "name":{
+                "type":"string"
+            },
+            "version":{
+                "type":"string"
+            },
+            "description":{
+                "type":"string"
+            },
+            "author":{
+                "type":"string"
+            },
+            "authorUrl":{
+                "type":"string"
+            },
+            "url":{
+                "type":"string"
+            },
+            "id":{
+                "type":"string"
+            },
+            "urls":{
+                "type":"array",
+                "items":{
+                    "type":"object",
+                    "properties":{
+                        "static":{
+                            "type":"string",
+                            "description":"The URL to the static files of the extension."
+                        },
+                        "api":{
+                            "type":"string",
+                            "description":"The URL to the API of the extension."
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

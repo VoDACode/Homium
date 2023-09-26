@@ -1,15 +1,9 @@
-import { ObjectModel } from "../models/ObjectModel";
-import { ObjectEventType } from "../types/ObjectEventType";
-import db from "../db";
-import mqtt from "./MqttService";
-import { convertAnyToCorrectType } from "../models/ObjectProperty";
-import config from "../config";
-import { Logger } from "./LogService";
-import { ScriptArgument, ScriptTargetEvent } from "../models/ScriptModel";
-import { Service } from "./Service";
+import { serviceManager, BaseService, IConfigService, IDatabaseService, ILogger, IMqttService, IObjectService } from "homium-lib/services";
+import { ObjectEventType, ObjectPropertyUpdateEvent, UpdateObjectEvent } from "homium-lib/types/object.types";
+import { ScriptArgument, ScriptTargetEvent } from "homium-lib/types/script.types";
+import { convertAnyToCorrectType } from "homium-lib/utils";
+import { ObjectModel } from "homium-lib/models";
 
-type UpdateEvent = (object: ObjectModel) => void;
-type PropertyUpdateEvent = (object: ObjectModel, property: string, value: any) => void;
 
 class ObjectEventService {
     private _eventMap: Map<string, Array<Function>>;
@@ -85,6 +79,7 @@ class StoredObject {
     }
 
     async validateAndFix(): Promise<void> {
+        let db = serviceManager.get(IDatabaseService);
         let errors = [];
         // Validate parent
         if (this._object.parentId) {
@@ -134,13 +129,18 @@ class StoredObject {
     }
 }
 
-class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
+export class ObjectService extends BaseService<ObjectEventType | ScriptTargetEvent> implements IObjectService {
 
     public get name(): string {
-        return "ObjectStorage";
+        return "ObjectService";
     }
 
-    private logger = new Logger(this.name);
+    // services
+    private logger: ILogger;
+    private db: IDatabaseService;
+    private configService: IConfigService;
+    private mqttService: IMqttService;
+
     private _saveDelay: number = 1000 * 10;
     private _saveInterval: NodeJS.Timeout | undefined;
 
@@ -167,13 +167,12 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         }
     }
 
-    private constructor() {
+    constructor() {
         super();
-    }
-
-    private static _instance: ObjectStorage;
-    public static get instance(): ObjectStorage {
-        return this._instance || (this._instance = new this());
+        this.logger = serviceManager.get(ILogger, this.name);
+        this.db = serviceManager.get(IDatabaseService);
+        this.configService = serviceManager.get(IConfigService);
+        this.mqttService = serviceManager.get(IMqttService);
     }
 
     private objects: StoredObject[] = [];
@@ -244,21 +243,21 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         // Push object to array
         this.objects.push(new StoredObject(object, new ObjectEventService()));
         // Save object to database
-        await db.objects.insertOne(object);
-        if (config.data.mqtt.enabled) {
+        await this.db.objects.insertOne(object);
+        if (this.configService.config.mqtt.enabled) {
             this.logger.debug(`MQTT enabled, publishing object ${object.id}`);
             for (let prop of object.properties) {
                 if (!prop.mqttProperty.display)
                     continue;
                 // Publish property value to get topic
                 this.logger.debug(`Publishing property ${prop.key} to get topic`);
-                mqtt.publish(`Homium/objects/${object.id}/properties/${prop.key}/get`, prop.value);
+                this.mqttService.publish(`Homium/objects/${object.id}/properties/${prop.key}/get`, prop.value);
                 if (prop.mqttProperty.subscribe) {
                     // Publish property value to set topic
-                    mqtt.publish(`Homium/objects/${object.id}/properties/${prop.key}/set`, prop.value);
+                    this.mqttService.publish(`Homium/objects/${object.id}/properties/${prop.key}/set`, prop.value);
                     // Subscribe to set topic
                     this.logger.debug(`Subscribing to set topic (Homium/objects/${object.id}/properties/${prop.key}/set)`)
-                    mqtt.subscribe(`Homium/objects/${object.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
+                    this.mqttService.subscribe(`Homium/objects/${object.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                         // Call update function
                         this.updateObject(object!.id, prop.key, message);
                     });
@@ -277,26 +276,26 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         let object = this.objects.find((o) => o.object.id === id);
         // if object is not in memory, try to get it from database
         if (!object) {
-            let objFromDb = await db.objects.findOne({ id: id });
+            let objFromDb = await this.db.objects.findOne({ id: id });
             if (!objFromDb) {
                 this.logger.warn(`Object ${id} not found`);
                 return undefined;
             }
             // Push object to array
             this.objects.push(new StoredObject(objFromDb, new ObjectEventService()));
-            if (config.data.mqtt.enabled) {
+            if (this.configService.config.mqtt.enabled) {
                 for (let prop of objFromDb.properties) {
                     if (!prop.mqttProperty.display)
                         continue;
                     // Publish property value to get topic
                     this.logger.debug(`Publishing property ${prop.key} to get topic`);
-                    mqtt.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/get`, prop.value);
+                    this.mqttService.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/get`, prop.value);
                     if (prop.mqttProperty.subscribe) {
                         // Publish property value to set topic
-                        mqtt.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, prop.value);
+                        this.mqttService.publish(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, prop.value);
                         // Subscribe to set topic
                         this.logger.debug(`Subscribing to set topic (Homium/objects/${objFromDb.id}/properties/${prop.key}/set)`)
-                        mqtt.subscribe(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
+                        this.mqttService.subscribe(`Homium/objects/${objFromDb.id}/properties/${prop.key}/set`, (topic: string, message: string) => {
                             // Call update function
                             this._updateObject(objFromDb!.id, prop.key, message, false);
                         });
@@ -325,22 +324,22 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
             this.objects.splice(index, 1);
 
             // Remove object from database
-            await db.objects.deleteOne({ id: id });
+            await this.db.objects.deleteOne({ id: id });
 
             // Remove children from parent object
-            let objects = await db.objects.find({ children: id }).toArray();
+            let objects = await this.db.objects.find({ children: id }).toArray();
             for (let obj of objects) {
                 const indexInRAMStorage = this.objects.findIndex((o) => o.object.id === obj.id);
                 if (indexInRAMStorage > -1) {
                     this.objects[indexInRAMStorage].object.children = this.objects[indexInRAMStorage].object.children.filter((c: string) => c !== id);
                 }
                 obj.children = obj.children.filter((c: string) => c !== id);
-                await db.objects.updateOne({ id: obj.id }, { $set: { children: obj.children } });
+                await this.db.objects.updateOne({ id: obj.id }, { $set: { children: obj.children } });
             }
 
-            if (config.data.mqtt.enabled) {
+            if (this.configService.config.mqtt.enabled) {
                 // Unsubscribe from all set topics
-                mqtt.unsubscribe(`Homium/objects/${id}/#`);
+                this.mqttService.unsubscribe(`Homium/objects/${id}/#`);
             }
             this.emit('objectRemoved', objectRemoved);
             return true;
@@ -386,7 +385,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         }
 
         // Update parent object in database
-        await db.objects.updateOne({ id: parentId }, { $set: { children: parent.children } });
+        await this.db.objects.updateOne({ id: parentId }, { $set: { children: parent.children } });
         return true;
     }
 
@@ -403,7 +402,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         }
         object.id = id;
         object.updatedAt = Date.now();
-        await db.objects.updateOne({ id: id }, {
+        await this.db.objects.updateOne({ id: id }, {
             $set: { ...object }
         });
         const index = this.objects.findIndex((o) => o.object.id === id);
@@ -432,7 +431,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
             this.logger.warn(`Service is not running, can't reload object ${id}`);
             return;
         }
-        let object = await db.objects.findOne({ id: id });
+        let object = await this.db.objects.findOne({ id: id });
         if (!object) {
             this.logger.warn(`Object ${id} not found`);
             return;
@@ -484,10 +483,10 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
                 this.objects[index].object.properties[propIndex].value = value;
                 this.objects[index].events.dispatchEvent('update', this.objects[index].object);
                 this.objects[index].events.dispatchEvent('propertyUpdate', this.objects[index].object, prop, value);
-                if (config.data.mqtt.enabled && publishToMqtt) {
+                if (this.configService.config.mqtt.enabled && publishToMqtt) {
                     // If property is displayed, publish value to get topic
                     if (this.objects[index].object.properties.find(p => p.key === prop)?.mqttProperty.display) {
-                        mqtt.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
+                        this.mqttService.publish(`Homium/objects/${id}/properties/${prop}/get`, value);
                     }
                 }
                 // Added object to updated objects array
@@ -499,13 +498,13 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
             }
         } else {
             // If object is not in memory, unsubscribe from set topic
-            if (config.data.mqtt.enabled)
-                mqtt.unsubscribe(`Homium/objects/${id}/properties/${prop}/set`);
+            if (this.configService.config.mqtt.enabled)
+                this.mqttService.unsubscribe(`Homium/objects/${id}/properties/${prop}/set`);
         }
         return false;
     }
 
-    addEventListener(id: string, eventType: ObjectEventType | ScriptTargetEvent, callback: UpdateEvent | PropertyUpdateEvent | Function | ((args: ScriptArgument) => void)): boolean {
+    addEventListener(id: string, eventType: ObjectEventType | ScriptTargetEvent, callback: UpdateObjectEvent | ObjectPropertyUpdateEvent | Function | ((args: ScriptArgument) => void)): boolean {
         const object = this.objects.find((o) => o.object.id === id);
         if (object) {
             object.events.addEventListener(eventType, callback);
@@ -525,7 +524,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
 
     private publishObjects() {
         // if mqtt is disabled, return
-        if (!config.data.mqtt.enabled)
+        if (!this.configService.config.mqtt.enabled)
             return;
         this.emit('publishObjects');
         this.objects.forEach((o) => {
@@ -537,7 +536,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
                     return;
                 this.emit('publishProperty', o.object, p.key, p.value);
                 // Publish value to get topic
-                mqtt.publish(`Homium/objects/${o.object.id}/properties/${p.key}/get`, p.value);
+                this.mqttService.publish(`Homium/objects/${o.object.id}/properties/${p.key}/get`, p.value);
             });
         });
     }
@@ -563,7 +562,7 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
                 }
                 this.emit('saveObject', object.object);
                 // Update object in database
-                await db.objects.updateOne({ id: object.object.id }, {
+                await this.db.objects.updateOne({ id: object.object.id }, {
                     $set: {
                         properties: object.object.properties,
                         description: object.object.description,
@@ -583,5 +582,3 @@ class ObjectStorage extends Service<ObjectEventType | ScriptTargetEvent> {
         this.logger.debug('Saving objects done!');
     }
 }
-
-export default ObjectStorage.instance;

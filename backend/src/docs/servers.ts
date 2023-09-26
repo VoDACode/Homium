@@ -1,14 +1,16 @@
-import config from '../config';
+import { serviceManager, IConfigService } from 'homium-lib/services';
 import ip from 'ip';
+
+const configService = serviceManager.get(IConfigService);
 
 const payload = {
     "servers": [
         {
-            "url": "http://" + ip.address() + ":" + config.data.server.port,
+            "url": "http://" + ip.address() + ":" + configService.config.server.port,
             "description": "Local network server"
         },
         {
-            "url": "http://localhost:" + config.data.server.port,
+            "url": "http://localhost:" + configService.config.server.port,
             "description": "Local server"
         },
         {

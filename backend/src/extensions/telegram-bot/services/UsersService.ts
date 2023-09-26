@@ -1,10 +1,10 @@
-import { IExtension } from "../../../types/IExtension";
+import { Extension } from "homium-lib/extension";
 import { TelegramUser } from "../models/TelegramUser";
 
 export class UserService{
-    private _extension: IExtension;
+    private _extension: Extension;
 
-    constructor(extension: IExtension){
+    constructor(extension: Extension){
         this._extension = extension;
     }
 

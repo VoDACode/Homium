@@ -1,10 +1,11 @@
 import express from 'express';
-import { authGuard } from '../guards/AuthGuard';
-import extensions from '../services/extensions';
+import { authGuard } from 'homium-lib/utils/auth-guard';
+import { serviceManager, IExtensionsService } from 'homium-lib/services';
 
 const router = express.Router();
 
 router.get('/extensions', authGuard, async (req, res) => {
+    const extensions = serviceManager.get(IExtensionsService);
     res.status(200).send(extensions.allInfo);
 });
 

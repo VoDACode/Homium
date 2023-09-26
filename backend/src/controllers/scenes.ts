@@ -1,15 +1,18 @@
 import * as express from 'express';
 import { uuid } from 'uuidv4';
-import db from '../db';
-import { authGuard, hasPermission } from '../guards/AuthGuard';
-import { SceneModel } from '../models/SceneModel';
-import { SceneObject } from '../models/SceneObject';
-import { Logger } from '../services/LogService';
+import { authGuard, hasPermission } from 'homium-lib/utils/auth-guard';
+import { serviceManager, IDatabaseService, ILogger } from 'homium-lib/services';
+import { SceneObject } from 'homium-lib/models/scene-object.model';
+import { SceneModel } from 'homium-lib/models';
 
 const router = express.Router();
-const logger = new Logger('ScenesController');
+const logger = serviceManager.get(ILogger, 'ScenesController');
+logger.info('Initialized');
 
 router.get('/list', authGuard, async (req, res) => {
+
+    const db = serviceManager.get(IDatabaseService);
+
     res.send(await db.scenes.find().map(s => {
         return {
             id: s.id,
@@ -25,6 +28,8 @@ router.get('/details/:id', authGuard, (req, res) => {
         res.status(400).send('Invalid scene id').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     db.scenes.findOne({id: id}).then(s => {
         if(!s){
@@ -49,6 +54,8 @@ router.get('/screen/:id', authGuard, (req, res) => {
         res.status(400).send('Invalid scene id').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     db.scenes.findOne({id: id}).then(s => {
         if(!s){
@@ -88,6 +95,8 @@ router.post('/create', authGuard, async (req, res) => {
         return;
     }
 
+    const db = serviceManager.get(IDatabaseService);
+
     let id = uuid();
     while(await db.scenes.countDocuments({id: id}) > 0){
         id = uuid();
@@ -111,6 +120,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
         return;
     }
 
+    const db = serviceManager.get(IDatabaseService);
 
     const id = req.params.id as string;
     const name = req.body.name as string;
@@ -167,6 +177,8 @@ router.delete('/delete/:id', authGuard, async (req, res) => {
         res.status(400).send('Invalid scene id').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     const scene = await db.scenes.findOne({id: id});
 

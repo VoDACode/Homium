@@ -1,16 +1,15 @@
 import express from 'express';
-import extensions from './services/extensions';
-import {Logger} from './services/LogService';
-
-const logger = new Logger('Router');
+import { serviceManager, IExtensionsService, ILogger } from 'homium-lib/services';
 
 const router = express.Router();
 
 // API routes
 router.use('/api', (req, res, next) => {   
+    const logger = serviceManager.get(ILogger, 'Router');
     if(req.originalUrl.startsWith('/extensions') || req.originalUrl.startsWith('/api/controllers')){
         return next();
     }
+    let extensions = serviceManager.get(IExtensionsService);
     logger.debug('API request: ', req.originalUrl);
     let url = req.headers.referer;
     url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');
@@ -33,9 +32,11 @@ router.use('/api', (req, res, next) => {
 
 // Static files
 router.use('/static', (req, res, next) => {
+    const logger = serviceManager.get(ILogger, 'Router');
     if(req.originalUrl.startsWith('/static') && req.originalUrl != '/static'){
         return next();
     }
+    let extensions = serviceManager.get(IExtensionsService);
     logger.debug('Static request: ', req.originalUrl);
     let url = req.headers.referer;
     url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');
@@ -57,9 +58,11 @@ router.use('/static', (req, res, next) => {
 });
 
 router.use('/extension-info', (req, res, next) => {
+    const logger = serviceManager.get(ILogger, 'Router');
     if(req.originalUrl.startsWith('/extension-info') && req.originalUrl != '/extension-info'){
         return next();
     }
+    let extensions = serviceManager.get(IExtensionsService);
     logger.debug('Extension info request: ', req.originalUrl);
     let url = req.headers.referer;
     url = url?.replace(req.hostname, '').replace('http://', '').replace('https://', '');

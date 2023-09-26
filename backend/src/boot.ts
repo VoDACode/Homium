@@ -2,19 +2,13 @@ import { exec } from 'child_process';
 import express from 'express';
 import fs from 'fs-extra';
 import path from 'path';
-import { IExtension } from './types/IExtension';
-import extensions from './services/extensions';
-import db from './db';
-import { UserModel } from './models/UserModel';
 import { uuid } from 'uuidv4';
-import { ExtensionModel } from './models/ExtensionModel';
-import { Logger, logService } from './services/LogService';
-
 import { DownloaderHelper } from 'node-downloader-helper';
 import extract from 'extract-zip'
 
-
-const logger = new Logger('boot');
+import { serviceManager, IDatabaseService, ILogService, ILogger, IExtensionsService } from 'homium-lib/services';
+import { ExtensionModel, UserModel } from 'homium-lib/models';
+import { Extension } from 'homium-lib/extension';
 
 export function bootExtensions(app: express.Application) {
     return _bootExtensions(app, 'all');
@@ -25,6 +19,7 @@ export function bootNewExtensions(app: express.Application) {
 }
 
 export function loadControllers(app: express.Application) {
+    const logger = serviceManager.get(ILogger, 'Boot');
     logger.info('Loading controllers...');
     const controllersPath = path.join(__dirname, 'controllers');
     fs.readdirSync(controllersPath).forEach((file) => {
@@ -51,27 +46,32 @@ export function loadControllers(app: express.Application) {
 }
 
 export async function firstStart() {
+    const logger = serviceManager.get(ILogger, 'Boot');
     let firstStart = false;
     logger.info('Checking first start...');
+    const db = serviceManager.get(IDatabaseService);
     if (await db.users.countDocuments() === 0) {
         logger.info('First start detected. Creating root user...');
         let root = new UserModel("root", "toor", undefined, undefined, UserModel.getTemplatePermissions('admin'));
         await db.users.insertOne(root);
         firstStart = true;
     }
-    if (firstStart) {
-        logger.info('First start detected. Creating new linux user...');
-        exec('useradd -m -s /bin/bash -p $(openssl passwd -1 toor) homium', (err, stdout, stderr) => {
-            if (err) {
-                logger.error('Error while creating linux user: ' + err);
-            }
-            logger.info('Linux user created.');
-        });
-    }
+    // if (firstStart) {
+    //     logger.info('First start detected. Creating new linux user...');
+    //     exec('useradd -m -s /bin/bash -p $(openssl passwd -1 toor) homium', (err, stdout, stderr) => {
+    //         if (err) {
+    //             logger.error('Error while creating linux user: ' + err);
+    //         }
+    //         logger.info('Linux user created.');
+    //     });
+    // }
     logger.info('First start check complete.');
 }
 
 export async function checkForUpdates() {
+    const logger = serviceManager.get(ILogger, 'Boot');
+    let logService = serviceManager.get(ILogService);
+
     let subDir = '';
     let installPath = path.join(__dirname, '..', '..', '..');
     let newVersion = '';
@@ -345,8 +345,11 @@ export async function checkForUpdates() {
 }
 
 function _bootExtensions(app: express.Application, mode: 'onlyNew' | 'all') {
+    const logger = serviceManager.get(ILogger, 'Boot');
     logger.info('Booting extensions...');
     const extensionsPath = path.join(__dirname, 'extensions');
+    const db = serviceManager.get(IDatabaseService);
+    const extensions = serviceManager.get(IExtensionsService);
     fs.readdirSync(extensionsPath).forEach(async (file) => {
         let isExist = false;
         let firstStart = false;
@@ -420,9 +423,9 @@ function _bootExtensions(app: express.Application, mode: 'onlyNew' | 'all') {
 
         if (!isExist) {
             const original = new (require(path.join(extensionsPath, file)))(packageJson.id);
-            const extension: IExtension = original as IExtension;
-            if (!(original.__proto__ instanceof IExtension)) {
-                logger.warn(`Extension ${file} is not extending IExtension. Skipping...`);
+            const extension: Extension = original as Extension;
+            if (!(original.__proto__ instanceof Extension)) {
+                logger.warn(`Extension ${file} is not extending Extension. Skipping...`);
                 return;
             }
             logger.info(`Extension ${file} booted.`);

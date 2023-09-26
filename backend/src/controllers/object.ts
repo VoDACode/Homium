@@ -1,11 +1,10 @@
 import express from 'express';
 import { WithId } from 'mongodb';
 import { uuid } from 'uuidv4';
-import db from '../db';
-import { authGuard, hasPermission, isAuthorized } from '../guards/AuthGuard';
-import { getPropertyToJsonObject, ObjectModel, objectPropertyToJson } from '../models/ObjectModel';
-import { ObjectProperty, pushObjectPropertyHistory } from '../models/ObjectProperty';
-import ObjectService from '../services/ObjectService';
+import { authGuard, hasPermission, isAuthorized } from 'homium-lib/utils/auth-guard';
+import { ObjectModel, ObjectProperty } from 'homium-lib/models';
+import { serviceManager, IDatabaseService, IObjectService } from 'homium-lib/services';
+import { getPropertyToJsonObject, objectPropertyToJson, pushObjectPropertyHistory } from 'homium-lib/utils';
 
 const router = express.Router();
 
@@ -59,6 +58,10 @@ router.post('/create', authGuard, async (req, res) => {
 
     let obj = new ObjectModel(name, parentId, uuid(), description, properties, allowAnonymous);
     let parent: WithId<ObjectModel> | null = null;
+
+    const db = serviceManager.get(IDatabaseService);
+    const objectService = serviceManager.get(IObjectService);
+
     if (parentId != null) {
         parent = await db.objects.findOne({ id: parentId });
         if (parent == null) {
@@ -80,9 +83,9 @@ router.post('/create', authGuard, async (req, res) => {
     while (await db.objects.countDocuments({ id: obj.id }) > 0) {
         obj.id = uuid();
     }
-    await ObjectService.add(obj);
+    await objectService.add(obj);
     if (parent) {
-        await ObjectService.setChildren(parent.id, parent.children);
+        await objectService.setChildren(parent.id, parent.children);
     }
     res.status(201).send(obj.id).end();
 });
@@ -98,6 +101,10 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
+
+    const db = serviceManager.get(IDatabaseService);
+    const objectService = serviceManager.get(IObjectService);
+
     if (await db.objects.countDocuments({ id: id }) == 0) {
         return res.status(404).send('Object not found.').end();
     }
@@ -114,7 +121,7 @@ router.delete('/remove/:id', authGuard, async (req, res) => {
         return db.objects.find({ parentId: id }).forEach((object: any) => {
             remove(object.id);
         }).then(async () => {
-            await ObjectService.remove(id);
+            await objectService.remove(id);
         });
     }
 });
@@ -124,7 +131,10 @@ router.delete('/clear-cache', authGuard, async (req, res) => {
         res.status(403).send('Permission denied!').end();
         return;
     }
-    ObjectService.clearCache();
+
+    const objectService = serviceManager.get(IObjectService);
+
+    objectService.clearCache();
     res.status(200).send('Cache cleared.').end();
 });
 
@@ -151,6 +161,9 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
         return res.status(400).send('The object must contain at least one property.').end();
     }
 
+    const db = serviceManager.get(IDatabaseService);
+    const objectService = serviceManager.get(IObjectService);
+    
     let object = await db.objects.findOne({ id: id });
     if (object == null) {
         return res.status(404).send('Object not found.').end();
@@ -162,7 +175,7 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
         return res.status(403).send('This object is a system object and cannot be modified.').end();
     }
 
-    var parent = object.parentId == null ? null : await ObjectService.get(object.parentId);
+    var parent = object.parentId == null ? null : await objectService.get(object.parentId);
 
     if(parent != null){
         for(let i = 0; i < parent.properties.length; i++){
@@ -203,7 +216,7 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
     await updateChildren(id, obj, oldProperties);
 
     async function updateChildren(id: string, properties: ObjectProperty[], oldProperties: ObjectProperty[]) {
-        var oldParent = await ObjectService.get(id);
+        var oldParent = await objectService.get(id);
         if (oldParent == null) {
             return;
         }
@@ -233,14 +246,14 @@ router.put('/update/:id/object', authGuard, async (req, res) => {
                 }
             }
 
-            ObjectService.update(child.id, child).then(() => {
+            objectService.update(child.id, child).then(() => {
                 if (child.children != null && child.children.length > 0) {
                     updateChildren(child.id, child.properties, childProperties);
                 }
             });
         });
         oldParent.properties = properties;
-        await ObjectService.update(id, oldParent);
+        await objectService.update(id, oldParent);
     }
 
     res.status(200).send('Object updated.').end();
@@ -261,6 +274,10 @@ router.put('/update/:id', authGuard, async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
+
+    const db = serviceManager.get(IDatabaseService);
+    const objectService = serviceManager.get(IObjectService);
+
     let object = await db.objects.findOne({ id: id });
     if (object == null) {
         return res.status(404).send('Object not found.').end();
@@ -304,7 +321,7 @@ router.put('/update/:id', authGuard, async (req, res) => {
         }
         object.children = children;
     }
-    await ObjectService.update(id, object);
+    await objectService.update(id, object);
     res.status(200).send('Object updated.').end();
 });
 
@@ -313,7 +330,10 @@ router.get('/get/:id', async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
-    const object = await ObjectService.get(id);
+
+    const objectService = serviceManager.get(IObjectService);
+
+    const object = await objectService.get(id);
     if (!object) {
         return res.status(404).send('Object not found.').end();
     }
@@ -335,7 +355,10 @@ router.get('/get/:id/children', async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
-    const object = await ObjectService.get(id);
+
+    const objectService = serviceManager.get(IObjectService);
+
+    const object = await objectService.get(id);
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
@@ -363,7 +386,10 @@ router.get('/get/:id/:prop/history', async (req, res) => {
     if (id == null || typeof id !== 'string') {
         return res.status(400).send('The id must be a string.').end();
     }
-    const object = await ObjectService.get(id);
+
+    const objectService = serviceManager.get(IObjectService);
+
+    const object = await objectService.get(id);
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
@@ -391,6 +417,8 @@ router.get('/get-root', authGuard, async (req, res) => {
         return;
     }
 
+    const db = serviceManager.get(IDatabaseService);
+
     const object = await db.objects.find({ parentId: null }).toArray();
     if (object == null) {
         return res.status(404).send('Object not found.').end();
@@ -416,7 +444,9 @@ router.get('/set/:id', async (req, res) => {
         return res.status(400).send('The value must be a string, number, or boolean.').end();
     }
 
-    const object = await ObjectService.get(id);
+    const objectService = serviceManager.get(IObjectService);
+
+    const object = await objectService.get(id);
 
     if (!object) {
         return res.status(404).send('Object not found.').end();
@@ -456,7 +486,7 @@ router.get('/set/:id', async (req, res) => {
 
     pushObjectPropertyHistory(object, key, value);
 
-    ObjectService.updateObject(id, key, value);
+    objectService.updateObject(id, key, value);
 
     res.status(200).json(objectPropertyToJson(object.properties[index])).end();
 });
@@ -466,6 +496,8 @@ router.get('/list/ids', authGuard, async (req, res) => {
         res.status(403).send('Permission denied!').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     const objects = await db.objects.find().toArray();
     res.status(200).send(objects.map(p => p.id)).end();
@@ -479,6 +511,8 @@ router.get('/list', authGuard, async (req, res) => {
 
     const viewProperties = req.query.viewProperties == 'true';
     const viewType = req.query.viewType;
+
+    const db = serviceManager.get(IDatabaseService);
 
     const objects = await db.objects.find().toArray();
     res.status(200).send(objects.map(p => {
@@ -525,7 +559,9 @@ router.get('/list/:id', authGuard, async (req, res) => {
     const viewProperties = req.query.viewProperties == 'true';
     const viewType = req.query.viewType;
 
-    const object = await ObjectService.get(id);
+    const objectService = serviceManager.get(IObjectService);
+
+    const object = await objectService.get(id);
     if (object == null) {
         return res.status(404).send('Object not found.').end();
     }
@@ -568,6 +604,8 @@ router.get('/search', authGuard, async (req, res) => {
     if (query == null || typeof query !== 'string') {
         return res.status(400).send('The query must be a string.').end();
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     let objects = await db.objects.find({ name: { $regex: query, $options: 'i' } }).toArray();
 

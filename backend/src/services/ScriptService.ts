@@ -1,15 +1,9 @@
+import { ScriptModel } from 'homium-lib/models';
+import { serviceManager, BaseService, IConfigService, IDatabaseService, IExtensionsService, ILogger, IMqttService, IObjectService, IScriptService } from 'homium-lib/services';
+import { ScriptArgument, ScriptServiceEvent } from 'homium-lib/types/script.types';
 import { uuid } from 'uuidv4';
 import * as vm from 'vm';
-import config from '../config';
-import db from '../db';
-import { ScriptArgument, ScriptModel } from '../models/ScriptModel';
-import extensions from './extensions';
-import { Logger } from './LogService';
-import MqttService from './MqttService';
-import ObjectService from './ObjectService';
-import { Service } from './Service';
-
-export type ScriptServiceEvent = 'created' | 'updated' | 'deleted' | 'enabled' | 'disabled' | 'executed' | 'loaded';
+import { ObjectService } from './ObjectService';
 
 class VMService {
     private static _instance: VMService;
@@ -41,22 +35,31 @@ class ScriptStoreModel {
     }
 }
 
-class ScriptService extends Service<ScriptServiceEvent>{
+export class ScriptService extends BaseService<ScriptServiceEvent> implements IScriptService {
 
     public get name(): string {
-        return 'Script';
+        return 'ScriptService';
     }
 
-    private logger: Logger = new Logger(this.name);
+    private logger: ILogger;
+    private db: IDatabaseService;
+    private extensionService: IExtensionsService;
+    private mqttService: IMqttService;
+    private objectService: IObjectService;
+    private configService: IConfigService;
+
+
     private scripts: ScriptStoreModel[] = [];
 
-    private static _instance: ScriptService;
 
-    public static get instance(): ScriptService {
-        return this._instance || (this._instance = new this());
-    }
-    private constructor() {
+    constructor() {
         super();
+        this.logger = serviceManager.get(ILogger, this.name);
+        this.db = serviceManager.get(IDatabaseService);
+        this.extensionService = serviceManager.get(IExtensionsService);
+        this.mqttService = serviceManager.get(IMqttService);
+        this.objectService = serviceManager.get(IObjectService);
+        this.configService = serviceManager.get(IConfigService);
     }
 
     public async start(): Promise<void> {
@@ -64,7 +67,7 @@ class ScriptService extends Service<ScriptServiceEvent>{
             return Promise.resolve();
         this.warning = true;
         this.logger.info("Starting");
-        let list = await db.scripts.find().toArray();
+        let list = await this.db.scripts.find().toArray();
         this.logger.info(`Found ${list.length} script${list.length == 1 ? "" : "s"}`);
         list.forEach(script => {
             try {
@@ -107,13 +110,13 @@ class ScriptService extends Service<ScriptServiceEvent>{
         let context = {
             context: {
                 extensions: {
-                    ...extensions.getContext,
+                    ...this.extensionService.getContext,
                 },
                 services: {
-                    logger: new Logger(`Script ${id}`),
+                    logger: serviceManager.get(ILogger, `Script ${id}`),
                     mqtt: {
                         publish: async (topic: string, message: string) => {
-                            MqttService.publish(topic, message);
+                            this.mqttService.publish(topic, message);
                         },
                     }
                 },
@@ -139,24 +142,24 @@ class ScriptService extends Service<ScriptServiceEvent>{
     public async createScript(script: ScriptModel): Promise<string> {
         this.validateRunning();
         let id = script.id.length > 0 ? script.id : uuid();
-        if ((await db.scripts.countDocuments({ id: id })) > 0) {
+        if ((await this.db.scripts.countDocuments({ id: id })) > 0) {
             do {
                 id = uuid();
-            } while ((await db.scripts.countDocuments({ id: id })) > 0);
+            } while ((await this.db.scripts.countDocuments({ id: id })) > 0);
         }
         script.id = id;
-        await db.scripts.insertOne(script);
+        await this.db.scripts.insertOne(script);
         await this.initTarget(script);
         return id;
     }
 
     public async updateScript(script: ScriptModel): Promise<void> {
         this.validateRunning();
-        let dbScript = await db.scripts.findOne({ id: script.id });
+        let dbScript = await this.db.scripts.findOne({ id: script.id });
         if (!dbScript) {
             throw new Error("Script not found");
         }
-        await db.scripts.updateOne({ id: script.id }, { $set: script });
+        await this.db.scripts.updateOne({ id: script.id }, { $set: script });
         const index = this.scripts.findIndex(s => s.script.id === script.id);
         if (index > -1) {
             this.scripts[index] = new ScriptStoreModel(script);
@@ -187,12 +190,12 @@ class ScriptService extends Service<ScriptServiceEvent>{
         if (index > -1) {
             this.scripts.splice(index, 1);
         }
-        await db.scripts.deleteOne({ id: id });
+        await this.db.scripts.deleteOne({ id: id });
     }
 
     public async getIds(): Promise<string[]> {
         this.validateRunning();
-        return await db.scripts.find().map(s => s.id).toArray();
+        return await this.db.scripts.find().map(s => s.id).toArray();
     }
 
     public async getScript(id: string): Promise<ScriptModel> {
@@ -205,7 +208,7 @@ class ScriptService extends Service<ScriptServiceEvent>{
     }
 
     private async loadScript(id: string): Promise<ScriptModel> {
-        let script = await db.scripts.findOne({ id: id });
+        let script = await this.db.scripts.findOne({ id: id });
         if (!script) {
             throw new Error("Script not found");
         }
@@ -216,18 +219,18 @@ class ScriptService extends Service<ScriptServiceEvent>{
 
     private async initTarget(script: ScriptModel) {
         if (script.targetType === "Object") {
-            let obj = await ObjectService.get(script.targetId);
+            let obj = await this.objectService.get(script.targetId);
             if (!obj) {
                 this.logger.error(`Script ${script.id} is targeted to object ${script.targetId} but object is not loaded.`);
                 return;
             }
-            ObjectService.addEventListener(obj.id, "remove", () => {
+            this.objectService.addEventListener(obj.id, "remove", () => {
                 if (script.enabled == false) {
                     return;
                 }
                 this.deleteScript(script.id);
             });
-            ObjectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
+            this.objectService.addEventListener(obj.id, script.targetEvent, (args: ScriptArgument) => {
                 if (script.enabled == false) {
                     return;
                 }
@@ -238,11 +241,11 @@ class ScriptService extends Service<ScriptServiceEvent>{
                 }
             });
         } else if (script.targetType === "Extension") {
-            if (config.data.extensions.enabled == false) {
+            if (this.configService.config.extensions.enabled == false) {
                 this.logger.warn(`Script ${script.id} is targeted to extension ${script.targetId} but extensions are disabled.`);
                 return;
             }
-            let ext = extensions.get(script.targetId, 'id');
+            let ext = this.extensionService.get(script.targetId, 'id');
             if (!ext) {
                 this.logger.error(`Script ${script.id} is targeted to extension ${script.targetId} but extension is not loaded.`);
                 return;
@@ -260,5 +263,3 @@ class ScriptService extends Service<ScriptServiceEvent>{
         }
     }
 }
-
-export default ScriptService.instance;

@@ -24,21 +24,35 @@ process.argv.forEach((val, index) => {
     }
 });
 
+
+
 // proxy /api to options.target + '/api'
-app.use(createProxyMiddleware('/api', { target: `http://${options.target}`, changeOrigin: true }));
+app.use(createProxyMiddleware('/api', {
+    target: `http://${options.target}`, changeOrigin: true, onProxyReq: (proxyReq, req, res) => {
+        proxyReq.setHeader('Host', req.headers.host);
+    }
+}));
 let apiWsProxy = createProxyMiddleware('/api', { target: `ws://${options.target}`, ws: true, changeOrigin: true });
 
-app.use(createProxyMiddleware('/extensions', { target: `http://${options.target}`, changeOrigin: true }));
+app.use(createProxyMiddleware('/extensions', {
+    target: `http://${options.target}`, changeOrigin: true, onProxyReq: (proxyReq, req, res) => {
+        proxyReq.setHeader('Host', req.headers.host);
+    }
+}));
 let extensionWsProxy = createProxyMiddleware('/extensions', { target: `ws://${options.target}`, ws: true, changeOrigin: true });
 
-app.use(createProxyMiddleware('/extension-info', { target: `http://${options.target}`, changeOrigin: true }));
+app.use(createProxyMiddleware('/extension-info', {
+    target: `http://${options.target}`, changeOrigin: true, onProxyReq: (proxyReq, req, res) => {
+        proxyReq.setHeader('Host', req.headers.host);
+    }
+}));
 
 // add use for static files
 app.use(express.static(options.dist));
 
 // add use for SPA
 app.use((req, res) => {
-    if(fs.existsSync(path.join(options.dist, req.url))) {
+    if (fs.existsSync(path.join(options.dist, req.url))) {
         res.sendFile(path.join(options.dist, req.url));
     } else {
         res.sendFile(path.join(options.dist, 'index.html'));

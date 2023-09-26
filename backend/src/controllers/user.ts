@@ -1,9 +1,10 @@
 import { exec } from 'child_process';
 import express from 'express';
-import db from '../db';
-import { authGuard, getBot, getPermissions, getUser, hasPermission } from '../guards/AuthGuard';
-import { ClientPermissions, PermissionTemplate } from '../models/ClientPermissions';
-import { UserModel, UserView } from '../models/UserModel';
+import { authGuard, getBot, getPermissions, getUser, hasPermission } from 'homium-lib/utils/auth-guard';
+import { serviceManager, IDatabaseService } from 'homium-lib/services';
+import { UserModel, UserView } from 'homium-lib/models/user.model';
+import { ClientPermissions, PermissionTemplate } from 'homium-lib/models/permission.model';
+
 const router = express.Router();
 
 router.get('/list/', authGuard, async (req, res) => {
@@ -11,6 +12,9 @@ router.get('/list/', authGuard, async (req, res) => {
         res.status(403).send('Permission denied!');
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
+
     let users = await db.users.find({}).toArray();
     res.json(users.map(user => new UserView(user)));
 });
@@ -24,6 +28,9 @@ router.get('/list/:username', authGuard, async (req, res) => {
         res.status(400).send('Invalid request').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
+
     const username = req.params.username;
     const user = username == 'self' ? await getUser(req) : (await db.users.findOne({ username: username }));
     if (!user) {
@@ -47,6 +54,8 @@ router.get('/list/:username/permissions', authGuard, async (req, res) => {
         return;
     }
     const username = req.params.username;
+
+    const db = serviceManager.get(IDatabaseService);
 
     const permissions = username == 'self' ? await getPermissions(req) : (await db.users.findOne({ username: username }))?.permissions;
     if (!permissions) {
@@ -104,6 +113,8 @@ router.post('/list/', authGuard, async (req, res) => {
         }
     }
 
+    const db = serviceManager.get(IDatabaseService);
+
     if (await db.users.countDocuments({ username: username }) > 0) {
         res.status(400).send('Username already exists').end();
         return;
@@ -136,6 +147,8 @@ router.put('/list/:username', authGuard, async (req, res) => {
         res.status(400).send('Invalid request').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     let user = await db.users.findOne({ username: username });
 
@@ -229,6 +242,8 @@ router.delete('/list/:username', authGuard, async (req, res) => {
         res.status(400).send('You can`t delete yourself').end();
         return;
     }
+
+    const db = serviceManager.get(IDatabaseService);
 
     user = await db.users.findOne({ username: username });
 

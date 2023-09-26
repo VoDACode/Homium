@@ -1,5 +1,5 @@
 import express from 'express';
-import { authGuard, refresh, signin, signout } from '../guards/AuthGuard';
+import { authGuard, refresh, signin, signout } from 'homium-lib/utils/auth-guard';
 const router = express.Router();
 
 router.post('/signin', signin);

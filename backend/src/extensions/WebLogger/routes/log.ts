@@ -1,7 +1,7 @@
 import express from 'express';
 import WebLogger from '..';
-import { authGuard, isAuthorized } from '../../../guards/AuthGuard';
-import { LogRecord } from '../../../services/LogService';
+import { authGuard, isAuthorized } from 'homium-lib/utils/auth-guard';
+import { LogRecord } from 'homium-lib/types/log.types';
 
 const router = express.Router();
 

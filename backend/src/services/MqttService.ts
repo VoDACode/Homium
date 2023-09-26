@@ -1,17 +1,15 @@
+import { serviceManager, BaseService, IConfigService, ILogger } from 'homium-lib/services';
+import { MqttServiceEvent } from 'homium-lib/types/mqtt.types';
 import * as mqtt from 'mqtt';
-import config from '../config';
-import { Logger } from './LogService';
-import { Service, ServiceEvent } from './Service';
 
-export type MqttServiceEvent = 'published' | 'subscribed' | 'unsubscribed' | 'reconnect' | 'disconnected' | 'clientIdChanged' | ServiceEvent;
-
-export class MqttService extends Service<MqttServiceEvent> {
+export class MqttService extends BaseService<MqttServiceEvent> {
 
     public get name(): string {
-        return 'MQTT';
+        return 'MqttService';
     }
 
-    private logger = new Logger(this.name);
+    private logger: ILogger;
+    private configService: IConfigService;
     private mqttClient: mqtt.Client | null = null;
 
     private static _instance: MqttService;
@@ -27,12 +25,10 @@ export class MqttService extends Service<MqttServiceEvent> {
         this.emit('clientIdChanged', value);
     }
 
-    public static get instance() {
-        return this._instance || (this._instance = new this());
-    }
-
-    private constructor() {
+    constructor() {
         super();
+        this.logger = serviceManager.get(ILogger, this.name);
+        this.configService = serviceManager.get(IConfigService);
     }
 
     public get isConnected(): boolean {
@@ -43,7 +39,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (this.running)
             return Promise.resolve();
         return new Promise<void>((resolve, reject) => {
-            if (config.data.mqtt.enabled !== true) {
+            if (this.configService.config.mqtt.enabled !== true) {
                 this.logger.info('MQTT is disabled in config!');
                 this.running = false;
                 reject();
@@ -56,9 +52,9 @@ export class MqttService extends Service<MqttServiceEvent> {
                 this.logger.warn('Generated new client ID: ' + this.clientId);
             }
 
-            this.mqttClient = mqtt.connect(`mqtt://${config.data.mqtt.host}:${config.data.mqtt.port}`, {
-                username: config.data.mqtt.user,
-                password: config.data.mqtt.password,
+            this.mqttClient = mqtt.connect(`mqtt://${this.configService.config.mqtt.host}:${this.configService.config.mqtt.port}`, {
+                username: this.configService.config.mqtt.user,
+                password: this.configService.config.mqtt.password,
                 clientId: this.clientId,
                 clean: true,
                 reconnectPeriod: 1000,
@@ -118,7 +114,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.data.mqtt.topic + topic;
+        topic = this.configService.config.mqtt.topic + topic;
         this.mqttClient?.publish(topic, message.toString(), { qos: 1 }, (err) => {
             if (err) {
                 this.logger.error('Error publishing to MQTT broker! (topic: ' + topic + ')');
@@ -138,7 +134,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.data.mqtt.topic + topic;
+        topic = this.configService.config.mqtt.topic + topic;
         this.mqttClient?.subscribe(topic);
         this.mqttClient?.on('message', (topic, message) => {
             callback(topic, message.toString());
@@ -154,7 +150,7 @@ export class MqttService extends Service<MqttServiceEvent> {
         if (topic[0] !== '/') {
             topic = '/' + topic;
         }
-        topic = config.data.mqtt.topic + topic;
+        topic = this.configService.config.mqtt.topic + topic;
         this.mqttClient?.unsubscribe(topic, undefined, (err) => {
             if (err) {
                 this.logger.error('Error unsubscribing from MQTT broker! (topic: ' + topic + ')');
@@ -166,5 +162,3 @@ export class MqttService extends Service<MqttServiceEvent> {
         });
     }
 }
-
-export default MqttService.instance;
